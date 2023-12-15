@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualFlightOnlineTransmitter", "VirtualFlightOnlineTransmitter.csproj", "{BFD7F10B-1ADC-4635-9901-457BA2C37F78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BFD7F10B-1ADC-4635-9901-457BA2C37F78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFD7F10B-1ADC-4635-9901-457BA2C37F78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFD7F10B-1ADC-4635-9901-457BA2C37F78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFD7F10B-1ADC-4635-9901-457BA2C37F78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95CDEDBF-B599-4EE5-8561-90F7F3BFD458}
+	EndGlobalSection
+EndGlobal

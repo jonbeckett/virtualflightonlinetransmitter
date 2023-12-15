@@ -1,0 +1,39 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VirtualFlightOnlineTransmitter.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Callsign" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Your Callsign</Value>
+    </Setting>
+    <Setting Name="AircraftType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Your Aircraft Type</Value>
+    </Setting>
+    <Setting Name="PilotName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Your Name</Value>
+    </Setting>
+    <Setting Name="GroupName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">VirtualFlight.Online</Value>
+    </Setting>
+    <Setting Name="ServerURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://virtualflight.online/send.php</Value>
+    </Setting>
+    <Setting Name="Notes" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MSFSServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SOUTH EAST ASIA</Value>
+    </Setting>
+    <Setting Name="AutoConnect" Type="System.String" Scope="User">
+      <Value Profile="(Default)">true</Value>
+    </Setting>
+    <Setting Name="BroadcastToDiscord" Type="System.String" Scope="User">
+      <Value Profile="(Default)">true</Value>
+    </Setting>
+    <Setting Name="BroadcastLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">true</Value>
+    </Setting>
+    <Setting Name="BroadcastNotes" Type="System.String" Scope="User">
+      <Value Profile="(Default)">false</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
