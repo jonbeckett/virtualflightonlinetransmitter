@@ -2,7 +2,7 @@
 
 ## What is "Virtual Flight Online Transmitter" ?
 
-It is a small Windows application that transmits your position in Microsoft Flight Simulator to an online database where your last reported position is held for 5 minutes. The website then produces a "whazzup" formatted file that can be used by LittleNavMap to plot aircraft positions live on a map.
+It is a small Windows application that transmits your position in Microsoft Flight Simulator to an online database where your last reported position is held for 1 minute. The website then produces a "whazzup" formatted file that can be used by LittleNavMap to plot aircraft positions live on a map.
 
 ## Why?
 
