@@ -95,7 +95,7 @@ namespace VirtualFlightOnlineTransmitter
             // 
             this.btnConnect.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnConnect.Location = new System.Drawing.Point(12, 276);
+            this.btnConnect.Location = new System.Drawing.Point(12, 238);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(199, 23);
             this.btnConnect.TabIndex = 6;
@@ -117,7 +117,7 @@ namespace VirtualFlightOnlineTransmitter
             this.gbUserInfo.Controls.Add(this.tbCallsign);
             this.gbUserInfo.Controls.Add(this.lbPilotName);
             this.gbUserInfo.Controls.Add(this.lbCallsign);
-            this.gbUserInfo.Location = new System.Drawing.Point(12, 76);
+            this.gbUserInfo.Location = new System.Drawing.Point(12, 35);
             this.gbUserInfo.Name = "gbUserInfo";
             this.gbUserInfo.Size = new System.Drawing.Size(399, 194);
             this.gbUserInfo.TabIndex = 1;
@@ -264,7 +264,7 @@ namespace VirtualFlightOnlineTransmitter
             this.gbAircraftData.Controls.Add(this.tbLongitude);
             this.gbAircraftData.Controls.Add(this.lbLatitude);
             this.gbAircraftData.Controls.Add(this.lbLongitude);
-            this.gbAircraftData.Location = new System.Drawing.Point(12, 305);
+            this.gbAircraftData.Location = new System.Drawing.Point(12, 267);
             this.gbAircraftData.Name = "gbAircraftData";
             this.gbAircraftData.Size = new System.Drawing.Size(399, 246);
             this.gbAircraftData.TabIndex = 3;
@@ -519,7 +519,7 @@ namespace VirtualFlightOnlineTransmitter
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -528,7 +528,7 @@ namespace VirtualFlightOnlineTransmitter
             this.ssMain.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.ssMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsslMain});
-            this.ssMain.Location = new System.Drawing.Point(0, 307);
+            this.ssMain.Location = new System.Drawing.Point(0, 269);
             this.ssMain.Name = "ssMain";
             this.ssMain.Size = new System.Drawing.Size(420, 22);
             this.ssMain.TabIndex = 5;
@@ -548,7 +548,7 @@ namespace VirtualFlightOnlineTransmitter
             // btnDisconnect
             // 
             this.btnDisconnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDisconnect.Location = new System.Drawing.Point(213, 276);
+            this.btnDisconnect.Location = new System.Drawing.Point(213, 238);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(199, 23);
             this.btnDisconnect.TabIndex = 7;
@@ -560,7 +560,7 @@ namespace VirtualFlightOnlineTransmitter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(420, 329);
+            this.ClientSize = new System.Drawing.Size(420, 291);
             this.Controls.Add(this.btnDisconnect);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.gbUserInfo);
@@ -569,8 +569,8 @@ namespace VirtualFlightOnlineTransmitter
             this.Controls.Add(this.gbAircraftData);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mnuMain;
-            this.MaximumSize = new System.Drawing.Size(800, 612);
-            this.MinimumSize = new System.Drawing.Size(436, 354);
+            this.MaximumSize = new System.Drawing.Size(800, 586);
+            this.MinimumSize = new System.Drawing.Size(436, 330);
             this.Name = "frmMain";
             this.Text = "VirtualFlight.Online Transmitter";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);

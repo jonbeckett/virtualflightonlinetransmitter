@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using CTrue.FsConnect;
-using CTrue.FsConnect.Managers;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Net;
 using System.IO;
-using System.Media;
-using Microsoft.SyndicationFeed.Rss;
-using Microsoft.SyndicationFeed.Atom;
-using Microsoft.SyndicationFeed;
-using System.Xml;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging.Console;
-
 
 namespace VirtualFlightOnlineTransmitter
 {
