@@ -69,6 +69,7 @@ namespace VirtualFlightOnlineTransmitter
             return Math.Abs(d) + "° " + Math.Abs(m) + "' " + string.Format("{0:0.00}", Math.Abs(s)) + "\" " + (val > 0 ? "N" : "S");
         }
 
+
         /// <summary>
         /// Time the connection to the simulator started (used to calculate how long the user has been connected)
         /// </summary>
@@ -190,6 +191,8 @@ namespace VirtualFlightOnlineTransmitter
                     }
                 }
 
+                // todo - catch "server not found" errors and report them
+
             } catch
             {
                 // do nothing 
@@ -271,8 +274,8 @@ namespace VirtualFlightOnlineTransmitter
 
             // Update the Screen   
             this.tbAircraftType.Text = aircraft_type;
-            this.tbLatitude.Text = LatitudeToString(latitude); // string.Format("{0:0.000000000000}", latitude);
-            this.tbLongitude.Text = LongitudeToString(longitude); // string.Format("{0:0.000000000000}", longitude);
+            this.tbLatitude.Text = LatitudeToString(latitude);
+            this.tbLongitude.Text = LongitudeToString(longitude);
             this.tbAltitude.Text = string.Format("{0:0. ft}", altitude);
             this.tbHeading.Text = string.Format("{0:0. deg}", heading);
             this.tbAirspeed.Text = string.Format("{0:0. knots}", airspeed);
@@ -438,6 +441,7 @@ namespace VirtualFlightOnlineTransmitter
             tbServerURL.Text = tbServerURL.Text.Trim();
         }
 
+
         /// <summary>
         /// Remove spaces when focus leaves callsign field
         /// </summary>
@@ -447,6 +451,7 @@ namespace VirtualFlightOnlineTransmitter
         {
             tbCallsign.Text = tbCallsign.Text.Trim();
         }
+
 
         /// <summary>
         /// Remove spaces when focus leaves pilot name field
@@ -458,6 +463,7 @@ namespace VirtualFlightOnlineTransmitter
             tbPilotName.Text = tbPilotName.Text.Trim();
         }
 
+
         /// <summary>
         /// Remove spaces when focus leaves group name field
         /// </summary>
@@ -467,6 +473,7 @@ namespace VirtualFlightOnlineTransmitter
         {
             tbGroupName.Text = tbGroupName.Text.Trim();
         }
+
 
         /// <summary>
         /// Remove spaces when focus leaves notes field
@@ -489,7 +496,6 @@ namespace VirtualFlightOnlineTransmitter
             string version = System.Windows.Forms.Application.ProductVersion;
             MessageBox.Show("Transmitter\nby Jonathan Beckett\nVirtual Flight Online\nhttps://virtualflight.online\nVersion " + version, "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
 
 
         /// <summary>
@@ -618,7 +624,11 @@ namespace VirtualFlightOnlineTransmitter
             
         }
 
-
+        /// <summary>
+        /// Exits the application (shuts things down first)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // disconnect if connected
@@ -632,15 +642,24 @@ namespace VirtualFlightOnlineTransmitter
         }
 
 
+        /// <summary>
+        /// Resets the textboxes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void resetSettingsToDefaultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!this.FlightSimulatorConnection.Connected)
             {
-                tbServerURL.Text = "https://virtualflight.online/send.php";
+                tbServerURL.Text = "https://yourserver/send.php";
                 tbCallsign.Text = "Your Callsign";
                 tbPilotName.Text = "Your Name";
                 tbGroupName.Text = "Your Group";
                 cbMSFSServer.Text = "SOUTH EAST ASIA";
+                
+                // save the settings
+                Properties.Settings.Default.Save();
+
             } else
             {
                 MessageBox.Show("Please disconnect from the simulator first", "Disconnect First", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
