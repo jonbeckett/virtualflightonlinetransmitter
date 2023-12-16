@@ -104,11 +104,10 @@ namespace VirtualFlightOnlineTransmitter
             [SimVar(NameId = FsSimVar.PlaneTouchdownNormalVelocity, UnitId = FsUnit.FeetPerSecond)]
             public double PlaneTouchdownNormalVelocity;
 
+            // TODO - look into why TransponderCode doesn't come back from the simvars :)
             [SimVar(NameId = FsSimVar.TransponderCode, UnitId = FsUnit.Bco16)]
             public uint TransponderCode;
-
-
-            
+                        
         }
 
 
@@ -132,10 +131,8 @@ namespace VirtualFlightOnlineTransmitter
                 double groundspeed = r.GpsGroundSpeed;
                 double touchdown_velocity = r.PlaneTouchdownNormalVelocity;
                 
-
+                // TODO - look into why TransponderCode doesn't come back from the simvars
                 uint transponder_code = Bcd.Bcd2Dec(r.TransponderCode);
-
-                
 
                 this.DataReceivedEvent(aircraft_type,latitude, longitude, altitude, heading, airspeed, groundspeed, touchdown_velocity, transponder_code.ToString());
 
@@ -156,7 +153,6 @@ namespace VirtualFlightOnlineTransmitter
         {
             string result = "";
 
-            
             try
             {
                 // force the numbers into USA format
@@ -252,7 +248,6 @@ namespace VirtualFlightOnlineTransmitter
                     this.FlightSimulatorConnection.RequestData((int)Requests.PlaneInfoRequest, this.planeInfoDefinitionId);
                 } catch
                 {
-                    // problems
                     Disconnect("Problem transmitting data simulator." + ((Properties.Settings.Default["AutoConnect"].ToString().ToLower() == "true") ? " - retrying every 5 seconds" : ""));
                 }
 
@@ -343,6 +338,7 @@ namespace VirtualFlightOnlineTransmitter
         private void frmMain_Load(object sender, EventArgs e)
         {
             // pre-fill the settings boxes with data from properties
+            tbServerURL.Text = Properties.Settings.Default["ServerURL"].ToString();
             tbCallsign.Text = Properties.Settings.Default["Callsign"].ToString();
             tbPilotName.Text = Properties.Settings.Default["PilotName"].ToString();
             tbGroupName.Text = Properties.Settings.Default["GroupName"].ToString();
@@ -371,6 +367,16 @@ namespace VirtualFlightOnlineTransmitter
 
         }
 
+        /// <summary>
+        /// Updates settings when Server URL textbox is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbServerURL_TextChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default["ServerURL"] = tbServerURL.Text;
+            Properties.Settings.Default.Save();
+        }
 
         /// <summary>
         /// Updates settings when callsign textbox is changed
@@ -406,6 +412,17 @@ namespace VirtualFlightOnlineTransmitter
         }
 
         /// <summary>
+        /// Updates settings when server is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbMSFSServer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default["MSFSServer"] = cbMSFSServer.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        /// <summary>
         /// Updates settings when notes textbox is changed
         /// </summary>
         /// <param name="sender"></param>
@@ -414,6 +431,11 @@ namespace VirtualFlightOnlineTransmitter
         {
             Properties.Settings.Default["Notes"] = tbNotes.Text;
             Properties.Settings.Default.Save();
+        }
+
+        private void tbServerURL_Leave(object sender, EventArgs e)
+        {
+            tbServerURL.Text = tbServerURL.Text.Trim();
         }
 
         /// <summary>
@@ -515,6 +537,7 @@ namespace VirtualFlightOnlineTransmitter
                             this.FlightSimulatorConnection.FsDataReceived += this.HandleReceivedFsData;
 
                             // Disable the textboxes
+                            tbServerURL.Enabled = false;
                             tbCallsign.Enabled = false;
                             tbPilotName.Enabled = false;
                             tbGroupName.Enabled = false;
@@ -584,6 +607,7 @@ namespace VirtualFlightOnlineTransmitter
             btnDisconnect.Enabled = false;
 
             // switch the UI components back on
+            tbServerURL.Enabled = true;
             tbCallsign.Enabled = true;
             tbPilotName.Enabled = true;
             tbGroupName.Enabled = true;
@@ -612,6 +636,7 @@ namespace VirtualFlightOnlineTransmitter
         {
             if (!this.FlightSimulatorConnection.Connected)
             {
+                tbServerURL.Text = "https://virtualflight.online/send.php";
                 tbCallsign.Text = "Your Callsign";
                 tbPilotName.Text = "Your Name";
                 tbGroupName.Text = "Your Group";
@@ -636,19 +661,6 @@ namespace VirtualFlightOnlineTransmitter
                 this.Height = this.MinimumSize.Height;
             }
             
-        }
-
-                     
-
-        private void cbMSFSServer_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default["MSFSServer"] = cbMSFSServer.Text;
-            Properties.Settings.Default.Save();
-        }
-
-        private void mnuMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
         }
 
         private void tmrConnect_Tick(object sender, EventArgs e)
@@ -680,6 +692,9 @@ namespace VirtualFlightOnlineTransmitter
             tmrConnect.Stop();
             Disconnect("");
         }
+
+
+
 
     }
 }

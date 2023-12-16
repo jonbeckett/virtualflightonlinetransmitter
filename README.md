@@ -25,11 +25,7 @@ After clicking connect, the application will broadcast your location within the 
 
 ## Running your own server
 
-The /server subdirectory contains the resources required to make your own server. You'll need some MySQL and PHP webserver experience - a database.sql file is included to create the appropriate database to track aircraft positions (used by send.php and whazzup_ivao.php). The code should be self explanatory.
-
-## Changing the Server name
-
-* If you are running your own server, you'll need to get your users to change the client server URL - which you can do via the .config file in the client installation directory. Open the .config file in a text editor, and change the server name to suit.
+The /server subdirectory contains the resources required to make your own server. You'll need some MySQL and PHP webserver experience - a database.sql file is included to create the appropriate database to track aircraft positions (used by send.php and whazzup_ivao.php). The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "send.php" for your server.
 
 ## Configuring LittleNavMap
 

@@ -1,0 +1,33 @@
+H1,H2 {padding:0px;margin:0px;}
+    
+.info TH {font-weight:300; font-size:1em;padding:3px 5px 3px 0px;}
+.info TD {font-weight:300; font-size:1em;padding:3px 5px 3px 5px;}
+
+.l {text-align:left;}
+.c {text-align:center;}
+.r {text-align:right;}
+.n {color:#555;padding-left:20px;}
+A {text-decoration:none;color:#225588;}
+
+TR {border-bottom:1px solid #fff;}
+
+#aircraft_table TH {font-size:1em;}
+#aircraft_table TD {font-size:1em;font-weight:300}
+#aircraft_table TD A {font-size:1em;font-weight:700}
+
+#aircraft_table TH A {color:#557799;}
+#aircraft_table TH A:hover {color:#0000aa;text-decoration:underline;}
+
+.label {font-weight:bold; font-size:12px !important;}
+
+
+.info .callsign {
+  font-weight:bold !important;
+  font-size:1.5em;
+}
+.info .name {
+}
+.info .ac_type {
+}
+.info .notes {
+}
