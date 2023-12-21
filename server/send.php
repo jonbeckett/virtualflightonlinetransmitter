@@ -56,7 +56,7 @@ if(	empty($callsign) || empty($aircraft_type) || empty($pilot_name)	|| empty($gr
 		$now_timestamp = $now->getTimestamp();
 		if (($now_timestamp-$modified_timestamp) > 1){
 
-			// clean up the data
+			// clean up the data (only allow alphanumeric characters, spaces and hyphens)
 			$callsign      = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($callsign));
 			$pilot_name    = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($pilot_name));
 			$group_name    = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($group_name));

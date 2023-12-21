@@ -528,7 +528,7 @@ namespace VirtualFlightOnlineTransmitter
             // 
             this.aircraftDataToolStripMenuItem.CheckOnClick = true;
             this.aircraftDataToolStripMenuItem.Name = "aircraftDataToolStripMenuItem";
-            this.aircraftDataToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.aircraftDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aircraftDataToolStripMenuItem.Text = "&Aircraft Data";
             this.aircraftDataToolStripMenuItem.Click += new System.EventHandler(this.aircraftDataToolStripMenuItem_Click);
             // 

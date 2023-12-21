@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Transmitter"
-#define MyAppVersion "1.0.1.14"
+#define MyAppVersion "1.0.1.15"
 #define MyAppPublisher "Jonathan Beckett"
 #define MyAppURL "https://virtualflight.online"
 #define MyAppExeName "Transmitter.exe"
@@ -39,42 +39,42 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Text.Encodings.Web.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Text.Encodings.Web.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Text.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Text.Json.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Threading.Tasks.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Threading.Tasks.Extensions.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.ValueTuple.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.ValueTuple.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Transmitter.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Transmitter.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Transmitter.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\CTrue.FsConnect.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\CTrue.FsConnect.Managers.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\CTrue.FsConnect.Managers.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\CTrue.FsConnect.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Microsoft.Extensions.Logging.Console.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Microsoft.Extensions.Logging.Console.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Microsoft.FlightSimulator.SimConnect.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Microsoft.SyndicationFeed.ReaderWriter.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Newtonsoft.Json.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Serilog.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\Serilog.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\SimConnect.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Buffers.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Buffers.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Diagnostics.DiagnosticSource.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Diagnostics.DiagnosticSource.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Memory.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Memory.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Numerics.Vectors.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Numerics.Vectors.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Runtime.CompilerServices.Unsafe.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Text.Encodings.Web.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Text.Encodings.Web.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Text.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Text.Json.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Threading.Tasks.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Threading.Tasks.Extensions.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.ValueTuple.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.ValueTuple.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Transmitter.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Transmitter.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Transmitter.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\CTrue.FsConnect.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\CTrue.FsConnect.Managers.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\CTrue.FsConnect.Managers.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\CTrue.FsConnect.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Microsoft.Bcl.AsyncInterfaces.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Microsoft.Bcl.AsyncInterfaces.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Microsoft.Extensions.Logging.Console.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Microsoft.Extensions.Logging.Console.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Microsoft.FlightSimulator.SimConnect.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Microsoft.SyndicationFeed.ReaderWriter.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Newtonsoft.Json.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Serilog.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\Serilog.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\SimConnect.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Buffers.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Buffers.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Diagnostics.DiagnosticSource.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Diagnostics.DiagnosticSource.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Memory.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Memory.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Numerics.Vectors.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Numerics.Vectors.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\virtualflightonlinetransmitter\client\bin\Release\System.Runtime.CompilerServices.Unsafe.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
