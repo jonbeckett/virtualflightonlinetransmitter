@@ -1,5 +1,13 @@
 # Virtual Flight Online Transmitter
 
+## Where do I download the Transmitter installer from?
+
+In the right margin, there is a link to the most recent release:
+
+[https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/transmitter](https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/transmitter)
+
+Once installed, you will need to set the server URL - I am no longer telling people the server URL of the virtualflight.online server, but you are welcome to set your own server up using the contents of the server folder (see "Running your own server" below).
+
 ## What is "Virtual Flight Online Transmitter" ?
 
 It is a small Windows application that transmits your position in Microsoft Flight Simulator to an online database where your last reported position is held for 1 minute. The website then produces a "whazzup" formatted file that can be used by LittleNavMap to plot aircraft positions live on a map.
