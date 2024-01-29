@@ -133,8 +133,7 @@ function comparer(index) {
   }
 }
 
-var who_json_url = "https://virtualflight.online/who_json.php";
-
+var who_json_url = window.location.href.substring(0, window.location.href.lastIndexOf("/")+1) + "who_json.php";
 
 function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
 
