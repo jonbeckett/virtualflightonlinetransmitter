@@ -90,13 +90,13 @@ if ( mysqli_num_rows($result) > 0) {
 
 
 		// prepare aircraft information
-		$callsign = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["Callsign"]));
-		$pilot_name = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["PilotName"]));
-		$group_name = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["GroupName"]));
-		$msfs_server = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["Server"]));
-		$aircraft_type = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["AircraftType"]));
-		$version = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["Version"]));
-		$notes = preg_replace('/[^A-Za-z0-9. -\/\:\"]/', '', strip_tags($row["Notes"]));
+		$callsign = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["Callsign"] ?? ''));
+		$pilot_name = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["PilotName"] ?? ''));
+		$group_name = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["GroupName"] ?? ''));
+		$msfs_server = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["Server"] ?? ''));
+		$aircraft_type = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["AircraftType"] ?? ''));
+		$version = preg_replace('/[^A-Za-z0-9. -"]/', '', strip_tags($row["Version"] ?? ''));
+		$notes = preg_replace('/[^A-Za-z0-9. -\/\:\"]/', '', strip_tags($row["Notes"] ?? ''));
 		$notes = str_replace("\"","",$notes);
 		$longitude = $row["Longitude"];
 		$latitude = $row["Latitude"];
