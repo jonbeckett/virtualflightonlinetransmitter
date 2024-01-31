@@ -43,11 +43,11 @@ if ( mysqli_num_rows($result) > 0) {
 		$version = $row["Version"];
 
 
-		$callsign = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["Callsign"]));
-		$pilot_name = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["PilotName"]));
-		$group_name = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["GroupName"]));
-		$server_name = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["Server"]));
-		$aircraft_type = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["AircraftType"]));
+		$callsign = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["Callsign"] ?? ''));
+		$pilot_name = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["PilotName"] ?? ''));
+		$group_name = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["GroupName"] ?? ''));
+		$server_name = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["Server"] ?? ''));
+		$aircraft_type = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($row["AircraftType"] ?? ''));
 		
 
 		$latitude = number_format($row["Latitude"],4,".","");
@@ -56,7 +56,7 @@ if ( mysqli_num_rows($result) > 0) {
 		$heading = number_format($row["Heading"],0,".","");
 		$airspeed = number_format($row["Airspeed"],0,".","");
 		$groundspeed = number_format($row["Groundspeed"],0,".","");
-		$ipaddress = $row["IPAddress"];
+		$ipaddress = $row["IPAddress"] ?? '';
 
 		// output the whazzup data
 		//print($callsign.":".strip_tags($row["Callsign"]).":".$pilot_name.":PILOT::".$latitude.":".$longitude.":".$altitude.":".$groundspeed.":".$aircraft_type.":::::".$server_name.":B:6:1234:0:50:0:I:::::::::VFR:::::::".date("YmdHis").":".$group_name.":1 :1:1::S:0:".$heading.":0:40:\n");
