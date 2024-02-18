@@ -39,6 +39,8 @@ After clicking connect, the application will broadcast your location within the 
 
 The /server subdirectory contains the resources required to make your own server. You'll need some MySQL and PHP webserver experience - a database.sql file is included to create the appropriate database to track aircraft positions (used by send.php and whazzup_ivao.php). The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "send.php" for your server.
 
+Your webserver will need PHP and MySQL installed and configured.
+
 The installation procedure is typically as follows:
 
 1. Make a directory within the public HTML folder of your webserver (e.g. transmitter) and copy the server files into it
