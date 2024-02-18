@@ -71,5 +71,3 @@ If you would like to see everybody broadcasting their position with Virtual Flig
 ## Final note
 
 I don't really have time to look after Transmitter any more. It was always a stop-gap until Microsoft released a multiplayer location API - but they never have. I will answer questions about Transmitter, but please don't expect me to support your installations or modifications to the code.
-
-**Jonathan**<br />[jonbeckett@outlook.com](mailto:jonbeckett@outlook.com)
