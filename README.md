@@ -27,7 +27,7 @@ The server then provides a URL that outputs all aircraft that have been updated 
 * Launch Microsoft Flight Simulator.
 * Run "VirtualFlight.Online Transmitter".
 * Fill out the text boxes for:
-  * The server URL (e.g. https://your_server.com/send)
+  * The server URL (e.g. https://yourserver/transmitter/send)
   * Your callsign (e.g. G-ABCD)
   * Your name (e.g. Fred Smith)
   * Your group name (e.g. My Flight Sim Group)
@@ -38,6 +38,20 @@ After clicking connect, the application will broadcast your location within the 
 ## Running your own server
 
 The /server subdirectory contains the resources required to make your own server. You'll need some MySQL and PHP webserver experience - a database.sql file is included to create the appropriate database to track aircraft positions (used by send.php and whazzup_ivao.php). The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "send.php" for your server.
+
+The installation procedure is typically as follows:
+
+1. Make a directory within the public HTML folder of your webserver (e.g. transmitter) and copy the server files into it
+2. Create a database in MySQL, and use the database.sql file to create the "Positions" table
+3. Configure a user for the MySQL database
+4. Edit the config.php file to fill in your database name and user details
+
+That's it!
+
+The two URLs you will need after setting up the server are:
+
+* The Server URL for the Transmitter client - e.g. https://yourserver/transmitter/send
+* The Whazzup URL for LittleNavMap - e.g. https://yourserver/transmitter/whazzup_ivao
 
 ## Configuring LittleNavMap
 
