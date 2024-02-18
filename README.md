@@ -22,11 +22,15 @@ The desktop application connects to a running copy of Microsoft Flight Simulator
 
 The server then provides a URL that outputs all aircraft that have been updated in the last few seconds in "whazzup" format - a data format commonly used with the likes of VATSIM and IVAO - and crucially LittleNavMap. The URL of the server can be used to configure LittleNavMap to show you and your friends aircraft on the map.
 
-## Running the Program
+## Configuring and Running Transmitter
 
 * Launch Microsoft Flight Simulator.
 * Run "VirtualFlight.Online Transmitter".
-* Fill out the text boxes for your callsign, aircraft type, name, and group name
+* Fill out the text boxes for:
+  * The server URL (e.g. https://your_server.com/send)
+  * Your callsign (e.g. G-ABCD)
+  * Your name (e.g. Fred Smith)
+  * Your group name (e.g. My Flight Sim Group)
 * Click Connect
 
 After clicking connect, the application will broadcast your location within the simulator to the internet once a second.
