@@ -43,7 +43,7 @@ Your webserver will need PHP and MySQL installed and configured.
 
 The installation procedure is typically as follows:
 
-1. Make a directory within the public HTML folder of your webserver (e.g. transmitter) and copy the server files into it
+1. Make a directory within the public HTML folder of your webserver (e.g. transmitter) and copy the server files into it (or even better, create a subdomain)
 2. Create a database in MySQL, and use the database.sql file to create the "Positions" table
 3. Configure a user for the MySQL database
 4. Edit the config.php file to fill in your database name and user details
