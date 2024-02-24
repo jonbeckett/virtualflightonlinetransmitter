@@ -28,12 +28,15 @@ The server then provides a URL that outputs all aircraft that have been updated 
 * Run "VirtualFlight.Online Transmitter".
 * Fill out the text boxes for:
   * The server URL (e.g. https://yourserver/transmitter/send)
+  * Your server pin (e.g. 1234)
   * Your callsign (e.g. G-ABCD)
   * Your name (e.g. Fred Smith)
   * Your group name (e.g. My Flight Sim Group)
 * Click Connect
 
 After clicking connect, the application will broadcast your location within the simulator to the internet once a second.
+
+*Important note - the pin number you fill into the Transmitter client MUST match the pin number of the server - if it doesn't, your transmissions to the server will be ignored.*
 
 ## Running your own server
 
@@ -46,7 +49,7 @@ The installation procedure is typically as follows:
 1. Make a directory within the public HTML folder of your webserver (e.g. transmitter) and copy the server files into it (or even better, create a subdomain)
 2. Create a database in MySQL, and use the database.sql file to create the "Positions" table
 3. Configure a user for the MySQL database
-4. Edit the config.php file to fill in your database name and user details
+4. Edit the config.php file to fill in your server pin number, database name and user details
 
 That's it!
 

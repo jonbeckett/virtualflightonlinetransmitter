@@ -73,18 +73,6 @@ namespace VirtualFlightOnlineTransmitter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://virtualflight.online/send.php")]
-        public string ServerURL {
-            get {
-                return ((string)(this["ServerURL"]));
-            }
-            set {
-                this["ServerURL"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Notes {
             get {
@@ -121,37 +109,25 @@ namespace VirtualFlightOnlineTransmitter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("true")]
-        public string BroadcastToDiscord {
+        [global::System.Configuration.DefaultSettingValueAttribute("http://yourserver/send.php")]
+        public string ServerURL {
             get {
-                return ((string)(this["BroadcastToDiscord"]));
+                return ((string)(this["ServerURL"]));
             }
             set {
-                this["BroadcastToDiscord"] = value;
+                this["ServerURL"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("true")]
-        public string BroadcastLocation {
+        [global::System.Configuration.DefaultSettingValueAttribute("1234")]
+        public string Pin {
             get {
-                return ((string)(this["BroadcastLocation"]));
+                return ((string)(this["Pin"]));
             }
             set {
-                this["BroadcastLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("false")]
-        public string BroadcastNotes {
-            get {
-                return ((string)(this["BroadcastNotes"]));
-            }
-            set {
-                this["BroadcastNotes"] = value;
+                this["Pin"] = value;
             }
         }
     }

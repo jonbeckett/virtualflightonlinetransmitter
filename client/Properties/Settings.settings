@@ -14,9 +14,6 @@
     <Setting Name="GroupName" Type="System.String" Scope="User">
       <Value Profile="(Default)">VirtualFlight.Online</Value>
     </Setting>
-    <Setting Name="ServerURL" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://virtualflight.online/send.php</Value>
-    </Setting>
     <Setting Name="Notes" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -26,14 +23,11 @@
     <Setting Name="AutoConnect" Type="System.String" Scope="User">
       <Value Profile="(Default)">true</Value>
     </Setting>
-    <Setting Name="BroadcastToDiscord" Type="System.String" Scope="User">
-      <Value Profile="(Default)">true</Value>
+    <Setting Name="ServerURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://yourserver/send.php</Value>
     </Setting>
-    <Setting Name="BroadcastLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">true</Value>
-    </Setting>
-    <Setting Name="BroadcastNotes" Type="System.String" Scope="User">
-      <Value Profile="(Default)">false</Value>
+    <Setting Name="Pin" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1234</Value>
     </Setting>
   </Settings>
 </SettingsFile>

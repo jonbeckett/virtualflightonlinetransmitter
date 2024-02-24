@@ -87,6 +87,8 @@ namespace VirtualFlightOnlineTransmitter
             this.tsslMain = new System.Windows.Forms.ToolStripStatusLabel();
             this.tmrConnect = new System.Windows.Forms.Timer(this.components);
             this.btnDisconnect = new System.Windows.Forms.Button();
+            this.tbPin = new System.Windows.Forms.TextBox();
+            this.lbPin = new System.Windows.Forms.Label();
             this.gbUserInfo.SuspendLayout();
             this.gbAircraftData.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -99,8 +101,8 @@ namespace VirtualFlightOnlineTransmitter
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnConnect.Location = new System.Drawing.Point(12, 271);
             this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(199, 23);
-            this.btnConnect.TabIndex = 6;
+            this.btnConnect.Size = new System.Drawing.Size(203, 23);
+            this.btnConnect.TabIndex = 7;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
@@ -109,6 +111,8 @@ namespace VirtualFlightOnlineTransmitter
             // 
             this.gbUserInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbUserInfo.Controls.Add(this.lbPin);
+            this.gbUserInfo.Controls.Add(this.tbPin);
             this.gbUserInfo.Controls.Add(this.lbServer);
             this.gbUserInfo.Controls.Add(this.tbServerURL);
             this.gbUserInfo.Controls.Add(this.label1);
@@ -123,7 +127,7 @@ namespace VirtualFlightOnlineTransmitter
             this.gbUserInfo.Controls.Add(this.lbCallsign);
             this.gbUserInfo.Location = new System.Drawing.Point(12, 35);
             this.gbUserInfo.Name = "gbUserInfo";
-            this.gbUserInfo.Size = new System.Drawing.Size(399, 229);
+            this.gbUserInfo.Size = new System.Drawing.Size(403, 229);
             this.gbUserInfo.TabIndex = 1;
             this.gbUserInfo.TabStop = false;
             this.gbUserInfo.Text = "User Information";
@@ -144,7 +148,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbServerURL.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbServerURL.Location = new System.Drawing.Point(89, 24);
             this.tbServerURL.Name = "tbServerURL";
-            this.tbServerURL.Size = new System.Drawing.Size(303, 22);
+            this.tbServerURL.Size = new System.Drawing.Size(222, 22);
             this.tbServerURL.TabIndex = 0;
             this.tbServerURL.TextChanged += new System.EventHandler(this.tbServerURL_TextChanged);
             this.tbServerURL.Leave += new System.EventHandler(this.tbServerURL_Leave);
@@ -171,10 +175,10 @@ namespace VirtualFlightOnlineTransmitter
             "EAST USA",
             "WEST USA",
             "SOUTH EAST ASIA"});
-            this.cbMSFSServer.Location = new System.Drawing.Point(89, 134);
+            this.cbMSFSServer.Location = new System.Drawing.Point(89, 136);
             this.cbMSFSServer.Name = "cbMSFSServer";
-            this.cbMSFSServer.Size = new System.Drawing.Size(303, 24);
-            this.cbMSFSServer.TabIndex = 4;
+            this.cbMSFSServer.Size = new System.Drawing.Size(307, 24);
+            this.cbMSFSServer.TabIndex = 5;
             this.cbMSFSServer.SelectedIndexChanged += new System.EventHandler(this.cbMSFSServer_SelectedIndexChanged);
             // 
             // lbNotes
@@ -196,8 +200,8 @@ namespace VirtualFlightOnlineTransmitter
             this.tbNotes.Multiline = true;
             this.tbNotes.Name = "tbNotes";
             this.tbNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbNotes.Size = new System.Drawing.Size(303, 55);
-            this.tbNotes.TabIndex = 5;
+            this.tbNotes.Size = new System.Drawing.Size(307, 55);
+            this.tbNotes.TabIndex = 6;
             this.tbNotes.TextChanged += new System.EventHandler(this.tbNotes_TextChanged);
             this.tbNotes.Leave += new System.EventHandler(this.tbNotes_Leave);
             // 
@@ -217,8 +221,8 @@ namespace VirtualFlightOnlineTransmitter
             this.tbGroupName.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbGroupName.Location = new System.Drawing.Point(89, 108);
             this.tbGroupName.Name = "tbGroupName";
-            this.tbGroupName.Size = new System.Drawing.Size(303, 22);
-            this.tbGroupName.TabIndex = 3;
+            this.tbGroupName.Size = new System.Drawing.Size(307, 22);
+            this.tbGroupName.TabIndex = 4;
             this.tbGroupName.TextChanged += new System.EventHandler(this.tbGroupName_TextChanged);
             this.tbGroupName.Leave += new System.EventHandler(this.tbGroupName_Leave);
             // 
@@ -229,8 +233,8 @@ namespace VirtualFlightOnlineTransmitter
             this.tbPilotName.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbPilotName.Location = new System.Drawing.Point(89, 80);
             this.tbPilotName.Name = "tbPilotName";
-            this.tbPilotName.Size = new System.Drawing.Size(303, 22);
-            this.tbPilotName.TabIndex = 2;
+            this.tbPilotName.Size = new System.Drawing.Size(307, 22);
+            this.tbPilotName.TabIndex = 3;
             this.tbPilotName.TextChanged += new System.EventHandler(this.tbPilotName_TextChanged);
             this.tbPilotName.Leave += new System.EventHandler(this.tbPilotName_Leave);
             // 
@@ -241,8 +245,8 @@ namespace VirtualFlightOnlineTransmitter
             this.tbCallsign.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbCallsign.Location = new System.Drawing.Point(89, 52);
             this.tbCallsign.Name = "tbCallsign";
-            this.tbCallsign.Size = new System.Drawing.Size(303, 22);
-            this.tbCallsign.TabIndex = 1;
+            this.tbCallsign.Size = new System.Drawing.Size(307, 22);
+            this.tbCallsign.TabIndex = 2;
             this.tbCallsign.TextChanged += new System.EventHandler(this.tbCallsign_TextChanged);
             this.tbCallsign.Leave += new System.EventHandler(this.tbCallsign_Leave);
             // 
@@ -291,7 +295,7 @@ namespace VirtualFlightOnlineTransmitter
             this.gbAircraftData.Controls.Add(this.lbLongitude);
             this.gbAircraftData.Location = new System.Drawing.Point(12, 300);
             this.gbAircraftData.Name = "gbAircraftData";
-            this.gbAircraftData.Size = new System.Drawing.Size(399, 246);
+            this.gbAircraftData.Size = new System.Drawing.Size(403, 246);
             this.gbAircraftData.TabIndex = 3;
             this.gbAircraftData.TabStop = false;
             this.gbAircraftData.Text = "Aircraft Data";
@@ -313,7 +317,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbAircraftType.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbAircraftType.Location = new System.Drawing.Point(89, 19);
             this.tbAircraftType.Name = "tbAircraftType";
-            this.tbAircraftType.Size = new System.Drawing.Size(304, 22);
+            this.tbAircraftType.Size = new System.Drawing.Size(308, 22);
             this.tbAircraftType.TabIndex = 14;
             // 
             // lbTouchdownVelocity
@@ -333,7 +337,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbTouchdownVelocity.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbTouchdownVelocity.Location = new System.Drawing.Point(89, 216);
             this.tbTouchdownVelocity.Name = "tbTouchdownVelocity";
-            this.tbTouchdownVelocity.Size = new System.Drawing.Size(304, 22);
+            this.tbTouchdownVelocity.Size = new System.Drawing.Size(308, 22);
             this.tbTouchdownVelocity.TabIndex = 12;
             // 
             // lbGroundspeed
@@ -353,7 +357,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbGroundspeed.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbGroundspeed.Location = new System.Drawing.Point(89, 188);
             this.tbGroundspeed.Name = "tbGroundspeed";
-            this.tbGroundspeed.Size = new System.Drawing.Size(304, 22);
+            this.tbGroundspeed.Size = new System.Drawing.Size(308, 22);
             this.tbGroundspeed.TabIndex = 10;
             // 
             // lbHeading
@@ -373,7 +377,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbHeading.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbHeading.Location = new System.Drawing.Point(89, 132);
             this.tbHeading.Name = "tbHeading";
-            this.tbHeading.Size = new System.Drawing.Size(304, 22);
+            this.tbHeading.Size = new System.Drawing.Size(308, 22);
             this.tbHeading.TabIndex = 8;
             // 
             // lbAirspeed
@@ -402,7 +406,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbAirspeed.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbAirspeed.Location = new System.Drawing.Point(89, 160);
             this.tbAirspeed.Name = "tbAirspeed";
-            this.tbAirspeed.Size = new System.Drawing.Size(304, 22);
+            this.tbAirspeed.Size = new System.Drawing.Size(308, 22);
             this.tbAirspeed.TabIndex = 9;
             // 
             // tbAltitude
@@ -413,7 +417,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbAltitude.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbAltitude.Location = new System.Drawing.Point(89, 103);
             this.tbAltitude.Name = "tbAltitude";
-            this.tbAltitude.Size = new System.Drawing.Size(304, 22);
+            this.tbAltitude.Size = new System.Drawing.Size(308, 22);
             this.tbAltitude.TabIndex = 7;
             // 
             // tbLatitude
@@ -424,7 +428,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbLatitude.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbLatitude.Location = new System.Drawing.Point(89, 47);
             this.tbLatitude.Name = "tbLatitude";
-            this.tbLatitude.Size = new System.Drawing.Size(304, 22);
+            this.tbLatitude.Size = new System.Drawing.Size(308, 22);
             this.tbLatitude.TabIndex = 6;
             // 
             // tbLongitude
@@ -435,7 +439,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbLongitude.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbLongitude.Location = new System.Drawing.Point(89, 75);
             this.tbLongitude.Name = "tbLongitude";
-            this.tbLongitude.Size = new System.Drawing.Size(304, 22);
+            this.tbLongitude.Size = new System.Drawing.Size(308, 22);
             this.tbLongitude.TabIndex = 5;
             // 
             // lbLatitude
@@ -466,7 +470,7 @@ namespace VirtualFlightOnlineTransmitter
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.mnuMain.Size = new System.Drawing.Size(420, 24);
+            this.mnuMain.Size = new System.Drawing.Size(424, 24);
             this.mnuMain.TabIndex = 4;
             this.mnuMain.Text = "...";
             // 
@@ -554,7 +558,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tsslMain});
             this.ssMain.Location = new System.Drawing.Point(0, 302);
             this.ssMain.Name = "ssMain";
-            this.ssMain.Size = new System.Drawing.Size(420, 22);
+            this.ssMain.Size = new System.Drawing.Size(424, 22);
             this.ssMain.TabIndex = 5;
             this.ssMain.Text = "...";
             // 
@@ -572,19 +576,41 @@ namespace VirtualFlightOnlineTransmitter
             // btnDisconnect
             // 
             this.btnDisconnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDisconnect.Location = new System.Drawing.Point(213, 271);
+            this.btnDisconnect.Location = new System.Drawing.Point(217, 271);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(199, 23);
-            this.btnDisconnect.TabIndex = 7;
+            this.btnDisconnect.TabIndex = 8;
             this.btnDisconnect.Text = "Disconnect";
             this.btnDisconnect.UseVisualStyleBackColor = true;
             this.btnDisconnect.Click += new System.EventHandler(this.btnDisconnect_Click);
+            // 
+            // tbPin
+            // 
+            this.tbPin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbPin.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbPin.Location = new System.Drawing.Point(345, 24);
+            this.tbPin.Name = "tbPin";
+            this.tbPin.PasswordChar = '*';
+            this.tbPin.Size = new System.Drawing.Size(51, 22);
+            this.tbPin.TabIndex = 1;
+            this.tbPin.TextChanged += new System.EventHandler(this.tbPin_TextChanged);
+            this.tbPin.Leave += new System.EventHandler(this.tbPin_Leave);
+            // 
+            // lbPin
+            // 
+            this.lbPin.AutoSize = true;
+            this.lbPin.Location = new System.Drawing.Point(317, 28);
+            this.lbPin.Name = "lbPin";
+            this.lbPin.Size = new System.Drawing.Size(22, 13);
+            this.lbPin.TabIndex = 16;
+            this.lbPin.Text = "Pin";
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(420, 324);
+            this.ClientSize = new System.Drawing.Size(424, 324);
             this.Controls.Add(this.btnDisconnect);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.gbUserInfo);
@@ -593,8 +619,8 @@ namespace VirtualFlightOnlineTransmitter
             this.Controls.Add(this.gbAircraftData);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mnuMain;
-            this.MaximumSize = new System.Drawing.Size(800, 618);
-            this.MinimumSize = new System.Drawing.Size(436, 363);
+            this.MaximumSize = new System.Drawing.Size(440, 618);
+            this.MinimumSize = new System.Drawing.Size(440, 363);
             this.Name = "frmMain";
             this.Text = "VirtualFlight.Online Transmitter";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
@@ -661,6 +687,8 @@ namespace VirtualFlightOnlineTransmitter
         private ToolStripSeparator toolStripMenuItem4;
         private Label lbServer;
         private TextBox tbServerURL;
+        private Label lbPin;
+        private TextBox tbPin;
     }
 }
 

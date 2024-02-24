@@ -164,6 +164,7 @@ namespace VirtualFlightOnlineTransmitter
                     + "&PilotName=" + Properties.Settings.Default["PilotName"].ToString()
                     + "&GroupName=" + Properties.Settings.Default["GroupName"].ToString()
                     + "&MSFSServer=" + Properties.Settings.Default["MSFSServer"].ToString()
+                    + "&Pin=" + Properties.Settings.Default["Pin"].ToString()
                     + "&AircraftType=" + aircraft_type.ToString()
                     + "&Latitude=" + latitude.ToString(usa_format)
                     + "&Longitude=" + longitude.ToString(usa_format)
@@ -342,6 +343,7 @@ namespace VirtualFlightOnlineTransmitter
         {
             // pre-fill the settings boxes with data from properties
             tbServerURL.Text = Properties.Settings.Default["ServerURL"].ToString();
+            tbPin.Text = Properties.Settings.Default["Pin"].ToString();
             tbCallsign.Text = Properties.Settings.Default["Callsign"].ToString();
             tbPilotName.Text = Properties.Settings.Default["PilotName"].ToString();
             tbGroupName.Text = Properties.Settings.Default["GroupName"].ToString();
@@ -378,6 +380,12 @@ namespace VirtualFlightOnlineTransmitter
         private void tbServerURL_TextChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default["ServerURL"] = tbServerURL.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void tbPin_TextChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default["Pin"] = tbPin.Text;
             Properties.Settings.Default.Save();
         }
 
@@ -441,6 +449,10 @@ namespace VirtualFlightOnlineTransmitter
             tbServerURL.Text = tbServerURL.Text.Trim();
         }
 
+        private void tbPin_Leave(object sender, EventArgs e)
+        {
+            tbPin.Text = tbPin.Text.Trim();
+        }
 
         /// <summary>
         /// Remove spaces when focus leaves callsign field
@@ -544,6 +556,7 @@ namespace VirtualFlightOnlineTransmitter
 
                             // Disable the textboxes
                             tbServerURL.Enabled = false;
+                            tbPin.Enabled = false;
                             tbCallsign.Enabled = false;
                             tbPilotName.Enabled = false;
                             tbGroupName.Enabled = false;
@@ -614,6 +627,7 @@ namespace VirtualFlightOnlineTransmitter
 
             // switch the UI components back on
             tbServerURL.Enabled = true;
+            tbPin.Enabled = true;
             tbCallsign.Enabled = true;
             tbPilotName.Enabled = true;
             tbGroupName.Enabled = true;
@@ -652,6 +666,7 @@ namespace VirtualFlightOnlineTransmitter
             if (!this.FlightSimulatorConnection.Connected)
             {
                 tbServerURL.Text = "https://yourserver/send.php";
+                tbPin.Text = "1234";
                 tbCallsign.Text = "Your Callsign";
                 tbPilotName.Text = "Your Name";
                 tbGroupName.Text = "Your Group";
@@ -711,8 +726,6 @@ namespace VirtualFlightOnlineTransmitter
             tmrConnect.Stop();
             Disconnect("");
         }
-
-
 
 
     }
