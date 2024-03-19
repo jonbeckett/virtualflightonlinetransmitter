@@ -6,7 +6,7 @@ In the right margin, there is a link to the most recent release:
 
 [https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/transmitter](https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/transmitter)
 
-Once installed and running, you will need to set the server URL within the Transmitter client application - I am no longer giving out the server URL of the virtualflight.online server (it's massively over-subscribed), but you are welcome to set your own server up using the contents of the server folder (see "Running your own server" below).
+Once installed and running, you will need to set the server URL within the Transmitter client application. VirtualFlight.Online no longer operates their own Transmitter server, but you are welcome to set your own up using the contents of the server folder (see "Running your own server" below).
 
 ## What is "Virtual Flight Online Transmitter" ?
 
@@ -18,7 +18,7 @@ If you and your friends want to see each other on mapping software such as Littl
 
 ## How It Works
 
-The desktop application connects to a running copy of Microsoft Flight Simulator via the SimConnect interface, and reads your aircraft's latitude, longitude, altitude, and airspeed. It combines the data with your keyed callsign, aircraft type, and name, and sends it to a server on the internet via the "Server URL" entered into the application.
+The desktop application connects to a running copy of Microsoft Flight Simulator via the SimConnect interface, and reads your aircraft's latitude, longitude, altitude, speed and type. It combines the data with your keyed callsign and name, and sends it to a server on the internet via the "Server URL" entered into the application.
 
 The server then provides a URL that outputs all aircraft that have been updated in the last few seconds in "whazzup" format - a data format commonly used with the likes of VATSIM and IVAO - and crucially LittleNavMap. The URL of the server can be used to configure LittleNavMap to show you and your friends aircraft on the map.
 
