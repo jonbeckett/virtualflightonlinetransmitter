@@ -65,7 +65,7 @@ if (  ($server_pin != "") ? (trim($user_pin) == trim($server_pin)) : true  ) {
 				$group_name    = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($group_name));
 				$server        = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($server));
 				$aircraft_type = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($aircraft_type));
-				$notes         = preg_replace('/[^A-Za-z0-9., -\n]/', '', strip_tags($notes));
+				$notes         = preg_replace('/[^A-Za-z0-9.,\n -]/', '', strip_tags($notes));
 
 				// prepare database instruction
 				$sql = "UPDATE Positions SET"
