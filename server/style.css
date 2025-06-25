@@ -31,3 +31,20 @@ TR {border-bottom:1px solid #fff;}
 }
 .info .notes {
 }
+
+/* Aircraft Label Styles for Radar */
+.aircraft-label {
+    z-index: 1000 !important;
+}
+
+.draggable-label {
+    cursor: move !important;
+}
+
+.draggable-label:hover {
+    opacity: 0.9;
+}
+
+.draggable-label:active {
+    cursor: grabbing !important;
+}

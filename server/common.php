@@ -20,11 +20,11 @@ function page_header($title){
 		        ."<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj\" crossorigin=\"anonymous\"></script>\n"
   		        ."<!-- <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9526818083576145\" crossorigin=\"anonymous\"></script> -->\n"
 		        ."<link href=\"style.css\" rel=\"stylesheet\" />\n"
-  		        	.( ( strpos($_SERVER['REQUEST_URI'],"who") > -1 ) ? "<link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.1/dist/leaflet.css\" integrity=\"sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=\" crossorigin=\"anonymous\"/>\n" : "" )
-  			.( ( strpos($_SERVER['REQUEST_URI'],"who") > -1 ) ? "<script src=\"https://unpkg.com/leaflet@1.9.1/dist/leaflet.js\" integrity=\"sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s=\" crossorigin=\"anonymous\"></script>\n" : "" )
-  			.( ( strpos($_SERVER['REQUEST_URI'],"who") > -1 ) ? "<script src=\"who.js?t=".time()." crossorigin=\"anonymous\"></script>\n" : "" )
-			.( ( strpos($_SERVER['REQUEST_URI'],"who") > -1 ) ? "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css\" integrity=\"sha512-xh6O\/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==\" crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\" />\n" : "")
-			.( ( strpos($_SERVER['REQUEST_URI'],"who") > -1 ) ? "<script src=\"https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js\"></script>\n" : "")
+  		        	.( ( strpos($_SERVER['REQUEST_URI'],"status") > -1 ) ? "<link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.1/dist/leaflet.css\" integrity=\"sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=\" crossorigin=\"anonymous\"/>\n" : "" )
+  			.( ( strpos($_SERVER['REQUEST_URI'],"status") > -1 ) ? "<script src=\"https://unpkg.com/leaflet@1.9.1/dist/leaflet.js\" integrity=\"sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s=\" crossorigin=\"anonymous\"></script>\n" : "" )
+  			.( ( strpos($_SERVER['REQUEST_URI'],"status") > -1 ) ? "<script src=\"status.js?t=".time()." crossorigin=\"anonymous\"></script>\n" : "" )
+			.( ( strpos($_SERVER['REQUEST_URI'],"status") > -1 ) ? "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css\" integrity=\"sha512-xh6O\/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==\" crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\" />\n" : "")
+			.( ( strpos($_SERVER['REQUEST_URI'],"status") > -1 ) ? "<script src=\"https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js\"></script>\n" : "")
 
 		."</head>\n"
 		."<body>\n"

@@ -40,23 +40,20 @@ After clicking connect, the application will broadcast your location within the 
 
 ## Running your own server
 
-The /server subdirectory contains the resources required to make your own server. You'll need some MySQL and PHP webserver experience - a database.sql file is included to create the appropriate database to track aircraft positions (used by send.php and whazzup_ivao.php). The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "send.php" for your server.
+The /server subdirectory contains the resources required to make your own server. You'll need some PHP webserver experience - a database.sql file is included to create the appropriate database to track aircraft positions (used by transmit.php and ivao.php). The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "transmit.php" for your server.
 
-Your webserver will need PHP and MySQL installed and configured.
+Your webserver will need PHP installed and configured, and it will need APCu enabled (this is the magic that lets us avoid a database)
 
 The installation procedure is typically as follows:
 
 1. Make a directory within the public HTML folder of your webserver (e.g. transmitter) and copy the server files into it (or even better, create a subdomain)
-2. Create a database in MySQL, and use the database.sql file to create the "Positions" table
-3. Configure a user for the MySQL database
-4. Edit the config.php file to fill in your server pin number, database name and user details
 
 That's it!
 
 The two URLs you will need after setting up the server are:
 
-* The Server URL for the Transmitter client - e.g. https://yourserver/transmitter/send
-* The Whazzup URL for LittleNavMap - e.g. https://yourserver/transmitter/whazzup_ivao
+* The Server URL for the Transmitter client - e.g. https://yourserver/transmit
+* The Whazzup URL for LittleNavMap - e.g. https://yourserver/ivao
 
 ## Configuring LittleNavMap
 
@@ -66,10 +63,14 @@ If you would like to see everybody broadcasting their position with Virtual Flig
 * Click on Options
 * Select the Online Flying section within the Options panel
 * Choose the radio button for "Custom" within the Online Flying section
-* Fill the URL http://your_server_name/whazzup_ivao into the URL field
+* Fill the URL http://your_server_name/ivao into the URL field
 * Set the update rate to something sensible (e.g. 5 seconds)
 * Make sure IVAO is chosen in the format drop-down
 * Click Apply, and OK
+
+## How to see who's online
+
+Visit /status or /radar in a browser (obviously related to where you've installed the server files)
 
 ## Final note
 
