@@ -27,7 +27,7 @@ The server then provides a URL that outputs all aircraft that have been updated 
 * Launch Microsoft Flight Simulator.
 * Run "VirtualFlight.Online Transmitter".
 * Fill out the text boxes for:
-  * The server URL (e.g. https://yourserver/transmitter/send)
+  * The server URL (e.g. https://yourserver/transmit)
   * Your server pin (e.g. 1234)
   * Your callsign (e.g. G-ABCD)
   * Your name (e.g. Fred Smith)
