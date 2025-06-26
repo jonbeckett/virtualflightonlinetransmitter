@@ -40,7 +40,7 @@ After clicking connect, the application will broadcast your location within the 
 
 ## Running your own server
 
-The /server subdirectory contains the resources required to make your own server. You'll need some PHP webserver experience - a database.sql file is included to create the appropriate database to track aircraft positions (used by transmit.php and ivao.php). The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "transmit.php" for your server.
+The /server subdirectory contains the resources required to make your own server. The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "transmit.php" for your server.
 
 Your webserver will need PHP installed and configured, and it will need APCu enabled (this is the magic that lets us avoid a database)
 
