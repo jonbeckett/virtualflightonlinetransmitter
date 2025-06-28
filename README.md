@@ -4,7 +4,7 @@
 
 In the right margin, there is a link to the most recent release:
 
-[https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/transmitter](https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/transmitter)
+[https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/Transmitter](https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/Transmitter)
 
 Once installed and running, you will need to set the server URL within the Transmitter client application. VirtualFlight.Online no longer operates their own Transmitter server, but you are welcome to set your own up using the contents of the server folder (see "Running your own server" below).
 
@@ -27,7 +27,7 @@ The server then provides a URL that outputs all aircraft that have been updated 
 * Launch Microsoft Flight Simulator.
 * Run "VirtualFlight.Online Transmitter".
 * Fill out the text boxes for:
-  * The server URL (e.g. https://yourserver/transmitter/send)
+  * The server URL (e.g. https://yourserver/transmit)
   * Your server pin (e.g. 1234)
   * Your callsign (e.g. G-ABCD)
   * Your name (e.g. Fred Smith)
@@ -40,7 +40,7 @@ After clicking connect, the application will broadcast your location within the 
 
 ## Running your own server
 
-The /server subdirectory contains the resources required to make your own server. You'll need some PHP webserver experience - a database.sql file is included to create the appropriate database to track aircraft positions (used by transmit.php and ivao.php). The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "transmit.php" for your server.
+The /server subdirectory contains the resources required to make your own server. The code should be self explanatory. Remember your users will also need to change their server URL to reflect the location of "transmit.php" for your server.
 
 Your webserver will need PHP installed and configured, and it will need APCu enabled (this is the magic that lets us avoid a database)
 
