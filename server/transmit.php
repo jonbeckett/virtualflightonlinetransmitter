@@ -20,54 +20,9 @@ if (!extension_loaded('apcu') || !apcu_enabled()) {
 // Function to store aircraft position in APCu
 function store_aircraft_position($callsign, $aircraft_data) {
     $position_key = APCU_PREFIX . 'position_' . $callsign;
-    $history_key = APCU_PREFIX . 'history_' . $callsign;
-    $current_time = time();
-    
-    // Get existing history
-    $history = apcu_fetch($history_key);
-    if ($history === false) {
-        $history = [];
-    }
-    
-    // Clean up old history entries (older than 30 seconds - keeps up to 6 positions at 5s intervals)
-    $history = array_filter($history, function($entry) use ($current_time) {
-        return ($current_time - $entry['timestamp']) <= 30;
-    });
-    
-    // Only add to history if enough time has passed (minimum 5 seconds between entries)
-    $should_add_to_history = true;
-    if (!empty($history)) {
-        $last_entry = end($history);
-        $time_since_last = $current_time - $last_entry['timestamp'];
-        $should_add_to_history = $time_since_last >= 5; // 5-second intervals
-    }
-    
-    if ($should_add_to_history) {
-        // Add current position to history
-        $history[] = [
-            'Latitude' => $aircraft_data['Latitude'],
-            'Longitude' => $aircraft_data['Longitude'],
-            'Altitude' => $aircraft_data['Altitude'],
-            'Heading' => $aircraft_data['Heading'],
-            'timestamp' => $current_time
-        ];
-        
-        // Keep last 6 positions for historical data
-        if (count($history) > 6) {
-            $history = array_slice($history, -6);
-        }
-        
-        // Store updated history
-        apcu_store($history_key, $history, POSITION_TTL);
-    }
     
     // Store current position
-    apcu_store($position_key, $aircraft_data, POSITION_TTL);
-    
-    // Store history
-    apcu_store($history_key, $history, POSITION_TTL);
-    
-    return true;
+    return apcu_store($position_key, $aircraft_data, POSITION_TTL);
 }
 
 // Function to get rate limit key
@@ -89,45 +44,42 @@ function is_rate_limited($callsign, $ip) {
     return false;
 }
 
-// get the data from the request (which may not be populated)
-$user_pin           = isset($_GET["Pin"])               ? $_GET["Pin"]               : "";
-$callsign           = isset($_GET["Callsign"])          ? $_GET["Callsign"]          : "";
-$aircraft_type      = isset($_GET["AircraftType"])      ? $_GET["AircraftType"]      : "";
-$pilot_name         = isset($_GET["PilotName"])         ? $_GET["PilotName"]         : "";
-$group_name         = isset($_GET["GroupName"])         ? $_GET["GroupName"]         : "";
-$msfs_server        = isset($_GET["MSFSServer"])        ? $_GET["MSFSServer"]        : "";
-$latitude           = isset($_GET["Latitude"])          ? $_GET["Latitude"]          : "0";
-$longitude          = isset($_GET["Longitude"])         ? $_GET["Longitude"]         : "0";
-$altitude           = isset($_GET["Altitude"])          ? $_GET["Altitude"]          : "0";
-$heading            = isset($_GET["Heading"])           ? $_GET["Heading"]           : "0";
-$airspeed           = isset($_GET["Airspeed"])          ? $_GET["Airspeed"]          : "0";
-$groundspeed        = isset($_GET["Groundspeed"])       ? $_GET["Groundspeed"]       : "0";
-$touchdown_velocity = isset($_GET["TouchdownVelocity"]) ? $_GET["TouchdownVelocity"] : "0";
-$notes              = isset($_GET["Notes"])             ? $_GET["Notes"]             : "";
-$server             = isset($_GET["MSFSServer"])        ? $_GET["MSFSServer"]        : "";
-$version            = isset($_GET["Version"])           ? $_GET["Version"]           : "1.0.0.n";
+// Get the data from the request
+$user_pin           = $_GET["Pin"] ?? "";
+$callsign           = $_GET["Callsign"] ?? "";
+$aircraft_type      = $_GET["AircraftType"] ?? "";
+$pilot_name         = $_GET["PilotName"] ?? "";
+$group_name         = $_GET["GroupName"] ?? "";
+$msfs_server        = $_GET["MSFSServer"] ?? "";
+$latitude           = $_GET["Latitude"] ?? "0";
+$longitude          = $_GET["Longitude"] ?? "0";
+$altitude           = $_GET["Altitude"] ?? "0";
+$heading            = $_GET["Heading"] ?? "0";
+$airspeed           = $_GET["Airspeed"] ?? "0";
+$groundspeed        = $_GET["Groundspeed"] ?? "0";
+$touchdown_velocity = $_GET["TouchdownVelocity"] ?? "0";
+$notes              = $_GET["Notes"] ?? "";
+$version            = $_GET["Version"] ?? "1.0.0.n";
 
-// if the server pin is used, the user pin must match the server pin
-if (($server_pin != "") ? (trim($user_pin) == trim($server_pin)) : true) {
+// If the server pin is used, the user pin must match the server pin
+if (empty($server_pin) || trim($user_pin) === trim($server_pin)) {
+    // Default groundspeed to airspeed if it is not supplied
+    if ($groundspeed == "0") {
+        $groundspeed = $airspeed;
+    }
 
-    // default groundspeed to airspeed if it is not supplied
-    if ($groundspeed == "0") $groundspeed = $airspeed;
-
-    // check we have everything we need to store the data
+    // Check we have everything we need to store the data
     if (empty($callsign) || empty($aircraft_type) || empty($pilot_name) || empty($group_name)) {
         print "Insufficient data received";	
     } else {
-
         // Check rate limiting
         if (is_rate_limited($callsign, $_SERVER['REMOTE_ADDR'])) {
             print "rate limited";
         } else {
-
             // Clean up the data (only allow alphanumeric characters, spaces and hyphens)
             $callsign      = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($callsign));
             $pilot_name    = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($pilot_name));
             $group_name    = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($group_name));
-            $server        = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($server));
             $aircraft_type = preg_replace('/[^A-Za-z0-9. -]/', '', strip_tags($aircraft_type));
             $notes         = preg_replace('/[^A-Za-z0-9.,\n -]/', '', strip_tags($notes));
 
@@ -145,19 +97,19 @@ if (($server_pin != "") ? (trim($user_pin) == trim($server_pin)) : true) {
                 'Groundspeed' => (float)$groundspeed,
                 'TouchdownVelocity' => (float)$touchdown_velocity,
                 'Notes' => $notes,
-                'Server' => $server,
+                'Server' => $msfs_server,
                 'Version' => $version,
                 'IPAddress' => $_SERVER['REMOTE_ADDR'],
                 'timestamp' => time()
             ];
 
-            // Check if aircraft already exists and update created time
+            // Check if aircraft already exists and preserve created time
             $position_key = APCU_PREFIX . 'position_' . $callsign;
             $existing = apcu_fetch($position_key);
             if ($existing !== false) {
-                $aircraft_data['created'] = $existing['created'] ?? time(); // Keep original created time or set new
+                $aircraft_data['created'] = $existing['created'] ?? time();
             } else {
-                $aircraft_data['created'] = time(); // New aircraft
+                $aircraft_data['created'] = time();
             }
             $aircraft_data['modified'] = time();
 

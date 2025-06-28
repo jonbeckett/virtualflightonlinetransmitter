@@ -1,242 +1,192 @@
 # Virtual Flight Online Transmitter
 
-A real-time aircraft tracking system for Microsoft Flight Simulator that displays aircraft positions on a web-based radar display and status pages.
+A real-time aircraft tracking system for Microsoft Flight Simulator that displays live flight data on an interactive web-based radar display.
 
 ## 🎯 Overview
 
-Virtual Flight Online Transmitter is a web-based aircraft tracking system that allows multiple pilots to share their real-time position data from Microsoft Flight Simulator. The system provides:
+Virtual Flight Online Transmitter enables multiple pilots to share their real-time position data from Microsoft Flight Simulator, creating a shared virtual airspace experience with:
 
-- **Real-time radar display** with aircraft icons, labels, and interactive features
-- **Aircraft status tables** with detailed flight information
-- **IVAO-compatible data feeds** for integration with external flight tracking tools
-- **Persistent data storage** using APCu in-memory caching
-- **Professional aviation radar styling** with draggable labels
+- **Interactive radar display** with aircraft icons, draggable labels, and auto-positioning
+- **Real-time status pages** with detailed flight information
+- **IVAO-compatible data feeds** for integration with flight tracking tools
+- **In-memory data storage** using APCu for fast performance
+- **Professional aviation radar styling** with dark theme
 
-## 🚀 Features
+## ✈️ Features
 
 ### Radar Display (`radar.php`)
-- Interactive map with aircraft icons showing heading and movement
-- Draggable aircraft labels with position memory
-- Zoom-based label visibility (labels appear at zoom level 6+)
-- Real-time updates every 5 seconds
-- Professional radar-style dark theme
+- Live aircraft tracking with heading indicators and movement status
+- Draggable aircraft labels with persistent positioning
+- Auto-fit view to show all aircraft on page load
+- Zoom-based label visibility (appears at zoom level 6+)
+- Updates every 5 seconds with smooth animations
 
-### Status Pages (`status.php`)
-- Tabular view of all online aircraft
-- Sortable columns for all aircraft data
+### Status Dashboard (`status.php`)
+- Sortable table view of all online aircraft
+- Real-time position updates with time online tracking
 - Integrated mini-map with aircraft markers
-- Real-time position updates
+- Aircraft count and connection status indicators
 
-### Data Feeds
-- **JSON API** (`status_json.php`, `radar_data.php`) for modern integrations
-- **IVAO whazzup format** (`whazzup_ivao.php`) for compatibility with flight tracking tools
-- **JSON whazzup format** (`whazzup_ivao_json.php`) for API consumers
+### Data APIs
+- **JSON endpoints** for modern web integration
+- **IVAO whazzup format** for compatibility with existing tools
+- **Cache management interface** for monitoring and administration
 
-### Administration
-- **APCu cache manager** (`apcu_manager.php`) for data monitoring and cleanup
-- **Automatic cleanup** - aircraft disappear after 1 minute of no updates
+## �️ Quick Start
 
-## 📋 Prerequisites
+### Requirements
+- **PHP 7.4+** with APCu extension
+- **Web server** (Apache/Nginx)
+- **No database needed** - uses in-memory caching
 
-### Server Requirements
-- **PHP 7.4+** with the following extensions:
-  - `APCu` extension (for in-memory caching)
-  - `JSON` extension
-- **Apache/Nginx** web server
-- **No database required** - uses APCu for all data storage
+### Installation
 
-### Client Requirements (for pilots)
-- **Microsoft Flight Simulator 2020** or **Microsoft Flight Simulator 2024**
-- HTTP client capable of sending POST requests (e.g., addon, script, or external tool)
-
-## 🛠️ Installation
-
-### 1. Server Setup
-
-1. **Install APCu extension:**
+1. **Install APCu extension**
    ```bash
    # Ubuntu/Debian
-   sudo apt-get install php-apcu
+   sudo apt install php-apcu
    
-   # CentOS/RHEL
-   sudo yum install php-pecl-apcu
-   
-   # Windows (via XAMPP/WAMP)
-   # Enable extension=apcu in php.ini
-   ```
-
-2. **Configure APCu in php.ini:**
-   ```ini
+   # Enable in php.ini
    extension=apcu
    apc.enabled=1
    apc.shm_size=128M
-   apc.ttl=1800
-   apc.enable_cli=1
    ```
 
-3. **Upload project files** to your web server directory
+2. **Upload files** to your web server
 
-4. **Set permissions** (Linux/Unix):
-   ```bash
-   chmod 755 *.php
-   chmod 644 *.css *.js *.md
-   ```
-
-### 2. Configuration
-
-1. **Edit `transmit.php`** to set your server PIN (optional):
+3. **Configure** (optional) - Set server PIN in `transmit.php`:
    ```php
-   $server_pin = "your_secure_pin_here"; // Leave empty to disable
+   $server_pin = "your_secure_pin"; // Leave empty to disable
    ```
 
-2. **Verify APCu** is working by visiting:
-   ```
-   https://yourserver.com/path/apcu_manager.php
-   ```
+4. **Verify setup** by visiting `apcu_manager.php`
 
 ## 📡 How It Works
 
 ### Data Flow
-1. **Aircraft transmit data** → `transmit.php` (receives position updates)
-2. **Data stored in APCu** → In-memory cache with 30-minute TTL
-3. **Web pages fetch data** → Various endpoints serve cached data
-4. **Real-time updates** → Pages refresh every 5 seconds
+```
+Aircraft → transmit.php → APCu Cache → Web Pages → Users
+```
 
-### Data Structure
-Each aircraft transmits the following data:
+1. **Aircraft send position data** to `transmit.php` via HTTP POST
+2. **Data cached in memory** with 30-minute expiration
+3. **Web pages fetch cached data** for real-time display
+4. **Automatic cleanup** removes inactive aircraft after 60 seconds
+
+### Aircraft Data Structure
 ```json
 {
   "Callsign": "N123AB",
-  "PilotName": "John Pilot",
+  "PilotName": "John Pilot", 
   "GroupName": "Virtual Airlines",
-  "Server": "East USA",
   "AircraftType": "Boeing 737-800",
   "Latitude": 40.7128,
   "Longitude": -74.0060,
   "Altitude": 35000,
-  "Heading": 090,
+  "Heading": 90,
   "Airspeed": 450,
   "Groundspeed": 485,
-  "TouchdownVelocity": 0,
-  "Notes": "Flight remarks",
-  "Version": "1.0"
+  "Notes": "Flight remarks"
 }
 ```
 
-### Client Integration
-Pilots send POST requests to `transmit.php` with their position data:
+## 🌐 API Reference
 
+| Endpoint | Type | Purpose |
+|----------|------|---------|
+| `radar.php` | HTML | Interactive radar map |
+| `status.php` | HTML | Aircraft data table |
+| `radar_data.php` | JSON | Raw aircraft positions |
+| `status_json.php` | JSON | Formatted aircraft data |
+| `transmit.php` | POST | Data submission |
+| `whazzup_ivao.php` | Text | IVAO-compatible feed |
+| `apcu_manager.php` | HTML | Cache administration |
+
+### Sending Data
 ```bash
 curl -X POST https://yourserver.com/transmit.php \
-  -H "Content-Type: application/x-www-form-urlencoded" \
   -d "Callsign=N123AB&PilotName=John+Pilot&Latitude=40.7128&Longitude=-74.0060&..."
 ```
 
-## 🌐 API Endpoints
-
-| Endpoint | Format | Description |
-|----------|--------|-------------|
-| `radar.php` | HTML | Interactive radar display |
-| `status.php` | HTML | Aircraft status table |
-| `radar_data.php` | JSON | Raw aircraft data for radar |
-| `status_json.php` | JSON | Aircraft data for status page |
-| `whazzup_ivao.php` | Text | IVAO-compatible whazzup format |
-| `whazzup_ivao_json.php` | JSON | JSON version of whazzup data |
-| `transmit.php` | POST | Data submission endpoint |
-| `apcu_manager.php` | HTML | Cache management interface |
-
-## 🎮 Usage
+## 🎮 Usage Guide
 
 ### For Pilots
-1. Configure your flight simulator addon/tool to send data to `transmit.php`
-2. Ensure data is sent every 5-30 seconds for real-time tracking
-3. Your aircraft will appear on the radar and status pages automatically
+1. Configure your flight sim addon to send data to `transmit.php`
+2. Send updates every 5-30 seconds for smooth tracking
+3. Your aircraft appears automatically on radar and status pages
 
 ### For Viewers
-1. **Radar View**: Visit `radar.php` for an interactive map experience
-2. **Status View**: Visit `status.php` for a detailed table view
-3. **Drag labels** on the radar to customize aircraft label positions
-4. **Click aircraft** to center the map on their position
+- **Radar**: Interactive map with clickable aircraft and draggable labels
+- **Status**: Detailed table view with sortable columns
+- **Auto-positioning**: Map automatically centers on active aircraft
 
 ### For Developers
-- Use `status_json.php` or `radar_data.php` for JSON data
-- Use `whazzup_ivao.php` for IVAO-compatible feeds
-- Data updates automatically every 5 seconds
+- Use JSON endpoints for custom integrations
+- IVAO whazzup format for compatibility with existing tools
+- Real-time updates with 5-second refresh intervals
 
-## ⚙️ Configuration Options
+## ⚙️ Configuration
 
-### Timing Settings
-- **Update Interval**: 5 seconds (configurable in `radar.js`)
-- **Aircraft Timeout**: 60 seconds (aircraft removed if no updates)
-- **APCu TTL**: 30 minutes (data persistence)
+### Performance Settings
+```php
+// In transmit.php
+define('POSITION_TTL', 1800);     // 30 minutes data retention
+$updateInterval = 5000;           // 5 second refresh rate
+$aircraftTimeout = 60;            // Remove after 60 seconds offline
+```
 
-### Display Settings
-- **Label Visibility**: Zoom level 6+ (configurable in `radar.js`)
-- **Map Center**: USA (configurable in `radar.js`)
-- **Radar Theme**: Dark aviation style
+### Display Options
+```javascript
+// In radar.js
+this.defaultPixelOffset = [60, 80];  // Label positioning
+const showLabels = zoom >= 6;        // Label visibility threshold
+maxZoom: 10                          // Auto-fit zoom limit
+```
 
 ## 🔧 Troubleshooting
 
-### Common Issues
+**APCu not available**
+- Install APCu extension and restart web server
+- Check `phpinfo()` for extension status
 
-1. **"APCu not available" error**
-   - Install and enable APCu extension
-   - Restart web server after installation
+**No aircraft showing**
+- Verify APCu is working via `apcu_manager.php`
+- Check aircraft are sending data within 60-second timeout
+- Confirm data format matches expected structure
 
-2. **No aircraft appearing**
-   - Check APCu is working via `apcu_manager.php`
-   - Verify data is being sent to `transmit.php`
-   - Check 60-second timeout hasn't expired
+**Performance issues**
+- Increase APCu memory allocation in `php.ini`
+- Monitor cache usage in APCu manager
+- Check server resources during peak usage
 
-3. **Performance issues**
-   - Increase APCu memory in php.ini
-   - Monitor cache usage in `apcu_manager.php`
-
-### Debug Tools
-- `apcu_manager.php` - View cached data and statistics
-- Browser developer tools - Check for JavaScript errors
-- Server error logs - Check for PHP errors
-
-## 📁 File Structure
+## 📁 Project Structure
 
 ```
 server/
-├── radar.php              # Interactive radar display
-├── radar.js               # Radar JavaScript functionality
-├── radar_data.php         # JSON data for radar
-├── status.php             # Aircraft status table
-├── status.js              # Status page JavaScript
-├── status_json.php        # JSON data for status
-├── transmit.php           # Data submission endpoint
-├── whazzup_ivao.php       # IVAO whazzup format
-├── whazzup_ivao_json.php  # JSON whazzup format
-├── apcu_manager.php       # Cache management
-├── common.php             # Shared functions
-├── style.css              # Styling
-└── README.md              # This file
+├── radar.php           # Main radar display
+├── radar.js            # Radar functionality
+├── status.php          # Aircraft status table
+├── transmit.php        # Data endpoint
+├── *_data.php          # JSON API endpoints
+├── whazzup_ivao.php    # IVAO compatibility
+├── apcu_manager.php    # Administration
+├── common.php          # Shared functions
+└── style.css           # Styling
 ```
 
-## 🚦 System Status
+## � Key Features
 
-The system provides several indicators of health:
-- **Green "Connected"** - System operating normally
-- **Aircraft count** - Number of currently tracked aircraft
-- **Last update time** - When data was last refreshed
-- **Cache statistics** - Available via APCu manager
+- **Zero-database design** - Uses APCu in-memory cache for speed
+- **Auto-positioning radar** - Automatically centers on active aircraft
+- **Draggable labels** - Customize aircraft label positions
+- **Real-time updates** - 5-second refresh with smooth animations
+- **IVAO compatibility** - Works with existing flight tracking tools
+- **Professional styling** - Aviation-themed dark radar interface
 
 ## 📜 License
 
-This project is provided as-is for educational and simulation purposes. Modify and distribute according to your needs.
-
-## 🤝 Contributing
-
-Contributions welcome! Areas for improvement:
-- Additional map providers
-- Enhanced aircraft icons
-- Mobile responsive design
-- Additional data export formats
-- Performance optimizations
+Open source project for educational and simulation use. Modify and distribute freely.
 
 ---
 
-**Virtual Flight Online Transmitter** - Real-time flight tracking for the virtual aviation community.
+**Virtual Flight Online Transmitter** - Bringing pilots together in virtual airspace.

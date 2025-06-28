@@ -5,9 +5,11 @@ class RadarDisplay {
         this.headingLines = new Map();
         this.labelLayers = new Map(); // New: for aircraft labels
         this.labelLines = new Map(); // New: for label connecting lines
-        this.labelPositions = new Map(); // Store custom label positions relative to aircraft
+        this.labelPixelPositions = new Map(); // Store pixel offsets instead of geo offsets
         this.updateInterval = 5000; // 5 seconds
         this.radarDataUrl = 'radar_data.php';
+        this.defaultPixelOffset = [60, 80]; // Fixed pixel offset for new labels
+        this.isInitialLoad = true; // Track if this is the first load for auto-positioning
         
         this.init();
     }
@@ -182,22 +184,18 @@ class RadarDisplay {
         const callsign = aircraft.callsign;
         const position = [aircraft.latitude, aircraft.longitude];
         
-        // Check if we have a saved label position for this aircraft
-        let labelOffset;
-        if (this.labelPositions.has(callsign)) {
-            labelOffset = this.labelPositions.get(callsign);
+        // Get pixel offset for this aircraft (either saved or default)
+        let pixelOffset;
+        if (this.labelPixelPositions.has(callsign)) {
+            pixelOffset = this.labelPixelPositions.get(callsign);
         } else {
-            // Default position: top-right of aircraft
-            const zoom = this.map.getZoom();
-            const offsetMultiplier = Math.max(0.01, 0.1 / zoom);
-            labelOffset = [offsetMultiplier * 1.5, offsetMultiplier * 2];
-            this.labelPositions.set(callsign, labelOffset);
+            // Use default pixel offset for new aircraft
+            pixelOffset = [...this.defaultPixelOffset]; // Copy the array
+            this.labelPixelPositions.set(callsign, pixelOffset);
         }
         
-        const labelPosition = [
-            position[0] + labelOffset[0], 
-            position[1] + labelOffset[1]
-        ];
+        // Convert pixel offset to geographic position based on current zoom
+        const labelPosition = this.pixelOffsetToLatLng(position, pixelOffset);
         
         // Create label content with better styling
         const labelText = `
@@ -251,12 +249,9 @@ class RadarDisplay {
             // Update the connecting line
             labelLine.setLatLngs([position, newLabelPosArray]);
             
-            // Calculate and save relative offset
-            const newOffset = [
-                newLabelPos.lat - position[0],
-                newLabelPos.lng - position[1]
-            ];
-            this.labelPositions.set(callsign, newOffset);
+            // Convert the new position to pixel offset and save it
+            const newPixelOffset = this.latLngToPixelOffset(position, newLabelPosArray);
+            this.labelPixelPositions.set(callsign, newPixelOffset);
         });
         
         labelMarker.on('dragend', (e) => {
@@ -286,16 +281,15 @@ class RadarDisplay {
     // Update label position when aircraft moves (for dragged labels)
     updateLabelPosition(aircraft) {
         const callsign = aircraft.callsign;
-        if (!this.labelLayers.has(callsign) || !this.labelPositions.has(callsign)) {
+        if (!this.labelLayers.has(callsign) || !this.labelPixelPositions.has(callsign)) {
             return;
         }
         
         const position = [aircraft.latitude, aircraft.longitude];
-        const savedOffset = this.labelPositions.get(callsign);
-        const newLabelPosition = [
-            position[0] + savedOffset[0],
-            position[1] + savedOffset[1]
-        ];
+        const savedPixelOffset = this.labelPixelPositions.get(callsign);
+        
+        // Convert pixel offset to current geographic position
+        const newLabelPosition = this.pixelOffsetToLatLng(position, savedPixelOffset);
         
         // Get the label group and update both line and marker
         const labelGroup = this.labelLayers.get(callsign);
@@ -344,8 +338,8 @@ class RadarDisplay {
                 }
                 
                 // Remove saved label position
-                if (this.labelPositions.has(callsign)) {
-                    this.labelPositions.delete(callsign);
+                if (this.labelPixelPositions.has(callsign)) {
+                    this.labelPixelPositions.delete(callsign);
                 }
             }
         }
@@ -393,6 +387,12 @@ class RadarDisplay {
         
         // Update aircraft count
         this.updateAircraftCount(aircraftData.length);
+        
+        // Auto-position map on initial load if aircraft are present
+        if (this.isInitialLoad && aircraftData.length > 0) {
+            this.autoFitAircraft(aircraftData);
+            this.isInitialLoad = false;
+        }
         
         console.log(`Updated ${aircraftData.length} aircraft on radar`);
     }
@@ -444,8 +444,37 @@ class RadarDisplay {
             }
         }
         
+        // Recalculate all label positions to maintain pixel-based distances
+        this.recalculateAllLabelPositions();
+        
         // Heading lines disabled
         // this.updateHeadingLinesForZoom();
+    }
+    
+    // Recalculate all label positions after zoom change to maintain pixel distances
+    recalculateAllLabelPositions() {
+        for (const [callsign, marker] of this.aircraftMarkers) {
+            if (this.labelPixelPositions.has(callsign) && this.labelLayers.has(callsign)) {
+                const aircraftPos = marker.getLatLng();
+                const aircraftPosArray = [aircraftPos.lat, aircraftPos.lng];
+                const pixelOffset = this.labelPixelPositions.get(callsign);
+                
+                // Recalculate geographic position based on pixel offset
+                const newLabelPosition = this.pixelOffsetToLatLng(aircraftPosArray, pixelOffset);
+                
+                // Update the actual label position
+                const labelGroup = this.labelLayers.get(callsign);
+                const layers = labelGroup.getLayers();
+                
+                if (layers.length >= 2) {
+                    const labelLine = layers[0];
+                    const labelMarker = layers[1];
+                    
+                    labelLine.setLatLngs([aircraftPosArray, newLabelPosition]);
+                    labelMarker.setLatLng(newLabelPosition);
+                }
+            }
+        }
     }
     
     updateHeadingLinesForZoom() {
@@ -481,9 +510,75 @@ class RadarDisplay {
                 }
                 this.labelLayers.delete(callsign);
                 // Also remove saved position
-                this.labelPositions.delete(callsign);
+                this.labelPixelPositions.delete(callsign);
             }
         }
+    }
+
+    // Auto-fit map view to show all aircraft on initial load
+    autoFitAircraft(aircraftData) {
+        if (aircraftData.length === 0) {
+            return;
+        }
+        
+        if (aircraftData.length === 1) {
+            // Single aircraft - center on it with a reasonable zoom
+            const aircraft = aircraftData[0];
+            this.map.setView([aircraft.latitude, aircraft.longitude], 8);
+            console.log(`Centered map on single aircraft: ${aircraft.callsign}`);
+        } else {
+            // Multiple aircraft - fit bounds to show all
+            const latitudes = aircraftData.map(ac => ac.latitude);
+            const longitudes = aircraftData.map(ac => ac.longitude);
+            
+            const minLat = Math.min(...latitudes);
+            const maxLat = Math.max(...latitudes);
+            const minLng = Math.min(...longitudes);
+            const maxLng = Math.max(...longitudes);
+            
+            // Create bounds with some padding
+            const bounds = L.latLngBounds(
+                [minLat, minLng],
+                [maxLat, maxLng]
+            );
+            
+            // Fit the map to bounds with padding
+            this.map.fitBounds(bounds, {
+                padding: [50, 50], // 50px padding on all sides
+                maxZoom: 10 // Don't zoom in too far
+            });
+            
+            console.log(`Auto-fitted map to ${aircraftData.length} aircraft`);
+        }
+    }
+
+    // Helper function to convert pixel offset to geographic coordinates based on current zoom
+    pixelOffsetToLatLng(centerPos, pixelOffset) {
+        // Get the center point in pixels
+        const centerPoint = this.map.latLngToContainerPoint(centerPos);
+        
+        // Calculate the offset point in pixels
+        const offsetPoint = L.point(
+            centerPoint.x + pixelOffset[0], 
+            centerPoint.y + pixelOffset[1]
+        );
+        
+        // Convert back to geographic coordinates
+        const offsetLatLng = this.map.containerPointToLatLng(offsetPoint);
+        
+        // Return as array
+        return [offsetLatLng.lat, offsetLatLng.lng];
+    }
+
+    // Helper function to convert geographic position back to pixel offset
+    latLngToPixelOffset(centerPos, labelPos) {
+        const centerPoint = this.map.latLngToContainerPoint(centerPos);
+        const labelPoint = this.map.latLngToContainerPoint(labelPos);
+        
+        return [
+            labelPoint.x - centerPoint.x,
+            labelPoint.y - centerPoint.y
+        ];
     }
 }
 
