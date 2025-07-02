@@ -2,32 +2,38 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VirtualFlightOnlineTransmitter.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="Callsign" Type="System.String" Scope="User">
+    <Setting Name="servers" Type="System.String" Scope="User">
+      <Value Profile="(Default)">[{"serverName":"VirtualFlight.Online","callsign":"Callsign","pilotName":"Pilot Name","groupName":"VirtualFlight.Online","notes":"","msfsServer":"WEST EUROPE","autoConnect":"true","serverURL":"http://yourserver/transmit.php","pin":"1234"}]</Value>
+    </Setting>
+    <Setting Name="serverName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Your Server Name</Value>
+    </Setting>
+    <Setting Name="callsign" Type="System.String" Scope="User">
       <Value Profile="(Default)">Your Callsign</Value>
     </Setting>
-    <Setting Name="AircraftType" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Your Aircraft Type</Value>
+    <Setting Name="pilotName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Your Pilot Name</Value>
     </Setting>
-    <Setting Name="PilotName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Your Name</Value>
+    <Setting Name="groupName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Your Group Name</Value>
     </Setting>
-    <Setting Name="GroupName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">VirtualFlight.Online</Value>
-    </Setting>
-    <Setting Name="Notes" Type="System.String" Scope="User">
+    <Setting Name="notes" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="MSFSServer" Type="System.String" Scope="User">
-      <Value Profile="(Default)">SOUTH EAST ASIA</Value>
+    <Setting Name="msfsServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">WEST EUROPE</Value>
     </Setting>
-    <Setting Name="AutoConnect" Type="System.String" Scope="User">
+    <Setting Name="autoConnect" Type="System.String" Scope="User">
       <Value Profile="(Default)">true</Value>
     </Setting>
-    <Setting Name="ServerURL" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://yourserver/send.php</Value>
+    <Setting Name="serverURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://transmitter.virtualflight.online/transmit.php</Value>
     </Setting>
-    <Setting Name="Pin" Type="System.String" Scope="User">
+    <Setting Name="pin" Type="System.String" Scope="User">
       <Value Profile="(Default)">1234</Value>
+    </Setting>
+    <Setting Name="selectedServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

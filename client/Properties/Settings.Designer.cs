@@ -12,7 +12,7 @@ namespace VirtualFlightOnlineTransmitter.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,109 +25,135 @@ namespace VirtualFlightOnlineTransmitter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("[{\"serverName\":\"VirtualFlight.Online\",\"callsign\":\"Callsign\",\"pilotName\":\"Pilot Na" +
+            "me\",\"groupName\":\"VirtualFlight.Online\",\"notes\":\"\",\"msfsServer\":\"WEST EUROPE\",\"au" +
+            "toConnect\":\"true\",\"serverURL\":\"http://yourserver/transmit.php\",\"pin\":\"1234\"}]")]
+        public string servers {
+            get {
+                return ((string)(this["servers"]));
+            }
+            set {
+                this["servers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Your Server Name")]
+        public string serverName {
+            get {
+                return ((string)(this["serverName"]));
+            }
+            set {
+                this["serverName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Your Callsign")]
-        public string Callsign {
+        public string callsign {
             get {
-                return ((string)(this["Callsign"]));
+                return ((string)(this["callsign"]));
             }
             set {
-                this["Callsign"] = value;
+                this["callsign"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Your Aircraft Type")]
-        public string AircraftType {
+        [global::System.Configuration.DefaultSettingValueAttribute("Your Pilot Name")]
+        public string pilotName {
             get {
-                return ((string)(this["AircraftType"]));
+                return ((string)(this["pilotName"]));
             }
             set {
-                this["AircraftType"] = value;
+                this["pilotName"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Your Name")]
-        public string PilotName {
+        [global::System.Configuration.DefaultSettingValueAttribute("Your Group Name")]
+        public string groupName {
             get {
-                return ((string)(this["PilotName"]));
+                return ((string)(this["groupName"]));
             }
             set {
-                this["PilotName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("VirtualFlight.Online")]
-        public string GroupName {
-            get {
-                return ((string)(this["GroupName"]));
-            }
-            set {
-                this["GroupName"] = value;
+                this["groupName"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Notes {
+        public string notes {
             get {
-                return ((string)(this["Notes"]));
+                return ((string)(this["notes"]));
             }
             set {
-                this["Notes"] = value;
+                this["notes"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SOUTH EAST ASIA")]
-        public string MSFSServer {
+        [global::System.Configuration.DefaultSettingValueAttribute("WEST EUROPE")]
+        public string msfsServer {
             get {
-                return ((string)(this["MSFSServer"]));
+                return ((string)(this["msfsServer"]));
             }
             set {
-                this["MSFSServer"] = value;
+                this["msfsServer"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("true")]
-        public string AutoConnect {
+        public string autoConnect {
             get {
-                return ((string)(this["AutoConnect"]));
+                return ((string)(this["autoConnect"]));
             }
             set {
-                this["AutoConnect"] = value;
+                this["autoConnect"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://yourserver/send.php")]
-        public string ServerURL {
+        [global::System.Configuration.DefaultSettingValueAttribute("https://transmitter.virtualflight.online/transmit.php")]
+        public string serverURL {
             get {
-                return ((string)(this["ServerURL"]));
+                return ((string)(this["serverURL"]));
             }
             set {
-                this["ServerURL"] = value;
+                this["serverURL"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1234")]
-        public string Pin {
+        public string pin {
             get {
-                return ((string)(this["Pin"]));
+                return ((string)(this["pin"]));
             }
             set {
-                this["Pin"] = value;
+                this["pin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string selectedServer {
+            get {
+                return ((string)(this["selectedServer"]));
+            }
+            set {
+                this["selectedServer"] = value;
             }
         }
     }

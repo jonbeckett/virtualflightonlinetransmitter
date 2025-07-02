@@ -6,6 +6,8 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Net;
 using System.IO;
+using System.Text.Json.Nodes;
+using System.Text.Json;
 
 namespace VirtualFlightOnlineTransmitter
 {
@@ -51,7 +53,7 @@ namespace VirtualFlightOnlineTransmitter
             int d = (int)val;
             int m = (int)((val - d) * 60);
             double s = ((((val - d) * 60) - m) * 60);
-            
+
             return Math.Abs(d) + "° " + Math.Abs(m) + "' " + string.Format("{0:0.00}", Math.Abs(s)) + "\" " + (val > 0 ? "E" : "W");
         }
 
@@ -108,7 +110,7 @@ namespace VirtualFlightOnlineTransmitter
             // TODO - look into why TransponderCode doesn't come back from the simvars :)
             [SimVar(NameId = FsSimVar.TransponderCode, UnitId = FsUnit.Bco16)]
             public uint TransponderCode;
-                        
+
         }
 
 
@@ -131,11 +133,11 @@ namespace VirtualFlightOnlineTransmitter
                 double airspeed = r.AirspeedIndicated;
                 double groundspeed = r.GpsGroundSpeed;
                 double touchdown_velocity = r.PlaneTouchdownNormalVelocity;
-                
+
                 // TODO - look into why TransponderCode doesn't come back from the simvars
                 uint transponder_code = Bcd.Bcd2Dec(r.TransponderCode);
 
-                this.DataReceivedEvent(aircraft_type,latitude, longitude, altitude, heading, airspeed, groundspeed, touchdown_velocity, transponder_code.ToString());
+                this.DataReceivedEvent(aircraft_type, latitude, longitude, altitude, heading, airspeed, groundspeed, touchdown_velocity, transponder_code.ToString());
 
             }
         }
@@ -159,6 +161,8 @@ namespace VirtualFlightOnlineTransmitter
                 // force the numbers into USA format
                 CultureInfo usa_format = new CultureInfo("en-US");
 
+
+
                 string url = Properties.Settings.Default["ServerURL"].ToString()
                     + "?Callsign=" + Properties.Settings.Default["Callsign"].ToString()
                     + "&PilotName=" + Properties.Settings.Default["PilotName"].ToString()
@@ -176,11 +180,11 @@ namespace VirtualFlightOnlineTransmitter
                     + "&TransponderCode=" + transponder_code
                     + "&Version=" + version
                     + "&Notes=" + System.Net.WebUtility.UrlEncode(notes);
-                            
+
                 var request = WebRequest.Create(url);
                 request.Method = "GET";
                 request.Timeout = 1000; // 1 second
-                
+
                 using (var webResponse = request.GetResponse())
                 {
                     using (var webStream = webResponse.GetResponseStream())
@@ -194,11 +198,12 @@ namespace VirtualFlightOnlineTransmitter
 
                 // todo - catch "server not found" errors and report them
 
-            } catch
+            }
+            catch
             {
                 // do nothing 
             }
-                        
+
             return result;
 
         }
@@ -250,7 +255,8 @@ namespace VirtualFlightOnlineTransmitter
                 try
                 {
                     this.FlightSimulatorConnection.RequestData((int)Requests.PlaneInfoRequest, this.planeInfoDefinitionId);
-                } catch
+                }
+                catch
                 {
                     Disconnect("Problem transmitting data simulator." + ((Properties.Settings.Default["AutoConnect"].ToString().ToLower() == "true") ? " - retrying every 5 seconds" : ""));
                 }
@@ -282,7 +288,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tbAirspeed.Text = string.Format("{0:0. knots}", airspeed);
             this.tbGroundspeed.Text = string.Format("{0:0. knots}", groundspeed);
             this.tbTouchdownVelocity.Text = string.Format("{0:0. ft/min}", touchdown_velocity * 60);
-            
+
             string version = System.Windows.Forms.Application.ProductVersion;
 
             // Transmit data to web
@@ -292,10 +298,10 @@ namespace VirtualFlightOnlineTransmitter
                 string notes = tbNotes.Text;
 
                 // send the data to the server and get the response back
-                string response_data = this.SendDataToServer(aircraft_type, latitude,longitude,heading,altitude,airspeed,groundspeed,touchdown_velocity,transponder_code, notes,version);
+                string response_data = this.SendDataToServer(aircraft_type, latitude, longitude, heading, altitude, airspeed, groundspeed, touchdown_velocity, transponder_code, notes, version);
 
                 tsslMain.Text = "Connected for " + DateTime.Now.Subtract(this.ConnectionStartTime).ToString(@"hh\:mm\:ss");
-                
+
             }
             catch
             {
@@ -303,7 +309,7 @@ namespace VirtualFlightOnlineTransmitter
                 Disconnect("Problem sending data to the server");
             }
 
-            
+
 
         }
 
@@ -326,7 +332,9 @@ namespace VirtualFlightOnlineTransmitter
                     this.tmrConnect.Stop();
                     this.Disconnect(string.Empty);
 
-                } else {
+                }
+                else
+                {
                     // cancel the form closure
                     e.Cancel = true;
                 }
@@ -342,16 +350,37 @@ namespace VirtualFlightOnlineTransmitter
         private void frmMain_Load(object sender, EventArgs e)
         {
             // pre-fill the settings boxes with data from properties
-            tbServerURL.Text = Properties.Settings.Default["ServerURL"].ToString();
-            tbPin.Text = Properties.Settings.Default["Pin"].ToString();
-            tbCallsign.Text = Properties.Settings.Default["Callsign"].ToString();
-            tbPilotName.Text = Properties.Settings.Default["PilotName"].ToString();
-            tbGroupName.Text = Properties.Settings.Default["GroupName"].ToString();
-            cbMSFSServer.Text = Properties.Settings.Default["MSFSServer"].ToString();
-            tbNotes.Text = Properties.Settings.Default["Notes"].ToString();
+
+            // fetch the JSON collection of servers from properties and populate the listbox
+            string serversText = Properties.Settings.Default["servers"].ToString();
+            JsonArray servers = JsonNode.Parse(serversText).AsArray();
+            foreach (JsonNode serverJSON in servers)
+            {
+                Server server = serverJSON.Deserialize<Server>();
+                lbServers.Items.Add(server.serverName);
+            }
+
+            // select the server in the listbox
+            lbServers.SelectedIndex = Properties.Settings.Default["selectedServer"] != null ? Convert.ToInt32(Properties.Settings.Default["selectedServer"]) : 0;
+
+            // get the selected server by it's index from the servers collection
+            JsonNode serverNode = servers[lbServers.SelectedIndex];
+
+            // deserialize it into a Server object
+            Server selectedServer = serverNode.Deserialize<Server>();
+
+            // populate the textboxes
+            tbServerName.Text = selectedServer.serverName;
+            tbServerURL.Text = selectedServer.serverURL;
+            tbPin.Text = selectedServer.pin;
+            tbCallsign.Text = selectedServer.callsign;
+            tbPilotName.Text = selectedServer.pilotName;
+            tbGroupName.Text = selectedServer.groupName;
+            cbMSFSServer.Text = selectedServer.msfsServer;
+            tbNotes.Text = selectedServer.notes;
 
             autoConnectToolStripMenuItem.Checked = Properties.Settings.Default["AutoConnect"].ToString().ToLower() == "true" ? true : false;
-            
+
             // Start the Transmitter
             if (autoConnectToolStripMenuItem.Checked)
             {
@@ -362,14 +391,43 @@ namespace VirtualFlightOnlineTransmitter
 
                 // cause an immediate connect
                 Connect();
-                
-            } else
+
+            }
+            else
             {
                 tsslMain.Text = "Version " + System.Windows.Forms.Application.ProductVersion;
             }
-            
+
             this.Refresh();
 
+
+        }
+
+        /// <summary>
+        /// Updates settings when Server Name textbox is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbServerName_TextChanged(object sender, EventArgs e)
+        {
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // update the server name in the selected server
+                servers[lbServers.SelectedIndex]["serverName"] = tbServerName.Text;
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // update the server name in the properties
+                Properties.Settings.Default["serverName"] = tbServerName.Text;
+                // save the properties
+                Properties.Settings.Default.Save();
+
+                // update the listbox item to reflect the new server name
+                lbServers.Items[lbServers.SelectedIndex] = tbServerName.Text;
+            }
         }
 
         /// <summary>
@@ -379,14 +437,44 @@ namespace VirtualFlightOnlineTransmitter
         /// <param name="e"></param>
         private void tbServerURL_TextChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default["ServerURL"] = tbServerURL.Text;
-            Properties.Settings.Default.Save();
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // update the server URL in the selected server
+                servers[lbServers.SelectedIndex]["serverURL"] = tbServerURL.Text;
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // update the server URL in the properties
+                Properties.Settings.Default["serverURL"] = tbServerURL.Text;
+                // save the properties
+                Properties.Settings.Default.Save();
+
+            }
+
+
         }
 
         private void tbPin_TextChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default["Pin"] = tbPin.Text;
-            Properties.Settings.Default.Save();
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // update the pin in the selected server
+                servers[lbServers.SelectedIndex]["pin"] = tbPin.Text;
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // update the pin in the properties
+                Properties.Settings.Default["pin"] = tbPin.Text;
+                // save the properties
+                Properties.Settings.Default.Save();
+            }
         }
 
         /// <summary>
@@ -396,8 +484,21 @@ namespace VirtualFlightOnlineTransmitter
         /// <param name="e"></param>
         private void tbCallsign_TextChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default["Callsign"] = tbCallsign.Text;
-            Properties.Settings.Default.Save();
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // update the callsign in the selected server
+                servers[lbServers.SelectedIndex]["callsign"] = tbCallsign.Text;
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // update the callsign in the properties
+                Properties.Settings.Default["callsign"] = tbCallsign.Text;
+                // save the properties
+                Properties.Settings.Default.Save();
+            }
         }
 
         /// <summary>
@@ -407,8 +508,21 @@ namespace VirtualFlightOnlineTransmitter
         /// <param name="e"></param>
         private void tbPilotName_TextChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default["PilotName"] = tbPilotName.Text;
-            Properties.Settings.Default.Save();
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // update the pilot name in the selected server
+                servers[lbServers.SelectedIndex]["pilotName"] = tbPilotName.Text;
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // update the pilot name in the properties
+                Properties.Settings.Default["pilotName"] = tbPilotName.Text;
+                // save the properties
+                Properties.Settings.Default.Save();
+            }
         }
 
         /// <summary>
@@ -418,8 +532,21 @@ namespace VirtualFlightOnlineTransmitter
         /// <param name="e"></param>
         private void tbGroupName_TextChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default["GroupName"] = tbGroupName.Text;
-            Properties.Settings.Default.Save();
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // update the group name in the selected server
+                servers[lbServers.SelectedIndex]["groupName"] = tbGroupName.Text;
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // update the group name in the properties
+                Properties.Settings.Default["groupName"] = tbGroupName.Text;
+                // save the properties
+                Properties.Settings.Default.Save();
+            }
         }
 
         /// <summary>
@@ -429,8 +556,21 @@ namespace VirtualFlightOnlineTransmitter
         /// <param name="e"></param>
         private void cbMSFSServer_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default["MSFSServer"] = cbMSFSServer.Text;
-            Properties.Settings.Default.Save();
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // update the MSFS server in the selected server
+                servers[lbServers.SelectedIndex]["msfsServer"] = cbMSFSServer.Text;
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // update the MSFS server in the properties
+                Properties.Settings.Default["msfsServer"] = cbMSFSServer.Text;
+                // save the properties
+                Properties.Settings.Default.Save();
+            }
         }
 
         /// <summary>
@@ -440,18 +580,21 @@ namespace VirtualFlightOnlineTransmitter
         /// <param name="e"></param>
         private void tbNotes_TextChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default["Notes"] = tbNotes.Text;
-            Properties.Settings.Default.Save();
-        }
-
-        private void tbServerURL_Leave(object sender, EventArgs e)
-        {
-            tbServerURL.Text = tbServerURL.Text.Trim();
-        }
-
-        private void tbPin_Leave(object sender, EventArgs e)
-        {
-            tbPin.Text = tbPin.Text.Trim();
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // update the notes in the selected server
+                servers[lbServers.SelectedIndex]["notes"] = tbNotes.Text;
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // update the notes in the properties
+                Properties.Settings.Default["notes"] = tbNotes.Text;
+                // save the properties
+                Properties.Settings.Default.Save();
+            }
         }
 
         /// <summary>
@@ -517,23 +660,24 @@ namespace VirtualFlightOnlineTransmitter
         {
 
             // first check if the default parameters have been changed
-            if (this.tbCallsign.Text == "Your Callsign" || this.tbPilotName.Text == "Your Name")
+            if (this.tbCallsign.Text == "Callsign" || this.tbPilotName.Text == "Pilot Name")
             {
                 tmrConnect.Stop();
+                btnDisconnect.Enabled = false;
                 tsslMain.Text = "";
-                MessageBox.Show("It looks like you haven't changed your callsign, or name yet. Please change them before connecting.", "Let's do this first", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                MessageBox.Show("It looks like you haven't changed your callsign, or name yet. Please change them before connecting.", "Let's do this first", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             else
             {
-                
+
                 // check if the parameters are empty
                 if (tbCallsign.Text != string.Empty && tbPilotName.Text != string.Empty && tbGroupName.Text != string.Empty)
                 {
-                    
+
                     // if the user is not connected
                     if (!this.FlightSimulatorConnection.Connected)
                     {
-                        
+
                         // try to connect
                         try
                         {
@@ -544,7 +688,7 @@ namespace VirtualFlightOnlineTransmitter
                             btnDisconnect.Enabled = true;
 
                             tsslMain.Text = "Connecting...";
-                            this.Refresh();
+                            this.Refresh(); // redraw the form to show the connecting message
 
                             // connect to simulator
                             this.FlightSimulatorConnection.Connect("VirtualFlightOnlineClient");
@@ -590,11 +734,11 @@ namespace VirtualFlightOnlineTransmitter
 
                     tmrConnect.Stop();
                     tmrTransmit.Stop();
-                    
+
                     btnConnect.Enabled = true;
                     btnDisconnect.Enabled = false;
                 }
-            
+
             }
         }
 
@@ -612,7 +756,8 @@ namespace VirtualFlightOnlineTransmitter
             if (msg.Length > 0)
             {
                 tsslMain.Text = msg;
-            } else
+            }
+            else
             {
                 tsslMain.Text = "Not Connected";
             }
@@ -635,7 +780,7 @@ namespace VirtualFlightOnlineTransmitter
 
             autoConnectToolStripMenuItem.Enabled = true;
             resetSettingsToDefaultsToolStripMenuItem.Enabled = true;
-            
+
         }
 
         /// <summary>
@@ -665,17 +810,24 @@ namespace VirtualFlightOnlineTransmitter
         {
             if (!this.FlightSimulatorConnection.Connected)
             {
-                tbServerURL.Text = "https://yourserver/send.php";
-                tbPin.Text = "1234";
-                tbCallsign.Text = "Your Callsign";
-                tbPilotName.Text = "Your Name";
-                tbGroupName.Text = "Your Group";
-                cbMSFSServer.Text = "SOUTH EAST ASIA";
+                lbServers.Items.Clear();
+
+                Properties.Settings.Default["servers"] = "[{ \"serverName\":\"VirtualFlight.Online\",\"callsign\":\"Callsign\",\"pilotName\":\"Pilot Name\",\"groupName\":\"VirtualFlight.Online\",\"notes\":\"\",\"msfsServer\":\"WEST EUROPE\",\"serverURL\":\"http://transmitter.virtualflight.online/transmit\",\"pin\":\"\"}]";
+                Properties.Settings.Default["selectedServer"] = "0";
+                Properties.Settings.Default.Save();
                 
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                Server server = servers[0].Deserialize<Server>();
+
+                lbServers.Items.Add(server.serverName);
+                lbServers.SelectedIndex = 0;
+
                 // save the settings
                 Properties.Settings.Default.Save();
 
-            } else
+            }
+            else
             {
                 MessageBox.Show("Please disconnect from the simulator first", "Disconnect First", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
@@ -690,11 +842,12 @@ namespace VirtualFlightOnlineTransmitter
             if (aircraftDataToolStripMenuItem.Checked)
             {
                 this.Height = this.MaximumSize.Height;
-            } else
+            }
+            else
             {
                 this.Height = this.MinimumSize.Height;
             }
-            
+
         }
 
         private void tmrConnect_Tick(object sender, EventArgs e)
@@ -707,13 +860,14 @@ namespace VirtualFlightOnlineTransmitter
 
         private void autoConnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
             if (this.autoConnectToolStripMenuItem.Checked)
             {
                 Properties.Settings.Default["AutoConnect"] = "true";
                 tmrConnect.Start();
             }
-            else {
+            else
+            {
                 Properties.Settings.Default["AutoConnect"] = "false";
                 tmrConnect.Stop();
             }
@@ -727,6 +881,181 @@ namespace VirtualFlightOnlineTransmitter
             Disconnect("");
         }
 
+        private void btnAddServer_Click(object sender, EventArgs e)
+        {
+            // make a new server
+            Server server = new Server
+            {
+                serverName = "VirtualFlight.Online",
+                callsign = "Callsign",
+                pilotName = "Pilot Name",
+                groupName = "VirtualFlight.Online",
+                notes = "",
+                msfsServer = "WEST EUROPE",
+                serverURL = "https://transmitter.virtualflight.online/transmit.php",
+                pin = ""
+            };
 
+            // fetch the JSON collection of servers from properties and populate the listbox
+            string serversText = Properties.Settings.Default["servers"].ToString();
+            JsonArray servers = JsonNode.Parse(serversText).AsArray();
+
+            // append the new server to the collection
+            servers.Add(JsonSerializer.SerializeToNode(server));
+
+            // put the servers back in the properties
+            Properties.Settings.Default["servers"] = servers.ToJsonString();
+
+            // save the selected server index in the properties
+            Properties.Settings.Default["selectedServer"] = (servers.Count() - 1).ToString();
+
+            // populate the controls on the page with the new server details
+            tbServerName.Text = server.serverName;
+            tbCallsign.Text = server.callsign;
+            tbPilotName.Text = server.pilotName;
+            tbGroupName.Text = server.groupName;
+            tbNotes.Text = server.notes;
+            cbMSFSServer.Text = server.msfsServer;
+            tbServerURL.Text = server.serverURL;
+            tbPin.Text = server.pin;
+
+            // create a new item in the servers listbox
+            lbServers.Items.Add(server.serverName);
+
+            // select the item in the servers listbox
+            lbServers.SelectedIndex = lbServers.Items.Count - 1;
+        }
+
+        private void lbServers_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // when the user selects a server, update the textboxes with the server details
+            if (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count)
+            {
+
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+
+                // cast the json node correlating with the selected item to a Server object
+                Server server = servers[lbServers.SelectedIndex].Deserialize<Server>();
+
+                // use the server details to populate the textboxes
+                tbServerName.Text = server.serverName;
+                tbServerURL.Text = server.serverURL;
+                tbPin.Text = server.pin;
+                tbCallsign.Text = server.callsign;
+                tbPilotName.Text = server.pilotName;
+                tbGroupName.Text = server.groupName;
+                cbMSFSServer.Text = server.msfsServer;
+
+                // store the selected server index in the properties
+                Properties.Settings.Default["selectedServer"] = lbServers.SelectedIndex.ToString();
+
+                // save the settings
+                Properties.Settings.Default.Save();
+            }
+
+
+        }
+
+        private void btnRemoveServer_Click(object sender, EventArgs e)
+        {
+            // when the user selects a server, update the textboxes with the server details
+            if ( (lbServers.SelectedIndex >= 0 && lbServers.SelectedIndex < lbServers.Items.Count) && lbServers.Items.Count > 1)
+            {
+                // get the selected server index
+                int selectedIndex = lbServers.SelectedIndex;
+                // get the servers from the properties of the application
+                string serversText = Properties.Settings.Default["servers"].ToString();
+                // parse it into a JsonArray
+                JsonArray servers = JsonNode.Parse(serversText).AsArray();
+                // remove the selected server from the collection
+                servers.RemoveAt(selectedIndex);
+                // put the servers back in the properties
+                Properties.Settings.Default["servers"] = servers.ToJsonString();
+                // save the settings
+                Properties.Settings.Default.Save();
+                // remove the selected item from the listbox
+                lbServers.Items.RemoveAt(selectedIndex);
+            }
+            else if (lbServers.Items.Count == 1)
+            {
+                // if there is only one server left, we cannot remove it
+                MessageBox.Show("You cannot remove the last server. Please add a new server before removing this one.", "Cannot Remove Last Server", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                // no server selected or no servers available
+                MessageBox.Show("Please select a server to remove", "No Server Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void websiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online website
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://virtualflight.online") { UseShellExecute = true });
+        }
+
+        private void newsletterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //open a browser to the Virtual Flight Online newsletter
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://virtualflightonline.substack.com/") { UseShellExecute = true });
+        }
+
+        private void airlineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online airline
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://airline.virtualflight.online") { UseShellExecute = true });
+        }
+
+        private void forumsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online forum
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://forums.virtualflight.online") { UseShellExecute = true });
+        }
+
+        private void discordToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online Discord server
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://bit.ly/virtualflightonlinediscordserver") { UseShellExecute = true });
+        }
+
+        private void facebookToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online Facebook page
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://www.facebook.com/groups/virtualflight.online") { UseShellExecute = true });
+        }
+
+        private void whosOnlineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online Whos Online page
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://transmitter.virtualflight.online/status") { UseShellExecute = true });
+        }
+
+        private void radarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online Radar page
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://transmitter.virtualflight.online/radar") { UseShellExecute = true });
+        }
+
+        private void whosOnlineToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online Whos Online page
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://transmitter.virtualflight.online/status") { UseShellExecute = true });
+        }
+
+        private void radarToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online Radar page
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://transmitter.virtualflight.online/radar") { UseShellExecute = true });
+        }
+
+        private void downloadTheSourceCodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the GitHub repository for the source code
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://github.com/jonbeckett/virtualflightonlinetransmitter") { UseShellExecute = true });
+        }
     }
 }
