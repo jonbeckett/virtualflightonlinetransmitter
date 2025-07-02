@@ -4,7 +4,7 @@
 
 In the right margin, there is a link to the most recent release:
 
-[https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/Transmitter](https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/tag/Transmitter)
+[https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/](https://github.com/jonbeckett/virtualflightonlinetransmitter/releases/)
 
 Once installed and running, you will need to set the server URL within the Transmitter client application. VirtualFlight.Online no longer operates their own Transmitter server, but you are welcome to set your own up using the contents of the server folder (see "Running your own server" below).
 
@@ -24,14 +24,8 @@ The server then provides a URL that outputs all aircraft that have been updated 
 
 ## Configuring and Running Transmitter
 
-* Launch Microsoft Flight Simulator.
-* Run "VirtualFlight.Online Transmitter".
-* Fill out the text boxes for:
-  * The server URL (e.g. https://yourserver/transmit)
-  * Your server pin (e.g. 1234)
-  * Your callsign (e.g. G-ABCD)
-  * Your name (e.g. Fred Smith)
-  * Your group name (e.g. My Flight Sim Group)
+* Launch Microsoft Flight Simulator
+* Run "VirtualFlight.Online Transmitter"
 * Click Connect
 
 After clicking connect, the application will broadcast your location within the simulator to the internet once a second.
