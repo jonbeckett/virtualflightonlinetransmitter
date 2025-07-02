@@ -25,9 +25,7 @@ namespace VirtualFlightOnlineTransmitter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("[{\"serverName\":\"VirtualFlight.Online\",\"callsign\":\"Callsign\",\"pilotName\":\"Pilot Na" +
-            "me\",\"groupName\":\"VirtualFlight.Online\",\"notes\":\"\",\"msfsServer\":\"WEST EUROPE\",\"au" +
-            "toConnect\":\"true\",\"serverURL\":\"http://yourserver/transmit.php\",\"pin\":\"1234\"}]")]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"[{""serverName"":""VirtualFlight.Online"",""callsign"":""Callsign"",""pilotName"":""Pilot Name"",""groupName"":""VirtualFlight.Online"",""notes"":"""",""msfsServer"":""WEST EUROPE"",""autoConnect"":""true"",""serverURL"":""https://transmitter.virtualflight.online/transmit"",""pin"":""1234""}]")]
         public string servers {
             get {
                 return ((string)(this["servers"]));

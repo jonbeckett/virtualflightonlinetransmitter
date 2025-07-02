@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="servers" Type="System.String" Scope="User">
-      <Value Profile="(Default)">[{"serverName":"VirtualFlight.Online","callsign":"Callsign","pilotName":"Pilot Name","groupName":"VirtualFlight.Online","notes":"","msfsServer":"WEST EUROPE","autoConnect":"true","serverURL":"http://yourserver/transmit.php","pin":"1234"}]</Value>
+      <Value Profile="(Default)">[{"serverName":"VirtualFlight.Online","callsign":"Callsign","pilotName":"Pilot Name","groupName":"VirtualFlight.Online","notes":"","msfsServer":"WEST EUROPE","autoConnect":"true","serverURL":"https://transmitter.virtualflight.online/transmit","pin":"1234"}]</Value>
     </Setting>
     <Setting Name="serverName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Your Server Name</Value>

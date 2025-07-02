@@ -814,7 +814,7 @@ namespace VirtualFlightOnlineTransmitter
             {
                 lbServers.Items.Clear();
 
-                Properties.Settings.Default["servers"] = "[{ \"serverName\":\"VirtualFlight.Online\",\"callsign\":\"Callsign\",\"pilotName\":\"Pilot Name\",\"groupName\":\"VirtualFlight.Online\",\"notes\":\"\",\"msfsServer\":\"WEST EUROPE\",\"serverURL\":\"http://transmitter.virtualflight.online/transmit\",\"pin\":\"\"}]";
+                Properties.Settings.Default["servers"] = "[{ \"serverName\":\"VirtualFlight.Online\",\"callsign\":\"Callsign\",\"pilotName\":\"Pilot Name\",\"groupName\":\"VirtualFlight.Online\",\"notes\":\"\",\"msfsServer\":\"WEST EUROPE\",\"serverURL\":\"https://transmitter.virtualflight.online/transmit\",\"pin\":\"\"}]";
                 Properties.Settings.Default["selectedServer"] = "0";
                 Properties.Settings.Default.Save();
                 
