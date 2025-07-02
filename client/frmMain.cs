@@ -699,6 +699,7 @@ namespace VirtualFlightOnlineTransmitter
                             this.FlightSimulatorConnection.FsDataReceived += this.HandleReceivedFsData;
 
                             // Disable the textboxes
+                            tbServerName.Enabled = false;
                             tbServerURL.Enabled = false;
                             tbPin.Enabled = false;
                             tbCallsign.Enabled = false;
@@ -771,6 +772,7 @@ namespace VirtualFlightOnlineTransmitter
             btnDisconnect.Enabled = false;
 
             // switch the UI components back on
+            tbServerName.Enabled = true;
             tbServerURL.Enabled = true;
             tbPin.Enabled = true;
             tbCallsign.Enabled = true;

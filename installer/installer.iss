@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Transmitter"
-#define MyAppVersion "1.0.1.16"
+#define MyAppVersion "1.0.1.20"
 #define MyAppPublisher "Jonathan Beckett"
 #define MyAppURL "https://virtualflight.online"
 #define MyAppExeName "Transmitter.exe"
