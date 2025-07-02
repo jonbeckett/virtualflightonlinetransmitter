@@ -1059,5 +1059,11 @@ namespace VirtualFlightOnlineTransmitter
             // open a browser to the GitHub repository for the source code
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://github.com/jonbeckett/virtualflightonlinetransmitter") { UseShellExecute = true });
         }
+
+        private void patreonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // open a browser to the Virtual Flight Online Patreon page
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://patreon.com/virtualflightonline") { UseShellExecute = true });
+        }
     }
 }

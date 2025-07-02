@@ -678,6 +678,7 @@ namespace VirtualFlightOnlineTransmitter
             this.patreonToolStripMenuItem.Name = "patreonToolStripMenuItem";
             this.patreonToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.patreonToolStripMenuItem.Text = "&Patreon";
+            this.patreonToolStripMenuItem.Click += new System.EventHandler(this.patreonToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
