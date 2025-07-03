@@ -106,16 +106,6 @@
             border: 1px solid #00ff00;
         }
         
-        .leaflet-control-zoom a {
-            background-color: rgba(0, 20, 40, 0.9);
-            color: #00ff00;
-            border: 1px solid #00ff00;
-        }
-        
-        .leaflet-control-zoom a:hover {
-            background-color: rgba(0, 40, 80, 0.9);
-        }
-        
         .refresh-indicator {
             position: absolute;
             top: 10px;
@@ -134,6 +124,313 @@
         
         .map-tiles {
             filter: invert(1) hue-rotate(180deg) saturate(0.3) brightness(0.7);
+        }
+        
+        /* Custom Draggable Toolbar Styles */
+        .radar-toolbar {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(0, 20, 40, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 8px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+            backdrop-filter: blur(10px);
+            user-select: none;
+            transition: all 0.3s ease;
+            animation: toolbarSlideIn 0.5s ease-out;
+            width: auto;
+            min-width: 56px;
+            box-sizing: border-box;
+        }
+        
+        @keyframes toolbarSlideIn {
+            from {
+                transform: translateY(-50%) translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(-50%) translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .radar-toolbar:hover {
+            box-shadow: 0 6px 20px rgba(0, 255, 0, 0.4);
+            border-color: #00ffff;
+        }
+        
+        /* Prevent toolbar from changing size during drag */
+        .radar-toolbar.dragging {
+            transition: none !important;
+            transform: none !important;
+            right: auto !important;
+        }
+        
+        .toolbar-drag-handle {
+            background: rgba(0, 40, 80, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            padding: 6px 8px;
+            cursor: grab;
+            text-align: center;
+            color: #00ff00;
+            font-size: 10px;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            user-select: none;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toolbar-drag-handle:hover {
+            background: rgba(0, 60, 120, 0.9);
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+        }
+        
+        .toolbar-drag-handle:active {
+            cursor: grabbing;
+        }
+        
+        .toolbar-btn {
+            background: rgba(0, 40, 80, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            color: #00ff00;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            min-width: 40px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toolbar-btn:hover {
+            background: rgba(0, 60, 120, 0.9);
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        .toolbar-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 0 4px rgba(0, 255, 0, 0.3);
+        }
+        
+        .toolbar-btn i {
+            pointer-events: none;
+        }
+        
+        .toolbar-separator {
+            height: 1px;
+            background: rgba(0, 255, 0, 0.3);
+            margin: 4px 0;
+        }
+        
+        /* Layer change notification */
+        .layer-notification {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 20, 40, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Aircraft List Styles */
+        .aircraft-list-container {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 20, 40, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            z-index: 1500;
+            display: none;
+            min-width: 600px;
+            max-width: 800px;
+            box-shadow: 0 6px 20px rgba(0, 255, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .aircraft-list-header {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(0, 40, 80, 0.9);
+            border-bottom: 1px solid #00ff00;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .aircraft-list-drag-handle {
+            cursor: grab;
+            color: #00ff00;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        
+        .aircraft-list-drag-handle:active {
+            cursor: grabbing;
+        }
+        
+        .aircraft-list-title {
+            flex-grow: 1;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .aircraft-list-close {
+            background: none;
+            border: none;
+            color: #00ff00;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            border-radius: 3px;
+            transition: background 0.2s ease;
+        }
+        
+        .aircraft-list-close:hover {
+            background: rgba(255, 0, 0, 0.3);
+        }
+        
+        .aircraft-list-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .aircraft-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        
+        .aircraft-list-table th {
+            background: rgba(0, 40, 80, 0.8);
+            border: 1px solid #00ff00;
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .aircraft-list-table td {
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            padding: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .aircraft-row {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .aircraft-row:hover {
+            background: rgba(0, 60, 120, 0.5);
+        }
+        
+        .aircraft-row:active {
+            background: rgba(0, 80, 160, 0.7);
+        }
+        
+        .callsign-cell {
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        .number-cell {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .no-aircraft-cell {
+            text-align: center;
+            font-style: italic;
+            color: #ffff00;
+            padding: 20px;
+        }
+        
+        /* Aircraft highlight animation */
+        @keyframes aircraftHighlight {
+            0%, 100% { 
+                transform: scale(1);
+                filter: drop-shadow(0 0 3px #00ff00);
+            }
+            50% { 
+                transform: scale(1.3);
+                filter: drop-shadow(0 0 15px #ffff00);
+            }
+        }
+        
+        /* Hide default Leaflet zoom controls */
+        .leaflet-control-zoom {
+            display: none !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .radar-toolbar {
+                right: 10px;
+                top: 60px;
+                transform: none;
+            }
+            
+            .toolbar-btn {
+                min-width: 36px;
+                min-height: 36px;
+                font-size: 14px;
+            }
+            
+            .aircraft-list-container {
+                left: 10px;
+                right: 10px;
+                transform: none;
+                min-width: auto;
+                max-width: none;
+                width: calc(100% - 20px);
+            }
+            
+            .aircraft-list-table {
+                font-size: 10px;
+            }
+            
+            .aircraft-list-table th,
+            .aircraft-list-table td {
+                padding: 4px 3px;
+            }
         }
     </style>
 </head>

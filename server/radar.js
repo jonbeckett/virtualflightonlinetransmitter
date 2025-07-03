@@ -11,6 +11,65 @@ class RadarDisplay {
         this.defaultPixelOffset = [60, 80]; // Fixed pixel offset for new labels
         this.isInitialLoad = true; // Track if this is the first load for auto-positioning
         
+        // Aircraft list management
+        this.aircraftListVisible = false;
+        this.aircraftListTable = null;
+        
+        // Tile layer configuration
+        this.currentTileLayerIndex = 0;
+        this.currentTileLayer = null;
+        this.tileLayers = [
+            {
+                name: 'OpenStreetMap',
+                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                attribution: '© OpenStreetMap contributors',
+                className: 'map-tiles',
+                opacity: 0.6
+            },
+            {
+                name: 'Satellite',
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                attribution: '© Esri, Maxar, Earthstar Geographics',
+                className: '',
+                opacity: 0.8
+            },
+            {
+                name: 'Dark Mode',
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                attribution: '© OpenStreetMap contributors © CARTO',
+                className: '',
+                opacity: 0.7
+            },
+            {
+                name: 'Aviation Chart',
+                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                attribution: '© OpenStreetMap contributors © CARTO',
+                className: '',
+                opacity: 0.5
+            },
+            {
+                name: 'Topographic',
+                url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                attribution: '© OpenTopoMap (CC-BY-SA)',
+                className: '',
+                opacity: 0.6
+            },
+            {
+                name: 'Terrain',
+                url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png',
+                attribution: '© Stamen Design © OpenStreetMap contributors',
+                className: '',
+                opacity: 0.7
+            },
+            {
+                name: 'No Map',
+                url: null,
+                attribution: '',
+                className: '',
+                opacity: 0
+            }
+        ];
+        
         this.init();
     }
     
@@ -23,15 +82,12 @@ class RadarDisplay {
         // Initialize the map
         this.map = L.map('radar-map', {
             preferCanvas: true,
-            attributionControl: false
+            attributionControl: false,
+            zoomControl: false // Disable default zoom controls
         }).setView([39.8283, -98.5795], 4); // Center on USA
         
-        // Add tile layer with radar-style appearance
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '',
-            className: 'map-tiles',
-            opacity: 0.6
-        }).addTo(this.map);
+        // Add initial tile layer
+        this.loadTileLayer(this.currentTileLayerIndex);
         
         // Add custom attribution
         L.control.attribution({
@@ -44,7 +100,88 @@ class RadarDisplay {
             this.handleZoomChange();
         });
         
+        // Initialize custom draggable toolbar
+        this.initCustomToolbar();
+        
+        // Add keyboard shortcuts
+        this.initKeyboardShortcuts();
+        
         console.log('Radar map initialized');
+    }
+    
+    loadTileLayer(index) {
+        // Remove current tile layer if it exists
+        if (this.currentTileLayer) {
+            this.map.removeLayer(this.currentTileLayer);
+        }
+        
+        const layerConfig = this.tileLayers[index];
+        
+        // Update attribution
+        const attributionControl = this.map.attributionControl;
+        if (attributionControl) {
+            // Clear existing attributions and add the new one
+            attributionControl._attributions = {};
+            attributionControl.addAttribution('Virtual Flight Online Radar');
+            if (layerConfig.attribution) {
+                attributionControl.addAttribution(layerConfig.attribution);
+            }
+        }
+        
+        // Add new tile layer if URL is provided
+        if (layerConfig.url) {
+            this.currentTileLayer = L.tileLayer(layerConfig.url, {
+                attribution: layerConfig.attribution,
+                className: layerConfig.className,
+                opacity: layerConfig.opacity,
+                maxZoom: 18
+            }).addTo(this.map);
+        } else {
+            this.currentTileLayer = null;
+        }
+        
+        // Update the layers button to show current layer
+        this.updateLayersButton();
+    }
+    
+    updateLayersButton() {
+        const layersBtn = document.getElementById('layers-btn');
+        if (layersBtn) {
+            const currentLayer = this.tileLayers[this.currentTileLayerIndex];
+            layersBtn.title = `Map Layer: ${currentLayer.name} (L)`;
+            
+            // Update button appearance based on layer type
+            switch (currentLayer.name) {
+                case 'No Map':
+                    layersBtn.style.background = 'rgba(255, 100, 0, 0.8)';
+                    layersBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                    break;
+                case 'Satellite':
+                    layersBtn.style.background = 'rgba(100, 150, 255, 0.8)';
+                    layersBtn.innerHTML = '<i class="fas fa-satellite"></i>';
+                    break;
+                case 'Dark Mode':
+                    layersBtn.style.background = 'rgba(50, 50, 50, 0.8)';
+                    layersBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                    break;
+                case 'Aviation Chart':
+                    layersBtn.style.background = 'rgba(0, 150, 255, 0.8)';
+                    layersBtn.innerHTML = '<i class="fas fa-plane"></i>';
+                    break;
+                case 'Topographic':
+                    layersBtn.style.background = 'rgba(139, 69, 19, 0.8)';
+                    layersBtn.innerHTML = '<i class="fas fa-mountain"></i>';
+                    break;
+                case 'Terrain':
+                    layersBtn.style.background = 'rgba(34, 139, 34, 0.8)';
+                    layersBtn.innerHTML = '<i class="fas fa-globe-americas"></i>';
+                    break;
+                default:
+                    layersBtn.style.background = 'rgba(0, 40, 80, 0.8)';
+                    layersBtn.innerHTML = '<i class="fas fa-layer-group"></i>';
+                    break;
+            }
+        }
     }
     
     async fetchRadarData() {
@@ -363,6 +500,9 @@ class RadarDisplay {
                 marker.setIcon(this.createAircraftIcon(aircraft));
                 marker.getPopup().setContent(this.createPopupContent(aircraft));
                 
+                // Store updated aircraft data on the marker
+                marker.aircraftData = aircraft;
+                
                 // Update label position if it was manually positioned
                 this.updateLabelPosition(aircraft);
             } else {
@@ -370,6 +510,9 @@ class RadarDisplay {
                 const marker = L.marker(position, {
                     icon: this.createAircraftIcon(aircraft)
                 });
+                
+                // Store aircraft data on the marker
+                marker.aircraftData = aircraft;
                 
                 marker.bindPopup(this.createPopupContent(aircraft));
                 
@@ -387,6 +530,11 @@ class RadarDisplay {
         
         // Update aircraft count
         this.updateAircraftCount(aircraftData.length);
+        
+        // Update aircraft list if visible
+        if (this.aircraftListVisible) {
+            this.updateAircraftListData();
+        }
         
         // Auto-position map on initial load if aircraft are present
         if (this.isInitialLoad && aircraftData.length > 0) {
@@ -579,6 +727,504 @@ class RadarDisplay {
             labelPoint.x - centerPoint.x,
             labelPoint.y - centerPoint.y
         ];
+    }
+    
+    initCustomToolbar() {
+        // Create toolbar container
+        const toolbar = document.createElement('div');
+        toolbar.className = 'radar-toolbar';
+        toolbar.id = 'radar-toolbar';
+        
+        // Create toolbar buttons
+        const zoomInBtn = document.createElement('button');
+        zoomInBtn.className = 'toolbar-btn';
+        zoomInBtn.innerHTML = '<i class="fas fa-plus"></i>';
+        zoomInBtn.title = 'Zoom In (+)';
+        zoomInBtn.addEventListener('click', () => {
+            this.map.zoomIn();
+        });
+        
+        const zoomOutBtn = document.createElement('button');
+        zoomOutBtn.className = 'toolbar-btn';
+        zoomOutBtn.innerHTML = '<i class="fas fa-minus"></i>';
+        zoomOutBtn.title = 'Zoom Out (-)';
+        zoomOutBtn.addEventListener('click', () => {
+            this.map.zoomOut();
+        });
+        
+        const homeBtn = document.createElement('button');
+        homeBtn.className = 'toolbar-btn';
+        homeBtn.innerHTML = '<i class="fas fa-home"></i>';
+        homeBtn.title = 'Reset View (H)';
+        homeBtn.addEventListener('click', () => {
+            this.map.setView([39.8283, -98.5795], 4);
+        });
+        
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'toolbar-btn';
+        fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        fullscreenBtn.title = 'Toggle Fullscreen (Shift+F)';
+        fullscreenBtn.addEventListener('click', () => {
+            this.toggleFullscreen();
+        });
+        
+        const layersBtn = document.createElement('button');
+        layersBtn.className = 'toolbar-btn';
+        layersBtn.innerHTML = '<i class="fas fa-layer-group"></i>';
+        layersBtn.title = 'Cycle Map Layers (L)';
+        layersBtn.id = 'layers-btn';
+        layersBtn.addEventListener('click', () => {
+            this.cycleTileLayer();
+        });
+        
+        const centerBtn = document.createElement('button');
+        centerBtn.className = 'toolbar-btn';
+        centerBtn.innerHTML = '<i class="fas fa-crosshairs"></i>';
+        centerBtn.title = 'Center on Aircraft (C)';
+        centerBtn.addEventListener('click', () => {
+            this.centerOnAircraft();
+        });
+        
+        const aircraftListBtn = document.createElement('button');
+        aircraftListBtn.className = 'toolbar-btn';
+        aircraftListBtn.innerHTML = '<i class="fas fa-list"></i>';
+        aircraftListBtn.title = 'Toggle Aircraft List (A)';
+        aircraftListBtn.id = 'aircraft-list-btn';
+        aircraftListBtn.addEventListener('click', () => {
+            this.toggleAircraftList();
+        });
+        
+        // Add drag handle
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'toolbar-drag-handle';
+        dragHandle.innerHTML = '<i class="fas fa-grip-vertical"></i>';
+        dragHandle.title = 'Drag to move toolbar';
+        
+        // Append elements to toolbar
+        toolbar.appendChild(dragHandle);
+        toolbar.appendChild(zoomInBtn);
+        toolbar.appendChild(zoomOutBtn);
+        
+        // Add separator
+        const separator1 = document.createElement('div');
+        separator1.className = 'toolbar-separator';
+        toolbar.appendChild(separator1);
+        
+        toolbar.appendChild(homeBtn);
+        toolbar.appendChild(centerBtn);
+        toolbar.appendChild(aircraftListBtn);
+        
+        // Add separator
+        const separator2 = document.createElement('div');
+        separator2.className = 'toolbar-separator';
+        toolbar.appendChild(separator2);
+        
+        toolbar.appendChild(layersBtn);
+        toolbar.appendChild(fullscreenBtn);
+        
+        // Add toolbar to the radar container
+        document.querySelector('.radar-container').appendChild(toolbar);
+        
+        // Make toolbar draggable
+        this.makeDraggable(toolbar, dragHandle);
+        
+        // Initialize button appearances
+        this.updateLayersButton();
+    }
+    
+    makeDraggable(element, handle) {
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let initialX = 0;
+        let initialY = 0;
+        
+        const startDrag = (event) => {
+            isDragging = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            
+            // Get the current computed position
+            const rect = element.getBoundingClientRect();
+            
+            // Convert from right/transform positioning to left/top positioning
+            element.style.right = 'auto';
+            element.style.transform = 'none';
+            element.style.left = rect.left + 'px';
+            element.style.top = rect.top + 'px';
+            element.style.position = 'absolute';
+            
+            // Store the current position as initial for dragging calculations
+            initialX = rect.left;
+            initialY = rect.top;
+            
+            element.classList.add('dragging');
+            element.style.cursor = 'grabbing';
+            handle.style.cursor = 'grabbing';
+            
+            // Prevent default to avoid text selection
+            event.preventDefault();
+        };
+        
+        const handleDrag = (event) => {
+            if (!isDragging) return;
+            
+            const deltaX = event.clientX - startX;
+            const deltaY = event.clientY - startY;
+            
+            const newX = initialX + deltaX;
+            const newY = initialY + deltaY;
+            
+            // Keep toolbar within viewport bounds
+            const maxX = window.innerWidth - element.offsetWidth;
+            const maxY = window.innerHeight - element.offsetHeight;
+            
+            const constrainedX = Math.max(0, Math.min(maxX, newX));
+            const constrainedY = Math.max(0, Math.min(maxY, newY));
+            
+            element.style.left = constrainedX + 'px';
+            element.style.top = constrainedY + 'px';
+        };
+        
+        const endDrag = () => {
+            if (isDragging) {
+                isDragging = false;
+                element.classList.remove('dragging');
+                element.style.cursor = 'default';
+                handle.style.cursor = 'grab';
+            }
+        };
+        
+        // Mouse events
+        handle.addEventListener('mousedown', startDrag);
+        
+        // Touch events for mobile
+        handle.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            startDrag(touch);
+        });
+        
+        document.addEventListener('mousemove', handleDrag);
+        
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                handleDrag(touch);
+            }
+        });
+        
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+    }
+    
+    initKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Only handle shortcuts if not typing in an input field
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            switch (e.key) {
+                case '+':
+                case '=':
+                    this.map.zoomIn();
+                    e.preventDefault();
+                    break;
+                case '-':
+                    this.map.zoomOut();
+                    e.preventDefault();
+                    break;
+                case 'h':
+                case 'H':
+                    this.map.setView([39.8283, -98.5795], 4);
+                    e.preventDefault();
+                    break;
+                case 'c':
+                case 'C':
+                    this.centerOnAircraft();
+                    e.preventDefault();
+                    break;
+                case 'l':
+                case 'L':
+                    this.cycleTileLayer();
+                    e.preventDefault();
+                    break;
+                case 'a':
+                case 'A':
+                    this.toggleAircraftList();
+                    e.preventDefault();
+                    break;
+                case 'f':
+                case 'F':
+                    if (e.shiftKey) {
+                        this.toggleFullscreen();
+                        e.preventDefault();
+                    }
+                    break;
+            }
+        });
+    }
+    
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log('Error attempting to enable fullscreen:', err);
+            });
+        } else {
+            document.exitFullscreen().catch(err => {
+                console.log('Error attempting to exit fullscreen:', err);
+            });
+        }
+    }
+    
+    cycleTileLayer() {
+        // Cycle to the next tile layer
+        this.currentTileLayerIndex = (this.currentTileLayerIndex + 1) % this.tileLayers.length;
+        this.loadTileLayer(this.currentTileLayerIndex);
+        
+        // Show notification of layer change
+        this.showLayerNotification();
+    }
+    
+    showLayerNotification() {
+        const currentLayer = this.tileLayers[this.currentTileLayerIndex];
+        
+        // Create or update notification
+        let notification = document.getElementById('layer-notification');
+        if (!notification) {
+            notification = document.createElement('div');
+            notification.id = 'layer-notification';
+            notification.className = 'layer-notification';
+            document.querySelector('.radar-container').appendChild(notification);
+        }
+        
+        notification.textContent = `Map Layer: ${currentLayer.name}`;
+        notification.style.opacity = '1';
+        
+        // Auto-hide after 2 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+        }, 2000);
+    }
+    
+    centerOnAircraft() {
+        // Center map on the first aircraft found, or all aircraft if multiple
+        if (this.aircraftMarkers.size === 0) {
+            console.log('No aircraft to center on');
+            return;
+        }
+        
+        if (this.aircraftMarkers.size === 1) {
+            // Single aircraft - center on it
+            const marker = this.aircraftMarkers.values().next().value;
+            this.map.setView(marker.getLatLng(), Math.max(this.map.getZoom(), 8));
+        } else {
+            // Multiple aircraft - fit all in view
+            const group = new L.featureGroup(Array.from(this.aircraftMarkers.values()));
+            this.map.fitBounds(group.getBounds(), {padding: [20, 20]});
+        }
+    }
+    
+    toggleAircraftList() {
+        this.aircraftListVisible = !this.aircraftListVisible;
+        
+        if (this.aircraftListVisible) {
+            this.showAircraftList();
+        } else {
+            this.hideAircraftList();
+        }
+        
+        // Update button appearance
+        this.updateAircraftListButton();
+    }
+    
+    showAircraftList() {
+        if (!this.aircraftListTable) {
+            this.createAircraftListTable();
+        }
+        
+        this.aircraftListTable.style.display = 'block';
+        this.updateAircraftListData();
+    }
+    
+    hideAircraftList() {
+        if (this.aircraftListTable) {
+            this.aircraftListTable.style.display = 'none';
+        }
+    }
+    
+    createAircraftListTable() {
+        // Create the main container
+        const container = document.createElement('div');
+        container.className = 'aircraft-list-container';
+        container.id = 'aircraft-list-container';
+        
+        // Create header with drag handle
+        const header = document.createElement('div');
+        header.className = 'aircraft-list-header';
+        
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'aircraft-list-drag-handle';
+        dragHandle.innerHTML = '<i class="fas fa-grip-horizontal"></i>';
+        
+        const title = document.createElement('div');
+        title.className = 'aircraft-list-title';
+        title.textContent = 'Aircraft List';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'aircraft-list-close';
+        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        closeBtn.addEventListener('click', () => {
+            this.toggleAircraftList();
+        });
+        
+        header.appendChild(dragHandle);
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        
+        // Create table container
+        const tableContainer = document.createElement('div');
+        tableContainer.className = 'aircraft-list-table-container';
+        
+        // Create table
+        const table = document.createElement('table');
+        table.className = 'aircraft-list-table';
+        
+        // Create table header
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        
+        const headers = ['Callsign', 'Pilot', 'Aircraft', 'Altitude', 'Speed'];
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+        
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+        
+        // Create table body
+        const tbody = document.createElement('tbody');
+        tbody.id = 'aircraft-list-tbody';
+        table.appendChild(tbody);
+        
+        tableContainer.appendChild(table);
+        container.appendChild(header);
+        container.appendChild(tableContainer);
+        
+        // Add to radar container
+        document.querySelector('.radar-container').appendChild(container);
+        
+        // Make draggable
+        this.makeDraggable(container, dragHandle);
+        
+        this.aircraftListTable = container;
+    }
+    
+    updateAircraftListData() {
+        if (!this.aircraftListTable || !this.aircraftListVisible) return;
+        
+        const tbody = document.getElementById('aircraft-list-tbody');
+        if (!tbody) return;
+        
+        // Clear existing rows
+        tbody.innerHTML = '';
+        
+        // Use existing aircraft markers data
+        if (this.aircraftMarkers.size > 0) {
+            // Convert markers to array and sort by callsign
+            const aircraftArray = Array.from(this.aircraftMarkers.entries()).map(([callsign, marker]) => {
+                return marker.aircraftData; // Get the stored aircraft data from the marker
+            }).filter(data => data) // Filter out any undefined data
+              .sort((a, b) => a.callsign.localeCompare(b.callsign));
+            
+            aircraftArray.forEach(aircraft => {
+                const row = document.createElement('tr');
+                row.className = 'aircraft-row';
+                row.setAttribute('data-callsign', aircraft.callsign);
+                
+                // Add click handler to zoom to aircraft
+                row.addEventListener('click', () => {
+                    this.zoomToAircraft(aircraft.callsign);
+                });
+                
+                // Callsign
+                const callsignCell = document.createElement('td');
+                callsignCell.textContent = aircraft.callsign;
+                callsignCell.className = 'callsign-cell';
+                row.appendChild(callsignCell);
+                
+                // Pilot Name
+                const pilotCell = document.createElement('td');
+                pilotCell.textContent = aircraft.pilot_name;
+                row.appendChild(pilotCell);
+                
+                // Aircraft Type
+                const aircraftCell = document.createElement('td');
+                aircraftCell.textContent = aircraft.aircraft_type;
+                row.appendChild(aircraftCell);
+                
+                // Altitude
+                const altitudeCell = document.createElement('td');
+                altitudeCell.textContent = Math.round(aircraft.altitude).toLocaleString() + ' ft';
+                altitudeCell.className = 'number-cell';
+                row.appendChild(altitudeCell);
+                
+                // Speed
+                const speedCell = document.createElement('td');
+                speedCell.textContent = Math.round(aircraft.groundspeed) + ' kts';
+                speedCell.className = 'number-cell';
+                row.appendChild(speedCell);
+                
+                tbody.appendChild(row);
+            });
+        } else {
+            // No aircraft found
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 5;
+            cell.textContent = 'No aircraft online';
+            cell.className = 'no-aircraft-cell';
+            row.appendChild(cell);
+            tbody.appendChild(row);
+        }
+    }
+    
+    zoomToAircraft(callsign) {
+        const marker = this.aircraftMarkers.get(callsign);
+        if (marker) {
+            const position = marker.getLatLng();
+            this.map.flyTo(position, Math.max(this.map.getZoom(), 10), {
+                animate: true,
+                duration: 1.5
+            });
+            
+            // Highlight the aircraft temporarily
+            marker.getElement().style.animation = 'aircraftHighlight 2s ease-in-out';
+            setTimeout(() => {
+                if (marker.getElement()) {
+                    marker.getElement().style.animation = '';
+                }
+            }, 2000);
+        }
+    }
+    
+    updateAircraftListButton() {
+        const btn = document.getElementById('aircraft-list-btn');
+        if (btn) {
+            if (this.aircraftListVisible) {
+                btn.style.background = 'rgba(0, 255, 100, 0.8)';
+                btn.innerHTML = '<i class="fas fa-list-check"></i>';
+                btn.title = 'Hide Aircraft List (A)';
+            } else {
+                btn.style.background = 'rgba(0, 40, 80, 0.8)';
+                btn.innerHTML = '<i class="fas fa-list"></i>';
+                btn.title = 'Show Aircraft List (A)';
+            }
+        }
     }
 }
 

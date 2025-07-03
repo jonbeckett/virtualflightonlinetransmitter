@@ -707,6 +707,11 @@ namespace VirtualFlightOnlineTransmitter
                             tbGroupName.Enabled = false;
                             cbMSFSServer.Enabled = false;
 
+                            // disable the add and remove server buttons
+                            lbServers.Enabled = false;
+                            btnAddServer.Enabled = false;
+                            btnRemoveServer.Enabled = false;
+
                             // Initialise the connection start time
                             this.ConnectionStartTime = DateTime.Now;
 
@@ -779,6 +784,11 @@ namespace VirtualFlightOnlineTransmitter
             tbPilotName.Enabled = true;
             tbGroupName.Enabled = true;
             cbMSFSServer.Enabled = true;
+
+            // switch the add and remove server buttons back on 
+            lbServers.Enabled = true;
+            btnAddServer.Enabled = true;
+            btnRemoveServer.Enabled = true;
 
             autoConnectToolStripMenuItem.Enabled = true;
             resetSettingsToDefaultsToolStripMenuItem.Enabled = true;
@@ -911,6 +921,12 @@ namespace VirtualFlightOnlineTransmitter
             // save the selected server index in the properties
             Properties.Settings.Default["selectedServer"] = (servers.Count() - 1).ToString();
 
+            // create a new item in the servers listbox
+            lbServers.Items.Add(server.serverName);
+
+            // select the item in the servers listbox
+            lbServers.SelectedIndex = lbServers.Items.Count - 1;
+
             // populate the controls on the page with the new server details
             tbServerName.Text = server.serverName;
             tbCallsign.Text = server.callsign;
@@ -921,11 +937,6 @@ namespace VirtualFlightOnlineTransmitter
             tbServerURL.Text = server.serverURL;
             tbPin.Text = server.pin;
 
-            // create a new item in the servers listbox
-            lbServers.Items.Add(server.serverName);
-
-            // select the item in the servers listbox
-            lbServers.SelectedIndex = lbServers.Items.Count - 1;
         }
 
         private void lbServers_SelectedIndexChanged(object sender, EventArgs e)
