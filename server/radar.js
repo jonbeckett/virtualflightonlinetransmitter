@@ -28,6 +28,12 @@ class RadarDisplay {
         this.lastKnownAircraftPositions = new Map(); // Track positions to avoid unnecessary updates
         this.lastLabelContentUpdate = new Map(); // Track when label content was last updated
         
+        // Measurement tool
+        this.measurementActive = false;
+        this.measurementStartPoint = null;
+        this.measurementLine = null;
+        this.measurementLabel = null;
+        
         // Tile layer configuration
         this.currentTileLayerIndex = 0;
         this.currentTileLayer = null;
@@ -110,6 +116,9 @@ class RadarDisplay {
         this.map.on('moveend', () => {
             this.handleMapMove();
         });
+        
+        // Initialize measurement tool
+        this.initMeasurementTool();
         
         // Initialize custom draggable toolbar
         this.initCustomToolbar();
@@ -1859,6 +1868,150 @@ class RadarDisplay {
                 console.warn(`Error updating label content for ${callsign}:`, error);
             }
         }
+    }
+    
+    // Measurement Tool Implementation
+    
+    initMeasurementTool() {
+        // Add mouse event listeners for measurement tool
+        this.map.on('mousedown', (e) => {
+            if (e.originalEvent.button === 2) { // Right mouse button
+                this.startMeasurement(e.latlng);
+                e.originalEvent.preventDefault();
+            }
+        });
+        
+        this.map.on('mousemove', (e) => {
+            if (this.measurementActive) {
+                this.updateMeasurement(e.latlng);
+            }
+        });
+        
+        this.map.on('mouseup', (e) => {
+            if (e.originalEvent.button === 2 && this.measurementActive) { // Right mouse button
+                this.endMeasurement();
+            }
+        });
+        
+        // Disable context menu on right click
+        this.map.getContainer().addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+    }
+    
+    startMeasurement(startLatLng) {
+        this.measurementActive = true;
+        this.measurementStartPoint = startLatLng;
+        
+        // Create measurement line
+        this.measurementLine = L.polyline([startLatLng, startLatLng], {
+            color: '#ff0000',
+            weight: 2,
+            opacity: 0.8,
+            dashArray: '5, 5'
+        }).addTo(this.map);
+        
+        // Create measurement label
+        this.measurementLabel = L.marker(startLatLng, {
+            icon: L.divIcon({
+                className: 'measurement-label',
+                html: '<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0.0 NM<br>000°</div>',
+                iconSize: [80, 40],
+                iconAnchor: [40, 20]
+            })
+        }).addTo(this.map);
+        
+        console.log('Measurement started');
+    }
+    
+    updateMeasurement(currentLatLng) {
+        if (!this.measurementActive || !this.measurementStartPoint) return;
+        
+        // Update line
+        this.measurementLine.setLatLngs([this.measurementStartPoint, currentLatLng]);
+        
+        // Calculate distance and bearing
+        const distance = this.calculateDistanceNauticalMiles(
+            this.measurementStartPoint.lat, this.measurementStartPoint.lng,
+            currentLatLng.lat, currentLatLng.lng
+        );
+        
+        const bearing = this.calculateBearing(
+            this.measurementStartPoint.lat, this.measurementStartPoint.lng,
+            currentLatLng.lat, currentLatLng.lng
+        );
+        
+        // Update label position and content
+        const midpoint = L.latLng(
+            (this.measurementStartPoint.lat + currentLatLng.lat) / 2,
+            (this.measurementStartPoint.lng + currentLatLng.lng) / 2
+        );
+        
+        this.measurementLabel.setLatLng(midpoint);
+        this.measurementLabel.setIcon(L.divIcon({
+            className: 'measurement-label',
+            html: `<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${distance.toFixed(1)} NM<br>${bearing.toFixed(0).padStart(3, '0')}°</div>`,
+            iconSize: [80, 40],
+            iconAnchor: [40, 20]
+        }));
+    }
+    
+    endMeasurement() {
+        this.measurementActive = false;
+        
+        // Remove measurement elements
+        if (this.measurementLine) {
+            this.map.removeLayer(this.measurementLine);
+            this.measurementLine = null;
+        }
+        
+        if (this.measurementLabel) {
+            this.map.removeLayer(this.measurementLabel);
+            this.measurementLabel = null;
+        }
+        
+        this.measurementStartPoint = null;
+        console.log('Measurement ended');
+    }
+    
+    calculateDistanceNauticalMiles(lat1, lng1, lat2, lng2) {
+        // Haversine formula for accurate distance calculation
+        const R = 3440.065; // Earth's radius in nautical miles
+        const dLat = this.toRadians(lat2 - lat1);
+        const dLng = this.toRadians(lng2 - lng1);
+        
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(this.toRadians(lat1)) * Math.cos(this.toRadians(lat2)) *
+                  Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+    
+    calculateBearing(lat1, lng1, lat2, lng2) {
+        // Calculate bearing (direction) from point 1 to point 2
+        const dLng = this.toRadians(lng2 - lng1);
+        const lat1Rad = this.toRadians(lat1);
+        const lat2Rad = this.toRadians(lat2);
+        
+        const y = Math.sin(dLng) * Math.cos(lat2Rad);
+        const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+                  Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLng);
+        
+        let bearing = this.toDegrees(Math.atan2(y, x));
+        
+        // Normalize to 0-360 degrees
+        bearing = (bearing + 360) % 360;
+        
+        return bearing;
+    }
+    
+    toRadians(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+    
+    toDegrees(radians) {
+        return radians * (180 / Math.PI);
     }
 }
 
