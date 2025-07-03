@@ -35,6 +35,20 @@ switch ($action) {
         }
         $message = "<p style='color: green;'>✅ Cleared {$cleared} VFO cache entries</p>";
         break;
+        
+    case 'clear_aircraft':
+        // Clear only aircraft position data
+        $info = apcu_cache_info();
+        $cleared = 0;
+        foreach ($info['cache_list'] as $entry) {
+            if (strpos($entry['info'], 'vfo_position_') === 0) {
+                if (apcu_delete($entry['info'])) {
+                    $cleared++;
+                }
+            }
+        }
+        $message = "<p style='color: green;'>✅ Cleared {$cleared} aircraft position entries</p>";
+        break;
 }
 
 // Get APCu info
@@ -92,6 +106,7 @@ $sma_info = apcu_sma_info();
     </div>
     
     <h2>🛠️ Cache Operations</h2>
+    <a href="?action=clear_aircraft" class="button" onclick="return confirm('Clear all aircraft position data?')">Clear Aircraft Data</a>
     <a href="?action=clear_vfo" class="button" onclick="return confirm('Clear VFO cache entries?')">Clear VFO Cache</a>
     <a href="?action=clear_all" class="button danger" onclick="return confirm('Clear ALL cache entries? This will affect other applications too!')">Clear All Cache</a>
     <a href="?" class="button">Refresh Stats</a>

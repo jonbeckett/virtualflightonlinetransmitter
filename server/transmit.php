@@ -6,6 +6,13 @@ error_reporting(E_ALL);
 // Server pin for authentication (set this to secure your endpoint)
 $server_pin = ""; // Leave empty to disable pin authentication
 
+// Debug mode
+$debug = isset($_REQUEST['debug']) ? true : false;
+
+if ($debug) {
+    error_log("DEBUG: Received request data: " . print_r($_REQUEST, true));
+}
+
 // APCu configuration
 define('APCU_PREFIX', 'vfo_');
 define('POSITION_TTL', 1800); // 30 minutes TTL for position data
@@ -44,22 +51,22 @@ function is_rate_limited($callsign, $ip) {
     return false;
 }
 
-// Get the data from the request
-$user_pin           = $_GET["Pin"] ?? "";
-$callsign           = $_GET["Callsign"] ?? "";
-$aircraft_type      = $_GET["AircraftType"] ?? "";
-$pilot_name         = $_GET["PilotName"] ?? "";
-$group_name         = $_GET["GroupName"] ?? "";
-$msfs_server        = $_GET["MSFSServer"] ?? "";
-$latitude           = $_GET["Latitude"] ?? "0";
-$longitude          = $_GET["Longitude"] ?? "0";
-$altitude           = $_GET["Altitude"] ?? "0";
-$heading            = $_GET["Heading"] ?? "0";
-$airspeed           = $_GET["Airspeed"] ?? "0";
-$groundspeed        = $_GET["Groundspeed"] ?? "0";
-$touchdown_velocity = $_GET["TouchdownVelocity"] ?? "0";
-$notes              = $_GET["Notes"] ?? "";
-$version            = $_GET["Version"] ?? "1.0.0.n";
+// Get the data from the request (support both GET and POST)
+$user_pin           = $_REQUEST["Pin"] ?? "";
+$callsign           = $_REQUEST["Callsign"] ?? "";
+$aircraft_type      = $_REQUEST["AircraftType"] ?? "";
+$pilot_name         = $_REQUEST["PilotName"] ?? "";
+$group_name         = $_REQUEST["GroupName"] ?? "";
+$msfs_server        = $_REQUEST["MSFSServer"] ?? "";
+$latitude           = $_REQUEST["Latitude"] ?? "0";
+$longitude          = $_REQUEST["Longitude"] ?? "0";
+$altitude           = $_REQUEST["Altitude"] ?? "0";
+$heading            = $_REQUEST["Heading"] ?? "0";
+$airspeed           = $_REQUEST["Airspeed"] ?? "0";
+$groundspeed        = $_REQUEST["Groundspeed"] ?? "0";
+$touchdown_velocity = $_REQUEST["TouchdownVelocity"] ?? "0";
+$notes              = $_REQUEST["Notes"] ?? "";
+$version            = $_REQUEST["Version"] ?? "1.0.0.n";
 
 // If the server pin is used, the user pin must match the server pin
 if (empty($server_pin) || trim($user_pin) === trim($server_pin)) {
@@ -70,6 +77,9 @@ if (empty($server_pin) || trim($user_pin) === trim($server_pin)) {
 
     // Check we have everything we need to store the data
     if (empty($callsign) || empty($aircraft_type) || empty($pilot_name) || empty($group_name)) {
+        if ($debug) {
+            error_log("DEBUG: Missing required fields - Callsign: '$callsign', AircraftType: '$aircraft_type', PilotName: '$pilot_name', GroupName: '$group_name'");
+        }
         print "Insufficient data received";	
     } else {
         // Check rate limiting
