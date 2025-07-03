@@ -15,6 +15,10 @@ class RadarDisplay {
         this.aircraftListVisible = false;
         this.aircraftListTable = null;
         
+        // Grid management
+        this.gridVisible = false;
+        this.gridLayer = null;
+        
         // Tile layer configuration
         this.currentTileLayerIndex = 0;
         this.currentTileLayer = null;
@@ -93,6 +97,11 @@ class RadarDisplay {
             this.handleZoomChange();
         });
         
+        // Add move event listener for grid updates
+        this.map.on('moveend', () => {
+            this.handleMapMove();
+        });
+        
         // Initialize custom draggable toolbar
         this.initCustomToolbar();
         
@@ -164,6 +173,10 @@ class RadarDisplay {
                 case 'Topographic':
                     layersBtn.style.background = 'rgba(139, 69, 19, 0.8)';
                     layersBtn.innerHTML = '<i class="fas fa-mountain"></i>';
+                    break;
+                case 'Terrain':
+                    layersBtn.style.background = 'rgba(34, 139, 34, 0.8)';
+                    layersBtn.innerHTML = '<i class="fas fa-globe-americas"></i>';
                     break;
                 default:
                     layersBtn.style.background = 'rgba(0, 40, 80, 0.8)';
@@ -584,8 +597,20 @@ class RadarDisplay {
         // Recalculate all label positions to maintain pixel-based distances
         this.recalculateAllLabelPositions();
         
+        // Update grid if visible
+        if (this.gridVisible) {
+            this.createGrid();
+        }
+        
         // Heading lines disabled
         // this.updateHeadingLinesForZoom();
+    }
+    
+    handleMapMove() {
+        // Update grid when map is panned
+        if (this.gridVisible) {
+            this.createGrid();
+        }
     }
     
     // Recalculate all label positions after zoom change to maintain pixel distances
@@ -718,6 +743,167 @@ class RadarDisplay {
         ];
     }
     
+    createGrid() {
+        if (this.gridLayer) {
+            this.map.removeLayer(this.gridLayer);
+        }
+        
+        const bounds = this.map.getBounds();
+        const zoom = this.map.getZoom();
+        
+        // Calculate grid spacing based on zoom level
+        let latSpacing, lngSpacing;
+        
+        if (zoom <= 3) {
+            latSpacing = lngSpacing = 30; // 30 degree grid
+        } else if (zoom <= 5) {
+            latSpacing = lngSpacing = 10; // 10 degree grid
+        } else if (zoom <= 7) {
+            latSpacing = lngSpacing = 5; // 5 degree grid
+        } else if (zoom <= 9) {
+            latSpacing = lngSpacing = 1; // 1 degree grid
+        } else if (zoom <= 11) {
+            latSpacing = lngSpacing = 0.5; // 30 minute grid
+        } else {
+            latSpacing = lngSpacing = 0.1; // 6 minute grid
+        }
+        
+        const gridLines = [];
+        const gridLabels = [];
+        
+        // Calculate bounds with some padding
+        const minLat = Math.floor(bounds.getSouth() / latSpacing) * latSpacing;
+        const maxLat = Math.ceil(bounds.getNorth() / latSpacing) * latSpacing;
+        const minLng = Math.floor(bounds.getWest() / lngSpacing) * lngSpacing;
+        const maxLng = Math.ceil(bounds.getEast() / lngSpacing) * lngSpacing;
+        
+        // Create latitude lines (horizontal)
+        for (let lat = minLat; lat <= maxLat; lat += latSpacing) {
+            if (lat >= -90 && lat <= 90) {
+                const line = L.polyline([
+                    [lat, bounds.getWest()],
+                    [lat, bounds.getEast()]
+                ], {
+                    color: '#00ff00',
+                    weight: lat % (latSpacing * 5) === 0 ? 1.5 : 0.8,
+                    opacity: lat % (latSpacing * 5) === 0 ? 0.6 : 0.3,
+                    dashArray: lat % (latSpacing * 5) === 0 ? null : '2, 4'
+                });
+                gridLines.push(line);
+                
+                // Add labels for major grid lines
+                if (lat % (latSpacing * 5) === 0 || latSpacing >= 5) {
+                    const latLabel = this.formatLatitude(lat);
+                    const label = L.marker([lat, bounds.getWest()], {
+                        icon: L.divIcon({
+                            className: 'grid-label',
+                            html: `<div style="color: #00ff00; font-size: 10px; font-family: monospace; background: rgba(0,0,0,0.5); padding: 2px 4px; border-radius: 2px; white-space: nowrap;">${latLabel}</div>`,
+                            iconSize: [50, 20],
+                            iconAnchor: [0, 10]
+                        })
+                    });
+                    gridLabels.push(label);
+                }
+            }
+        }
+        
+        // Create longitude lines (vertical)
+        for (let lng = minLng; lng <= maxLng; lng += lngSpacing) {
+            if (lng >= -180 && lng <= 180) {
+                const line = L.polyline([
+                    [bounds.getSouth(), lng],
+                    [bounds.getNorth(), lng]
+                ], {
+                    color: '#00ff00',
+                    weight: lng % (lngSpacing * 5) === 0 ? 1.5 : 0.8,
+                    opacity: lng % (lngSpacing * 5) === 0 ? 0.6 : 0.3,
+                    dashArray: lng % (lngSpacing * 5) === 0 ? null : '2, 4'
+                });
+                gridLines.push(line);
+                
+                // Add labels for major grid lines
+                if (lng % (lngSpacing * 5) === 0 || lngSpacing >= 5) {
+                    const lngLabel = this.formatLongitude(lng);
+                    
+                    // Place longitude labels at the very top edge of the viewport
+                    const labelLat = bounds.getNorth();
+                    
+                    const label = L.marker([labelLat, lng], {
+                        icon: L.divIcon({
+                            className: 'grid-label',
+                            html: `<div style="color: #00ff00; font-size: 10px; font-family: monospace; background: rgba(0,0,0,0.5); padding: 2px 4px; border-radius: 2px; white-space: nowrap;">${lngLabel}</div>`,
+                            iconSize: [50, 20],
+                            iconAnchor: [25, 0]
+                        })
+                    });
+                    gridLabels.push(label);
+                }
+            }
+        }
+        
+        // Combine all grid elements into a layer group
+        this.gridLayer = L.layerGroup([...gridLines, ...gridLabels]);
+        
+        if (this.gridVisible) {
+            this.gridLayer.addTo(this.map);
+        }
+    }
+    
+    formatLatitude(lat) {
+        const absLat = Math.abs(lat);
+        const degrees = Math.floor(absLat);
+        const minutes = Math.floor((absLat - degrees) * 60);
+        const hemisphere = lat >= 0 ? 'N' : 'S';
+        
+        if (minutes === 0) {
+            return `${degrees}°${hemisphere}`;
+        } else {
+            return `${degrees}°${minutes.toString().padStart(2, '0')}'${hemisphere}`;
+        }
+    }
+    
+    formatLongitude(lng) {
+        const absLng = Math.abs(lng);
+        const degrees = Math.floor(absLng);
+        const minutes = Math.floor((absLng - degrees) * 60);
+        const hemisphere = lng >= 0 ? 'E' : 'W';
+        
+        if (minutes === 0) {
+            return `${degrees}°${hemisphere}`;
+        } else {
+            return `${degrees}°${minutes.toString().padStart(2, '0')}'${hemisphere}`;
+        }
+    }
+    
+    toggleGrid() {
+        this.gridVisible = !this.gridVisible;
+        
+        if (this.gridVisible) {
+            this.createGrid();
+        } else {
+            if (this.gridLayer) {
+                this.map.removeLayer(this.gridLayer);
+            }
+        }
+        
+        this.updateGridButton();
+    }
+    
+    updateGridButton() {
+        const btn = document.getElementById('grid-btn');
+        if (btn) {
+            if (this.gridVisible) {
+                btn.style.background = 'rgba(0, 255, 100, 0.8)';
+                btn.innerHTML = '<i class="fas fa-border-all"></i>';
+                btn.title = 'Hide Coordinate Grid (G)';
+            } else {
+                btn.style.background = 'rgba(0, 40, 80, 0.8)';
+                btn.innerHTML = '<i class="fas fa-border-none"></i>';
+                btn.title = 'Show Coordinate Grid (G)';
+            }
+        }
+    }
+    
     initCustomToolbar() {
         // Create toolbar container
         const toolbar = document.createElement('div');
@@ -783,6 +969,15 @@ class RadarDisplay {
             this.toggleAircraftList();
         });
         
+        const gridBtn = document.createElement('button');
+        gridBtn.className = 'toolbar-btn';
+        gridBtn.innerHTML = '<i class="fas fa-border-none"></i>';
+        gridBtn.title = 'Toggle Coordinate Grid (G)';
+        gridBtn.id = 'grid-btn';
+        gridBtn.addEventListener('click', () => {
+            this.toggleGrid();
+        });
+        
         // Add drag handle
         const dragHandle = document.createElement('div');
         dragHandle.className = 'toolbar-drag-handle';
@@ -802,6 +997,7 @@ class RadarDisplay {
         toolbar.appendChild(homeBtn);
         toolbar.appendChild(centerBtn);
         toolbar.appendChild(aircraftListBtn);
+        toolbar.appendChild(gridBtn);
         
         // Add separator
         const separator2 = document.createElement('div');
@@ -819,6 +1015,7 @@ class RadarDisplay {
         
         // Initialize button appearances
         this.updateLayersButton();
+        this.updateGridButton();
     }
     
     makeDraggable(element, handle) {
@@ -943,6 +1140,11 @@ class RadarDisplay {
                 case 'a':
                 case 'A':
                     this.toggleAircraftList();
+                    e.preventDefault();
+                    break;
+                case 'g':
+                case 'G':
+                    this.toggleGrid();
                     e.preventDefault();
                     break;
                 case 'f':
