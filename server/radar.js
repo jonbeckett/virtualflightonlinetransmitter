@@ -34,6 +34,13 @@ class RadarDisplay {
         this.measurementLine = null;
         this.measurementLabel = null;
         
+        // Range ring tool
+        this.rangeRingActive = false;
+        this.rangeRingCenter = null;
+        this.rangeRingCircle = null;
+        this.rangeRingCenterMarker = null;
+        this.rangeRingLabel = null;
+        
         // Tile layer configuration
         this.currentTileLayerIndex = 0;
         this.currentTileLayer = null;
@@ -1873,10 +1880,19 @@ class RadarDisplay {
     // Measurement Tool Implementation
     
     initMeasurementTool() {
-        // Add mouse event listeners for measurement tool
+        // Add mouse event listeners for measurement tool and range rings
         this.map.on('mousedown', (e) => {
             if (e.originalEvent.button === 2) { // Right mouse button
-                this.startMeasurement(e.latlng);
+                console.log('Right click detected, Shift key:', e.originalEvent.shiftKey);
+                if (e.originalEvent.shiftKey) {
+                    // Shift + right click = range ring
+                    console.log('Starting range ring');
+                    this.startRangeRing(e.latlng);
+                } else {
+                    // Right click = measurement line
+                    console.log('Starting measurement');
+                    this.startMeasurement(e.latlng);
+                }
                 e.originalEvent.preventDefault();
             }
         });
@@ -1884,12 +1900,18 @@ class RadarDisplay {
         this.map.on('mousemove', (e) => {
             if (this.measurementActive) {
                 this.updateMeasurement(e.latlng);
+            } else if (this.rangeRingActive) {
+                this.updateRangeRing(e.latlng);
             }
         });
         
         this.map.on('mouseup', (e) => {
-            if (e.originalEvent.button === 2 && this.measurementActive) { // Right mouse button
-                this.endMeasurement();
+            if (e.originalEvent.button === 2) { // Right mouse button
+                if (this.measurementActive) {
+                    this.endMeasurement();
+                } else if (this.rangeRingActive) {
+                    this.endRangeRing();
+                }
             }
         });
         
@@ -2012,6 +2034,126 @@ class RadarDisplay {
     
     toDegrees(radians) {
         return radians * (180 / Math.PI);
+    }
+    
+    // Range Ring Tool Implementation
+    
+    startRangeRing(centerLatLng) {
+        this.rangeRingActive = true;
+        this.rangeRingCenter = centerLatLng;
+        
+        console.log('Starting range ring at:', centerLatLng);
+        
+        // Create center marker (small red circle)
+        this.rangeRingCenterMarker = L.circleMarker(centerLatLng, {
+            color: '#ff0000',
+            fillColor: '#ff0000',
+            fillOpacity: 0.8,
+            radius: 3,
+            weight: 1
+        }).addTo(this.map);
+        
+        // Create initial range ring circle (will be updated on mouse move)
+        this.rangeRingCircle = L.circle(centerLatLng, {
+            color: '#ff0000',
+            fillColor: 'transparent',
+            weight: 1,
+            opacity: 0.7,
+            radius: 1852 // Start with 1 NM radius in meters
+        }).addTo(this.map);
+        
+        // Create range label
+        this.rangeRingLabel = L.marker(centerLatLng, {
+            icon: L.divIcon({
+                className: 'range-ring-label',
+                html: '<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 11px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0.0 NM</div>',
+                iconSize: [60, 20],
+                iconAnchor: [30, 10]
+            })
+        }).addTo(this.map);
+        
+        console.log('Range ring elements created');
+    }
+    
+    updateRangeRing(currentLatLng) {
+        if (!this.rangeRingActive || !this.rangeRingCenter) return;
+        
+        // Calculate distance from center to current position
+        const radiusNM = this.calculateDistanceNauticalMiles(
+            this.rangeRingCenter.lat, this.rangeRingCenter.lng,
+            currentLatLng.lat, currentLatLng.lng
+        );
+        
+        // Convert nautical miles to meters for Leaflet circle
+        const radiusMeters = radiusNM * 1852;
+        
+        // Update circle radius
+        this.rangeRingCircle.setRadius(radiusMeters);
+        
+        // Position label on the edge of the circle at 45 degrees (northeast)
+        const labelBearing = 45; // Fixed at northeast for consistency
+        const labelDistance = radiusNM;
+        const labelPosition = this.calculateDestinationPoint(
+            this.rangeRingCenter.lat, this.rangeRingCenter.lng,
+            labelBearing, labelDistance
+        );
+        
+        // Update label position and content
+        this.rangeRingLabel.setLatLng([labelPosition.lat, labelPosition.lng]);
+        this.rangeRingLabel.setIcon(L.divIcon({
+            className: 'range-ring-label',
+            html: `<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 11px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${radiusNM.toFixed(1)} NM</div>`,
+            iconSize: [60, 20],
+            iconAnchor: [30, 10]
+        }));
+    }
+    
+    endRangeRing() {
+        this.rangeRingActive = false;
+        
+        console.log('Ending range ring');
+        
+        // Remove range ring elements
+        if (this.rangeRingCircle) {
+            this.map.removeLayer(this.rangeRingCircle);
+            this.rangeRingCircle = null;
+        }
+        
+        if (this.rangeRingCenterMarker) {
+            this.map.removeLayer(this.rangeRingCenterMarker);
+            this.rangeRingCenterMarker = null;
+        }
+        
+        if (this.rangeRingLabel) {
+            this.map.removeLayer(this.rangeRingLabel);
+            this.rangeRingLabel = null;
+        }
+        
+        this.rangeRingCenter = null;
+        console.log('Range ring ended');
+    }
+    
+    calculateDestinationPoint(lat, lng, bearing, distanceNM) {
+        // Calculate a destination point given a starting point, bearing, and distance
+        const R = 3440.065; // Earth radius in nautical miles
+        const bearingRad = this.toRadians(bearing);
+        const latRad = this.toRadians(lat);
+        const distanceRatio = distanceNM / R;
+        
+        const destLatRad = Math.asin(
+            Math.sin(latRad) * Math.cos(distanceRatio) +
+            Math.cos(latRad) * Math.sin(distanceRatio) * Math.cos(bearingRad)
+        );
+        
+        const destLngRad = this.toRadians(lng) + Math.atan2(
+            Math.sin(bearingRad) * Math.sin(distanceRatio) * Math.cos(latRad),
+            Math.cos(distanceRatio) - Math.sin(latRad) * Math.sin(destLatRad)
+        );
+        
+        return {
+            lat: this.toDegrees(destLatRad),
+            lng: this.toDegrees(destLngRad)
+        };
     }
 }
 
