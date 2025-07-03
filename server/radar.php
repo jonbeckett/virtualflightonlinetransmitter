@@ -432,6 +432,23 @@
                 padding: 4px 3px;
             }
         }
+        
+        /* Smooth Movement Button States */
+        .toolbar-btn.smooth-enabled {
+            background: rgba(0, 255, 100, 0.8) !important;
+        }
+        
+        .toolbar-btn.smooth-enabled:hover {
+            background: rgba(0, 255, 120, 0.9) !important;
+        }
+        
+        .toolbar-btn.smooth-disabled {
+            background: rgba(0, 40, 80, 0.8) !important;
+        }
+        
+        .toolbar-btn.smooth-disabled:hover {
+            background: rgba(0, 60, 120, 0.9) !important;
+        }
     </style>
 </head>
 <body>
@@ -442,6 +459,7 @@
                 <div>Aircraft Online: <span id="aircraft-count">0</span></div>
                 <div>Update Rate: 5 seconds</div>
                 <div>Last Update: <span id="last-update">--:--:--</span></div>
+                <div>Smooth Movement: <span id="smooth-status">Enabled</span></div>
                 <hr style="border-color: #00ff00; margin: 10px 0;">
                 <div><a href="status.php" style="color: #00ff00; text-decoration: none;">← Back to List View</a></div>
             </div>

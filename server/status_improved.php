@@ -6,13 +6,13 @@
     <title>Virtual Flight Online - Aircraft Status</title>
     <link rel="shortcut icon" type="image/jpg" href="virtualflightonline.jpg"/>
     
-    <!-- Bootstrap CSS (Updated to latest) -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Font Awesome (Updated) -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Leaflet CSS (Updated) -->
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     
     <!-- Custom CSS -->
@@ -55,11 +55,18 @@
             background: #f8f9fa;
             border-top: none;
             font-weight: 600;
-            cursor: pointer;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         
         .aircraft-table th:hover {
             background: #e9ecef;
+            cursor: pointer;
+        }
+        
+        .aircraft-table .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.1);
         }
         
         .callsign-link {
@@ -71,6 +78,52 @@
         .callsign-link:hover {
             color: #0a58ca;
             text-decoration: underline;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-online {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .status-moving {
+            background: #fff3cd;
+            color: #664d03;
+        }
+        
+        .stats-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
         }
         
         .refresh-indicator {
@@ -110,13 +163,33 @@
             border-radius: 8px;
         }
         
+        .filter-controls {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-group-toggle .btn {
+            border-radius: 0.375rem !important;
+            margin: 0 0.25rem;
+        }
+        
         @media (max-width: 768px) {
             .status-header h1 {
                 font-size: 2rem;
             }
             
+            .stats-container {
+                justify-content: center;
+            }
+            
             .aircraft-table {
                 font-size: 0.8rem;
+            }
+            
+            .table-container {
+                max-height: 400px;
             }
         }
     </style>
@@ -128,7 +201,7 @@
                 <div class="col-md-8">
                     <h1 class="display-4 mb-0">
                         <i class="fas fa-globe-americas me-3"></i>
-                        Who is Online?
+                        Aircraft Status
                     </h1>
                     <p class="lead mb-0 mt-2">Live tracking of online pilots</p>
                 </div>
@@ -146,6 +219,26 @@
     </header>
 
     <div class="container">
+        <!-- Statistics Section -->
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="total-aircraft">0</div>
+                <div class="stat-label">Total Aircraft</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="moving-aircraft">0</div>
+                <div class="stat-label">Moving Aircraft</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="unique-servers">0</div>
+                <div class="stat-label">Active Servers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="unique-groups">0</div>
+                <div class="stat-label">Groups Online</div>
+            </div>
+        </div>
+
         <!-- Navigation -->
         <div class="row mb-4">
             <div class="col">
@@ -155,6 +248,9 @@
                     </a>
                     <a href="index.html" class="btn btn-outline-secondary">
                         <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="test_aircraft.php" class="btn btn-outline-info">
+                        <i class="fas fa-vial"></i> Test Tools
                     </a>
                     <button class="btn btn-outline-success" onclick="refreshData()">
                         <i class="fas fa-sync-alt"></i> Refresh
@@ -180,19 +276,55 @@
 
         <!-- Aircraft List Section -->
         <div class="status-card">
-            <div class="status-card-header">
+            <div class="status-card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="fas fa-list me-2"></i>
                     Aircraft List
                 </h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="view-mode" id="view-all" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary" for="view-all">All</label>
+                    
+                    <input type="radio" class="btn-check" name="view-mode" id="view-moving" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="view-moving">Moving Only</label>
+                    
+                    <input type="radio" class="btn-check" name="view-mode" id="view-stationary" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="view-stationary">Stationary</label>
+                </div>
             </div>
             <div class="status-card-body">
+                <!-- Filter Controls -->
+                <div class="filter-controls">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="filter-callsign" class="form-label">Filter by Callsign</label>
+                            <input type="text" class="form-control" id="filter-callsign" placeholder="Enter callsign...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filter-server" class="form-label">Filter by Server</label>
+                            <select class="form-select" id="filter-server">
+                                <option value="">All Servers</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filter-group" class="form-label">Filter by Group</label>
+                            <select class="form-select" id="filter-group">
+                                <option value="">All Groups</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filter-aircraft" class="form-label">Filter by Aircraft</label>
+                            <input type="text" class="form-control" id="filter-aircraft" placeholder="Aircraft type...">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Aircraft Table -->
                 <div class="table-container">
                     <table class="table table-hover table-striped aircraft-table" id="aircraft_table">
                         <thead>
                             <tr>
-                                <th class="text-center" title="Aircraft Status">
+                                <th class="text-center" data-sort="status" title="Aircraft Status">
                                     <i class="fas fa-info-circle"></i>
                                 </th>
                                 <th data-sort="callsign" title="Click to sort by Callsign">
@@ -211,10 +343,10 @@
                                     Server <i class="fas fa-sort"></i>
                                 </th>
                                 <th class="text-end" data-sort="altitude" title="Click to sort by Altitude">
-                                    ALT <i class="fas fa-sort"></i>
+                                    Altitude <i class="fas fa-sort"></i>
                                 </th>
                                 <th class="text-end" data-sort="heading" title="Click to sort by Heading">
-                                    HDG <i class="fas fa-sort"></i>
+                                    Heading <i class="fas fa-sort"></i>
                                 </th>
                                 <th class="text-end" data-sort="airspeed" title="Click to sort by Airspeed">
                                     IAS <i class="fas fa-sort"></i>
@@ -223,7 +355,7 @@
                                     GS <i class="fas fa-sort"></i>
                                 </th>
                                 <th class="text-center" data-sort="touchdown_velocity" title="Click to sort by Landing Rate">
-                                    LLR (ft/min) <i class="fas fa-sort"></i>
+                                    LLR <i class="fas fa-sort"></i>
                                 </th>
                                 <th class="text-center" data-sort="time_online" title="Click to sort by Time Online">
                                     Online <i class="fas fa-sort"></i>
@@ -239,34 +371,27 @@
                     </table>
                 </div>
                 
-                <div class="mt-3 d-flex justify-content-between align-items-center">
-                    <small class="text-muted">
-                        <span id="aircraft_count">0</span> aircraft listed. Auto-refresh every 30 seconds.
+                <div class="mt-3 text-muted">
+                    <small>
+                        Showing <span id="filtered-count">0</span> of <span id="total-count">0</span> aircraft.
+                        Auto-refresh every 30 seconds.
                     </small>
-                    <div>
-                        <small class="text-muted me-3">
-                            Moving: <span id="moving-count">0</span>
-                        </small>
-                        <small class="text-muted">
-                            Servers: <span id="server-count">0</span>
-                        </small>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- jQuery (Updated) -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
-    <!-- Bootstrap JS (Updated) -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Leaflet JS (Updated) -->
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     
     <!-- Enhanced Status JS -->
-    <script src="status_improved.js?t=<?php echo time(); ?>"></script>
+    <script src="status_enhanced.js?t=<?php echo time(); ?>"></script>
 </body>
 </html>

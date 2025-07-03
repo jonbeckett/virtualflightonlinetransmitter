@@ -19,6 +19,15 @@ class RadarDisplay {
         this.gridVisible = false;
         this.gridLayer = null;
         
+        // Smooth movement system
+        this.aircraftPositions = new Map(); // Store aircraft movement data
+        this.smoothMovementEnabled = false; // Start disabled
+        this.interpolationInterval = 100; // Update positions every 100ms
+        this.interpolationTimer = null;
+        this.lastDataUpdateTime = null;
+        this.lastKnownAircraftPositions = new Map(); // Track positions to avoid unnecessary updates
+        this.lastLabelContentUpdate = new Map(); // Track when label content was last updated
+        
         // Tile layer configuration
         this.currentTileLayerIndex = 0;
         this.currentTileLayer = null;
@@ -385,11 +394,20 @@ class RadarDisplay {
             const newLabelPos = e.target.getLatLng();
             const newLabelPosArray = [newLabelPos.lat, newLabelPos.lng];
             
-            // Update the connecting line
-            labelLine.setLatLngs([position, newLabelPosArray]);
+            // Get current aircraft position from the aircraft marker
+            const aircraftMarker = this.aircraftMarkers.get(callsign);
+            let currentAircraftPos = position; // fallback to original position
+            
+            if (aircraftMarker) {
+                const currentLatLng = aircraftMarker.getLatLng();
+                currentAircraftPos = [currentLatLng.lat, currentLatLng.lng];
+            }
+            
+            // Update the connecting line from current aircraft position to new label position
+            labelLine.setLatLngs([currentAircraftPos, newLabelPosArray]);
             
             // Convert the new position to pixel offset and save it
-            const newPixelOffset = this.latLngToPixelOffset(position, newLabelPosArray);
+            const newPixelOffset = this.latLngToPixelOffset(currentAircraftPos, newLabelPosArray);
             this.labelPixelPositions.set(callsign, newPixelOffset);
         });
         
@@ -446,8 +464,254 @@ class RadarDisplay {
         }
     }
 
+    // Smooth Movement System Methods
+    
+    setupAircraftMovement(aircraft, currentTime) {
+        const callsign = aircraft.callsign;
+        const targetLat = aircraft.latitude;
+        const targetLng = aircraft.longitude;
+        const heading = aircraft.heading || 0;
+        const groundspeed = aircraft.groundspeed || 0;
+        
+        if (!this.aircraftPositions.has(callsign)) {
+            // New aircraft - start at target position
+            this.aircraftPositions.set(callsign, {
+                currentLat: targetLat,
+                currentLng: targetLng,
+                targetLat: targetLat,
+                targetLng: targetLng,
+                heading: heading,
+                groundspeed: groundspeed,
+                lastUpdateTime: currentTime,
+                interpolationStartTime: currentTime,
+                interpolationDuration: this.updateInterval // Time to reach target
+            });
+        } else {
+            // Existing aircraft - update target and movement data
+            const positionData = this.aircraftPositions.get(callsign);
+            
+            // Check if target position has changed significantly (more than ~100 meters)
+            const distance = this.calculateDistance(
+                positionData.targetLat, positionData.targetLng,
+                targetLat, targetLng
+            );
+            
+            if (distance > 0.001 || Math.abs(positionData.groundspeed - groundspeed) > 5) {
+                // Update target position and movement parameters
+                positionData.targetLat = targetLat;
+                positionData.targetLng = targetLng;
+                positionData.heading = heading;
+                positionData.groundspeed = groundspeed;
+                positionData.lastUpdateTime = currentTime;
+                positionData.interpolationStartTime = currentTime;
+                positionData.interpolationDuration = this.updateInterval;
+            }
+        }
+    }
+    
+    startSmoothMovement() {
+        if (this.interpolationTimer) {
+            clearInterval(this.interpolationTimer);
+        }
+        
+        this.interpolationTimer = setInterval(() => {
+            this.updateSmoothMovement();
+        }, this.interpolationInterval);
+        
+        console.log('Smooth aircraft movement started - aircraft and labels will move realistically based on heading and speed');
+    }
+    
+    stopSmoothMovement() {
+        if (this.interpolationTimer) {
+            clearInterval(this.interpolationTimer);
+            this.interpolationTimer = null;
+        }
+    }
+    
+    updateSmoothMovement() {
+        const currentTime = Date.now();
+        let hasMovingAircraft = false;
+        
+        for (const [callsign, positionData] of this.aircraftPositions) {
+            const marker = this.aircraftMarkers.get(callsign);
+            if (!marker) continue;
+            
+            // Calculate time since last update
+            const deltaTime = currentTime - (positionData.lastMovementUpdate || currentTime);
+            positionData.lastMovementUpdate = currentTime;
+            
+            // Choose interpolation method based on aircraft speed
+            let newPosition;
+            if (positionData.groundspeed > 10) {
+                // Use physics-based movement for moving aircraft
+                newPosition = this.interpolatePositionWithPhysics(positionData, 0, deltaTime);
+                positionData.currentLat = newPosition.lat;
+                positionData.currentLng = newPosition.lng;
+            } else {
+                // Use simple interpolation for stationary aircraft
+                const elapsed = currentTime - positionData.interpolationStartTime;
+                const progress = Math.min(elapsed / positionData.interpolationDuration, 1.0);
+                newPosition = this.interpolatePosition(positionData, progress);
+                positionData.currentLat = newPosition.lat;
+                positionData.currentLng = newPosition.lng;
+            }
+            
+            // Update marker position
+            marker.setLatLng([newPosition.lat, newPosition.lng]);
+            
+            // Update aircraft label and connecting line position during smooth movement
+            this.updateLabelForSmoothMovement(callsign, [newPosition.lat, newPosition.lng]);
+            
+            // Check if aircraft is still moving
+            if (positionData.groundspeed > 10) {
+                hasMovingAircraft = true;
+            }
+        }
+        
+        // If no aircraft are moving, we can reduce update frequency slightly
+        if (!hasMovingAircraft && this.aircraftPositions.size === 0) {
+            // No aircraft at all, stop smooth movement timer
+            this.stopSmoothMovement();
+        }
+    }
+    
+    interpolatePosition(positionData, progress) {
+        // Use easing function for smoother movement
+        const easedProgress = this.easeInOutQuad(progress);
+        
+        // Simple linear interpolation between current and target positions
+        const lat = positionData.currentLat + (positionData.targetLat - positionData.currentLat) * easedProgress;
+        const lng = positionData.currentLng + (positionData.targetLng - positionData.currentLng) * easedProgress;
+        
+        return { lat, lng };
+    }
+    
+    // Advanced interpolation using heading and speed for more realistic movement
+    interpolatePositionWithPhysics(positionData, progress, deltaTime) {
+        if (positionData.groundspeed < 10) {
+            // Aircraft is stationary or moving very slowly, use simple interpolation
+            return this.interpolatePosition(positionData, progress);
+        }
+        
+        // Calculate movement based on heading and speed
+        const speedKnots = positionData.groundspeed;
+        const speedMetersPerSecond = speedKnots * 0.514444; // Convert knots to m/s
+        const deltaTimeSeconds = deltaTime / 1000;
+        
+        // Convert heading to radians (heading 0 = North, clockwise)
+        const headingRad = positionData.heading * Math.PI / 180;
+        
+        // Calculate movement in meters
+        const distanceMeters = speedMetersPerSecond * deltaTimeSeconds;
+        
+        // Convert to latitude/longitude changes
+        // 1 degree latitude ≈ 111,320 meters
+        // 1 degree longitude ≈ 111,320 * cos(latitude) meters
+        const deltaLat = (distanceMeters * Math.cos(headingRad)) / 111320;
+        const avgLat = positionData.currentLat * Math.PI / 180;
+        const deltaLng = (distanceMeters * Math.sin(headingRad)) / (111320 * Math.cos(avgLat));
+        
+        // Calculate new position
+        let newLat = positionData.currentLat + deltaLat;
+        let newLng = positionData.currentLng + deltaLng;
+        
+        // Ensure we don't overshoot the target position
+        const distanceToTarget = this.calculateDistance(
+            newLat, newLng,
+            positionData.targetLat, positionData.targetLng
+        );
+        
+        const originalDistance = this.calculateDistance(
+            positionData.currentLat, positionData.currentLng,
+            positionData.targetLat, positionData.targetLng
+        );
+        
+        // If we're very close to target or would overshoot, snap to target
+        if (distanceToTarget < 0.0001 || distanceToTarget > originalDistance) {
+            newLat = positionData.targetLat;
+            newLng = positionData.targetLng;
+        }
+        
+        return { lat: newLat, lng: newLng };
+    }
+    
+    updateLabelForSmoothMovement(callsign, aircraftPosition) {
+        // Only update labels if they should be visible at current zoom level
+        const zoom = this.map.getZoom();
+        if (zoom < 6) {
+            return; // Labels are not shown at zoom levels below 6
+        }
+        
+        if (!this.labelLayers.has(callsign)) return;
+        
+        const labelGroup = this.labelLayers.get(callsign);
+        const layers = labelGroup.getLayers();
+        
+        if (layers.length >= 2) {
+            const labelLine = layers[0]; // Line is first
+            const labelMarker = layers[1]; // Marker is second
+            
+            try {
+                // Store the current aircraft position for this aircraft
+                if (!this.lastKnownAircraftPositions) {
+                    this.lastKnownAircraftPositions = new Map();
+                }
+                
+                const lastPos = this.lastKnownAircraftPositions.get(callsign);
+                const currentPos = aircraftPosition;
+                
+                // Only update if position has actually changed significantly to avoid unnecessary updates
+                if (!lastPos || 
+                    Math.abs(lastPos[0] - currentPos[0]) > 0.00005 || 
+                    Math.abs(lastPos[1] - currentPos[1]) > 0.00005) {
+                    
+                    this.lastKnownAircraftPositions.set(callsign, [...currentPos]);
+                    
+                    // Check if this label has a saved pixel offset (user has dragged it)
+                    if (this.labelPixelPositions.has(callsign)) {
+                        // Label has been manually positioned - update label position based on pixel offset
+                        const pixelOffset = this.labelPixelPositions.get(callsign);
+                        const newLabelPosition = this.pixelOffsetToLatLng(aircraftPosition, pixelOffset);
+                        
+                        // Update label marker position
+                        labelMarker.setLatLng(newLabelPosition);
+                        
+                        // Update connecting line to new positions
+                        labelLine.setLatLngs([aircraftPosition, newLabelPosition]);
+                    } else {
+                        // Label is using default offset - recalculate position
+                        const defaultLabelPosition = this.pixelOffsetToLatLng(aircraftPosition, this.defaultPixelOffset);
+                        
+                        // Update label marker position
+                        labelMarker.setLatLng(defaultLabelPosition);
+                        
+                        // Update connecting line to new positions
+                        labelLine.setLatLngs([aircraftPosition, defaultLabelPosition]);
+                    }
+                }
+            } catch (error) {
+                console.warn(`Error updating label for ${callsign}:`, error);
+            }
+        }
+    }
+    
+    easeInOutQuad(t) {
+        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
+    
+    calculateDistance(lat1, lng1, lat2, lng2) {
+        // Simple distance calculation for small distances
+        const deltaLat = lat2 - lat1;
+        const deltaLng = lng2 - lng1;
+        return Math.sqrt(deltaLat * deltaLat + deltaLng * deltaLng);
+    }
+    
     updateAircraftDisplay(aircraftData) {
         const currentCallsigns = new Set(aircraftData.map(ac => ac.callsign));
+        const currentTime = Date.now();
+        
+        // Store the time of this data update
+        this.lastDataUpdateTime = currentTime;
         
         // Remove aircraft that are no longer online
         for (const [callsign, marker] of this.aircraftMarkers) {
@@ -480,25 +744,48 @@ class RadarDisplay {
                 if (this.labelPixelPositions.has(callsign)) {
                     this.labelPixelPositions.delete(callsign);
                 }
+                
+                // Remove aircraft position data for smooth movement
+                if (this.aircraftPositions.has(callsign)) {
+                    this.aircraftPositions.delete(callsign);
+                }
+                
+                // Remove last known position data
+                if (this.lastKnownAircraftPositions.has(callsign)) {
+                    this.lastKnownAircraftPositions.delete(callsign);
+                }
             }
         }
         
-        // Update or create aircraft markers
+        // Update or create aircraft markers with smooth movement
         aircraftData.forEach(aircraft => {
             const callsign = aircraft.callsign;
-            const position = [aircraft.latitude, aircraft.longitude];
+            const targetPosition = [aircraft.latitude, aircraft.longitude];
             
-            // Skip drawing heading line (disabled)
-            // this.drawHeadingLine(aircraft);
-            
-            // Draw aircraft label
-            this.drawAircraftLabel(aircraft);
+            // Always setup aircraft movement data (needed for both smooth and non-smooth modes)
+            this.setupAircraftMovement(aircraft, currentTime);
             
             // Update or create aircraft marker
             if (this.aircraftMarkers.has(callsign)) {
                 // Update existing marker
                 const marker = this.aircraftMarkers.get(callsign);
-                marker.setLatLng(position);
+                
+                if (this.smoothMovementEnabled) {
+                    // Use current interpolated position for smooth movement
+                    const positionData = this.aircraftPositions.get(callsign);
+                    marker.setLatLng([positionData.currentLat, positionData.currentLng]);
+                } else {
+                    // Jump directly to target position when smooth movement is disabled
+                    marker.setLatLng(targetPosition);
+                    
+                    // Also update the position data to match the target
+                    const positionData = this.aircraftPositions.get(callsign);
+                    if (positionData) {
+                        positionData.currentLat = positionData.targetLat;
+                        positionData.currentLng = positionData.targetLng;
+                    }
+                }
+                
                 marker.setIcon(this.createAircraftIcon(aircraft));
                 marker.getPopup().setContent(this.createPopupContent(aircraft));
                 
@@ -508,8 +795,8 @@ class RadarDisplay {
                 // Update label position if it was manually positioned
                 this.updateLabelPosition(aircraft);
             } else {
-                // Create new marker
-                const marker = L.marker(position, {
+                // Create new marker at target position
+                const marker = L.marker(targetPosition, {
                     icon: this.createAircraftIcon(aircraft)
                 });
                 
@@ -519,16 +806,31 @@ class RadarDisplay {
                 marker.bindPopup(this.createPopupContent(aircraft));
                 
                 marker.on('click', () => {
-                    this.map.setView(position, Math.max(this.map.getZoom(), 8));
+                    this.map.setView(targetPosition, Math.max(this.map.getZoom(), 8));
                 });
                 
                 marker.addTo(this.map);
                 this.aircraftMarkers.set(callsign, marker);
             }
             
-            // Draw or update aircraft label
-            this.drawAircraftLabel(aircraft);
+            // Handle aircraft labels - avoid recreating during smooth movement to prevent stuttering
+            if (this.smoothMovementEnabled && this.labelLayers.has(callsign)) {
+                // During smooth movement, only update label content, don't recreate the label
+                this.updateLabelContent(callsign, aircraft);
+            } else if (!this.labelLayers.has(callsign)) {
+                // Label doesn't exist yet - create it
+                this.drawAircraftLabel(aircraft);
+            } else if (!this.smoothMovementEnabled) {
+                // Not in smooth movement - safe to update/recreate labels normally
+                this.drawAircraftLabel(aircraft);
+                this.updateLabelContent(callsign, aircraft);
+            }
         });
+        
+        // Start smooth movement if not already running
+        if (this.smoothMovementEnabled && !this.interpolationTimer) {
+            this.startSmoothMovement();
+        }
         
         // Update aircraft count
         this.updateAircraftCount(aircraftData.length);
@@ -978,6 +1280,21 @@ class RadarDisplay {
             this.toggleGrid();
         });
         
+        const smoothBtn = document.createElement('button');
+        smoothBtn.className = 'toolbar-btn';
+        smoothBtn.innerHTML = '<i class="fas fa-running"></i>';
+        smoothBtn.title = 'Toggle Smooth Movement (S)';
+        smoothBtn.id = 'smooth-btn';
+        
+        // Store direct reference to the button
+        this.smoothButton = smoothBtn;
+        
+        smoothBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.toggleSmoothMovement();
+        });
+        
         // Add drag handle
         const dragHandle = document.createElement('div');
         dragHandle.className = 'toolbar-drag-handle';
@@ -998,6 +1315,7 @@ class RadarDisplay {
         toolbar.appendChild(centerBtn);
         toolbar.appendChild(aircraftListBtn);
         toolbar.appendChild(gridBtn);
+        toolbar.appendChild(smoothBtn);
         
         // Add separator
         const separator2 = document.createElement('div');
@@ -1016,6 +1334,7 @@ class RadarDisplay {
         // Initialize button appearances
         this.updateLayersButton();
         this.updateGridButton();
+        this.updateSmoothButton();
     }
     
     makeDraggable(element, handle) {
@@ -1145,6 +1464,11 @@ class RadarDisplay {
                 case 'g':
                 case 'G':
                     this.toggleGrid();
+                    e.preventDefault();
+                    break;
+                case 's':
+                case 'S':
+                    this.toggleSmoothMovement();
                     e.preventDefault();
                     break;
                 case 'f':
@@ -1417,17 +1741,143 @@ class RadarDisplay {
             }
         }
     }
+    
+    toggleSmoothMovement() {
+        this.smoothMovementEnabled = !this.smoothMovementEnabled;
+        
+        // Update the button appearance
+        this.updateSmoothButton();
+        
+        if (this.smoothMovementEnabled) {
+            // Start smooth movement if there are aircraft
+            if (this.aircraftMarkers.size > 0 && !this.interpolationTimer) {
+                this.startSmoothMovement();
+            }
+        } else {
+            // Stop smooth movement
+            this.stopSmoothMovement();
+            
+            // Snap all aircraft to their target positions and ensure they update correctly
+            for (const [callsign, positionData] of this.aircraftPositions) {
+                const marker = this.aircraftMarkers.get(callsign);
+                if (marker && positionData) {
+                    // Move marker to target position
+                    marker.setLatLng([positionData.targetLat, positionData.targetLng]);
+                    // Update current position to match target
+                    positionData.currentLat = positionData.targetLat;
+                    positionData.currentLng = positionData.targetLng;
+                    
+                    // Update label position to match new aircraft position
+                    this.updateLabelPositionForMovement(callsign, [positionData.targetLat, positionData.targetLng]);
+                }
+            }
+        }
+        
+        console.log(`Smooth movement ${this.smoothMovementEnabled ? 'enabled' : 'disabled'}`);
+    }
+    
+    updateSmoothButton() {
+        const btn = document.getElementById('smooth-btn');
+        const status = document.getElementById('smooth-status');
+        
+        if (btn) {
+            // Remove any existing state classes first
+            btn.classList.remove('smooth-enabled', 'smooth-disabled');
+            
+            if (this.smoothMovementEnabled) {
+                btn.classList.add('smooth-enabled');
+                btn.innerHTML = '<i class="fas fa-running"></i>';
+                btn.title = 'Disable Smooth Movement (S)';
+            } else {
+                btn.classList.add('smooth-disabled');
+                btn.innerHTML = '<i class="fas fa-walking"></i>';
+                btn.title = 'Enable Smooth Movement (S)';
+            }
+        }
+        
+        if (status) {
+            status.textContent = this.smoothMovementEnabled ? 'Enabled' : 'Disabled';
+            status.style.color = this.smoothMovementEnabled ? '#00ff00' : '#ff6600';
+        }
+    }
+    
+    updateLabelContent(callsign, aircraft) {
+        // During smooth movement, throttle label content updates to prevent stuttering
+        if (this.smoothMovementEnabled) {
+            const lastUpdate = this.lastLabelContentUpdate.get(callsign) || 0;
+            const now = Date.now();
+            
+            // Only update label content every 2 seconds during smooth movement to prevent stuttering
+            if (now - lastUpdate < 2000) {
+                return;
+            }
+            this.lastLabelContentUpdate.set(callsign, now);
+        }
+        
+        // Update label content with current aircraft data
+        if (!this.labelLayers.has(callsign)) return;
+        
+        const labelGroup = this.labelLayers.get(callsign);
+        const layers = labelGroup.getLayers();
+        
+        if (layers.length >= 2) {
+            const labelMarker = layers[1]; // Marker is second
+            
+            try {
+                // Create updated label content
+                const updatedLabelText = `
+                    <div style="
+                        background: rgba(0, 20, 40, 0.95);
+                        color: #00ff00;
+                        padding: 3px 6px;
+                        border: 1px solid #00ff00;
+                        border-radius: 3px;
+                        font-family: 'Courier New', monospace;
+                        font-size: 10px;
+                        white-space: nowrap;
+                        box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+                        backdrop-filter: blur(2px);
+                        cursor: move;
+                    ">
+                        <div style="font-weight: bold; font-size: 11px;">${aircraft.callsign}</div>
+                        <div style="font-size: 9px; opacity: 0.8; margin-top: 1px;">
+                            ${Math.round(aircraft.altitude)}ft • ${Math.round(aircraft.groundspeed)}kts
+                        </div>
+                    </div>
+                `;
+                
+                // Update the label marker's icon with new content
+                const updatedIcon = L.divIcon({
+                    className: 'aircraft-label draggable-label',
+                    html: updatedLabelText,
+                    iconSize: [100, 35],
+                    iconAnchor: [50, 17.5] // Center of the label
+                });
+                
+                labelMarker.setIcon(updatedIcon);
+            } catch (error) {
+                console.warn(`Error updating label content for ${callsign}:`, error);
+            }
+        }
+    }
 }
 
 // Initialize the radar display when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Initializing Virtual Flight Online Radar Display');
-    new RadarDisplay();
+    window.radar = new RadarDisplay();
 });
 
 // Handle window resize
 window.addEventListener('resize', () => {
     if (window.radar && window.radar.map) {
         window.radar.map.invalidateSize();
+    }
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (window.radar) {
+        window.radar.stopSmoothMovement();
     }
 });
