@@ -55,13 +55,6 @@ class RadarDisplay {
                 opacity: 0.6
             },
             {
-                name: 'Terrain',
-                url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png',
-                attribution: '© Stamen Design © OpenStreetMap contributors',
-                className: '',
-                opacity: 0.7
-            },
-            {
                 name: 'No Map',
                 url: null,
                 attribution: '',
@@ -171,10 +164,6 @@ class RadarDisplay {
                 case 'Topographic':
                     layersBtn.style.background = 'rgba(139, 69, 19, 0.8)';
                     layersBtn.innerHTML = '<i class="fas fa-mountain"></i>';
-                    break;
-                case 'Terrain':
-                    layersBtn.style.background = 'rgba(34, 139, 34, 0.8)';
-                    layersBtn.innerHTML = '<i class="fas fa-globe-americas"></i>';
                     break;
                 default:
                     layersBtn.style.background = 'rgba(0, 40, 80, 0.8)';
@@ -757,7 +746,7 @@ class RadarDisplay {
         homeBtn.innerHTML = '<i class="fas fa-home"></i>';
         homeBtn.title = 'Reset View (H)';
         homeBtn.addEventListener('click', () => {
-            this.map.setView([39.8283, -98.5795], 4);
+            this.map.setView([20, 0], 3);
         });
         
         const fullscreenBtn = document.createElement('button');
