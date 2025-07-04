@@ -146,35 +146,7 @@
     </header>
 
     <div class="container">
-        <!-- Navigation -->
-        <div class="row mb-4">
-            <div class="col">
-                <div class="d-flex gap-2 flex-wrap">
-                    <a href="index.html" class="btn btn-outline-secondary">
-                        <i class="fas fa-home"></i> Home
-                    </a>
-                    <a href="https://virtualflightonline.substack.com" class="btn btn-outline-secondary">
-                        <i class="fas fa-newspaper"></i> Newsletter
-                    </a>
-                    <a href="https://forums.virtualflight.online" class="btn btn-outline-secondary">
-                        <i class="fas fa-comment"></i> Forums
-                    </a>
-                    <a href="https://bit.ly/virtualflightonlinediscord" class="btn btn-outline-secondary">
-                        <i class="fa-brands fa-discord"></i> Discord
-                    </a>
-                    <a href="https://facebook.com/groups/virtualflightonline" class="btn btn-outline-secondary">
-                        <i class="fa-brands fa-facebook"></i> Facebook
-                    </a>
-                    <a href="https://airline.virtualflight.online" class="btn btn-outline-secondary">
-                        <i class="fas fa-plane"></i> Airline
-                    </a>
-		    <button class="btn btn-outline-success ms-auto" onclick="refreshData()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </div>
-            </div>
-        </div>
-
+        
         <!-- Map Section -->
         <div class="status-card">
             <div class="status-card-header">
@@ -266,8 +238,47 @@
                 </div>
             </div>
         </div>
-    </div>
+        
+        <div class="row mt-4 mb-4">
+            <div class="col">
+                <div class="d-flex gap-2 flex-wrap">
+		    <button class="btn btn-outline-success ms-auto" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
 
+        <div class="row mt-4 mb-4">
+            <div class="col">
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a href="https://virtualflight.online" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="https://virtualflightonline.substack.com" class="btn btn-outline-secondary">
+                        <i class="fas fa-newspaper"></i> Newsletter
+                    </a>
+                    <a href="https://forums.virtualflight.online" class="btn btn-outline-secondary">
+                        <i class="fas fa-comment"></i> Forums
+                    </a>
+                    <a href="https://bit.ly/virtualflightonlinediscord" class="btn btn-outline-secondary">
+                        <i class="fa-brands fa-discord"></i> Discord
+                    </a>
+                    <a href="https://facebook.com/groups/virtualflightonline" class="btn btn-outline-secondary">
+                        <i class="fa-brands fa-facebook"></i> Facebook
+                    </a>
+                    <a href="https://airline.virtualflight.online" class="btn btn-outline-secondary">
+                        <i class="fas fa-plane"></i> Airline
+                    </a>
+                    <a href="https://transmitter.virtualflight.online" class="btn btn-outline-secondary">
+                        <i class="fas fa-satellite-dish"></i> Transmitter
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- jQuery (Updated) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
