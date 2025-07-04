@@ -4,167 +4,251 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Flight Online Transmitter</title>
+    <link rel="icon" href="https://transmitter.virtualflight.online/vfo_logo_300x300.jpg" />
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* Enhanced styling matching status.php */
+        .main-header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 15px 15px;
         }
         
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        h1 {
-            text-align: center;
-            color: #fff;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-size: 2.5em;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #e0e0e0;
-            margin-bottom: 40px;
-            font-size: 1.2em;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.1);
+        .feature-card {
+            background: white;
             border-radius: 10px;
-            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: none;
         }
         
-        .card:hover {
-            background: rgba(255, 255, 255, 0.15);
+        .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
-        .card h3 {
-            margin-top: 0;
-            color: #fff;
-            font-size: 1.4em;
-            margin-bottom: 15px;
+        .feature-card-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
         }
         
-        .card p {
-            color: #e0e0e0;
-            line-height: 1.6;
-            margin-bottom: 20px;
+        .feature-card-body {
+            padding: 2rem 1.5rem;
         }
         
-        .btn {
-            display: inline-block;
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #1e3c72;
+        }
+        
+        .btn-primary-custom {
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            color: white;
-            text-decoration: none;
+            border: none;
             padding: 12px 24px;
             border-radius: 8px;
-            font-weight: bold;
+            font-weight: 600;
             transition: all 0.3s ease;
-            text-align: center;
         }
         
-        .btn:hover {
+        .btn-primary-custom:hover {
             background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
         }
         
-        .btn-secondary {
+        .btn-secondary-custom {
             background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
-        }
-        
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-        }
-        
-        .btn-warning:hover {
-            background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);
-        }
-        
-        .icon {
-            font-size: 2em;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .status {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid #4CAF50;
+            border: none;
+            padding: 12px 24px;
             border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary-custom:hover {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+        
+        .btn-warning-custom {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-warning-custom:hover {
+            background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        .status-banner {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
             text-align: center;
+        }
+        
+        .quick-links-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .footer-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: #6c757d;
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
+            .main-header {
+                padding: 2rem 0;
             }
             
-            .grid {
-                grid-template-columns: 1fr;
+            .main-header h1 {
+                font-size: 2.5rem;
             }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>✈️ Virtual Flight Online Transmitter</h1>
-        <p class="subtitle">Real-time aircraft tracking system for Microsoft Flight Simulator</p>
-        
-        <div class="status">
-            <strong>System Status:</strong> Ready for flight tracking
-        </div>
-        
-        <div class="grid">
-            <div class="card">
-                <div class="icon">🎯</div>
-                <h3>Interactive Radar</h3>
-                <p>Advanced radar display with draggable toolbar, multi-layer maps, aircraft table, and professional aviation controls.</p>
-                <a href="radar.php" class="btn">Open Radar Display</a>
+<body class="bg-light">
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col">
+                    <h1 class="display-3 mb-0">
+                        <i class="fas fa-plane me-3"></i>
+                        Virtual Flight Online Transmitter
+                    </h1>
+                    <p class="lead mt-3 mb-0">Real-time aircraft tracking system for Microsoft Flight Simulator</p>
+                </div>
             </div>
-            
-            <div class="card">
-                <div class="icon">📊</div>
-                <h3>Aircraft Status</h3>
-                <p>Sortable table view of all online aircraft with real-time position updates and integrated mini-map.</p>
-                <a href="status.php" class="btn btn-secondary">View Status Dashboard</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="row mb-4">
+            <div class="col">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="index.html" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="https://virtualflightonline.substack.com" class="btn btn-outline-secondary">
+                        <i class="fas fa-newspaper"></i> Newsletter
+                    </a>
+                    <a href="https://forums.virtualflight.online" class="btn btn-outline-secondary">
+                        <i class="fas fa-comment"></i> Forums
+                    </a>
+                    <a href="https://bit.ly/virtualflightonlinediscord" class="btn btn-outline-secondary">
+                        <i class="fa-brands fa-discord"></i> Discord
+                    </a>
+                    <a href="https://facebook.com/groups/virtualflightonline" class="btn btn-outline-secondary">
+                        <i class="fa-brands fa-facebook"></i> Facebook
+                    </a>
+                    <a href="https://airline.virtualflight.online" class="btn btn-outline-secondary">
+                        <i class="fas fa-plane"></i> Airline
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Features -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="feature-card h-100">
+                    <div class="feature-card-header">
+                        <i class="fas fa-radar-dish feature-icon"></i>
+                        <h3 class="mb-0">Interactive Radar</h3>
+                    </div>
+                    <div class="feature-card-body text-center">
+                        <p class="text-muted mb-4">Advanced radar display with draggable toolbar, multi-layer maps, aircraft table, smooth movement, measurement tools, and professional aviation controls.</p>
+                        <a href="radar.php" class="btn btn-primary-custom">
+                            <i class="fas fa-external-link-alt me-2"></i>
+                            Open Radar Display
+                        </a>
+                    </div>
+                </div>
             </div>
 
+            <div class="col-lg-6 mb-4">
+                <div class="feature-card h-100">
+                    <div class="feature-card-header">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                        <h3 class="mb-0">Aircraft Status</h3>
+                    </div>
+                    <div class="feature-card-body text-center">
+                        <p class="text-muted mb-4">Sortable table view of all online aircraft with real-time position updates, integrated mini-map, and comprehensive flight data.</p>
+                        <a href="status.php" class="btn btn-secondary-custom">
+                            <i class="fas fa-external-link-alt me-2"></i>
+                            View Status Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <hr style="border: 1px solid rgba(255,255,255,0.2); margin: 30px 0;">
+        <!-- Quick Links Section -->
+        <div class="quick-links-section">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-link me-2"></i>
+                Quick Links
+            </h3>
+            <div class="row text-center">
+                <div class="col-md-6 mb-3">
+                    <a href="https://github.com/jonbeckett/virtualflightonlinetransmitter/releases" class="btn btn-warning-custom w-100">
+                        <i class="fas fa-download me-2"></i>
+                        Download Free Transmitter Client
+                    </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <a href="https://virtualflight.online/operations/transmitter" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-book me-2"></i>
+                        User Guide & Documentation
+                    </a>
+                </div>
+            </div>
+        </div>
         
-        <div style="text-align: center; color: #ccc;">
-            <p><strong>Virtual Flight Online Transmitter</strong> - Bringing pilots together in virtual airspace</p>
-            <p><small>Built with ❤️ for the flight simulation community</small></p>
+        <!-- Footer Section -->
+        <div class="footer-section">
+            <h5 class="mb-3">
+                <i class="fas fa-heart text-danger me-2"></i>
+                Virtual Flight Online Transmitter
+            </h5>
+            <p class="mb-2"><strong>Bringing pilots together in virtual airspace</strong></p>
+            <p class="mb-0"><small>Built with ❤️ for the flight simulation community</small></p>
         </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

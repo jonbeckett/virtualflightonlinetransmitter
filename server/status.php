@@ -17,7 +17,7 @@
     
     <!-- Custom CSS -->
     <link href="style.css" rel="stylesheet" />
-    
+    <link rel="icon" href="https://transmitter.virtualflight.online/vfo_logo_300x300.jpg" />
     <style>
         /* Enhanced styling for better UX */
         .status-header {
@@ -150,13 +150,25 @@
         <div class="row mb-4">
             <div class="col">
                 <div class="d-flex gap-2 flex-wrap">
-                    <a href="radar.php" class="btn btn-primary">
-                        <i class="fas fa-radar-dish"></i> Advanced Radar
-                    </a>
                     <a href="index.html" class="btn btn-outline-secondary">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <button class="btn btn-outline-success" onclick="refreshData()">
+                    <a href="https://virtualflightonline.substack.com" class="btn btn-outline-secondary">
+                        <i class="fas fa-newspaper"></i> Newsletter
+                    </a>
+                    <a href="https://forums.virtualflight.online" class="btn btn-outline-secondary">
+                        <i class="fas fa-comment"></i> Forums
+                    </a>
+                    <a href="https://bit.ly/virtualflightonlinediscord" class="btn btn-outline-secondary">
+                        <i class="fa-brands fa-discord"></i> Discord
+                    </a>
+                    <a href="https://facebook.com/groups/virtualflightonline" class="btn btn-outline-secondary">
+                        <i class="fa-brands fa-facebook"></i> Facebook
+                    </a>
+                    <a href="https://airline.virtualflight.online" class="btn btn-outline-secondary">
+                        <i class="fas fa-plane"></i> Airline
+                    </a>
+		    <button class="btn btn-outline-success ms-auto" onclick="refreshData()">
                         <i class="fas fa-sync-alt"></i> Refresh
                     </button>
                 </div>
