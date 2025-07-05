@@ -273,6 +273,9 @@
                     <a href="https://transmitter.virtualflight.online" class="btn btn-outline-secondary">
                         <i class="fas fa-satellite-dish"></i> Transmitter
                     </a>
+                    <a href="https://patreon.com/virtualflightonline" class="btn btn-outline-secondary">
+                        <i class="fa-brands fa-patreon"></i> Patreon
+                    </a>
 
                 </div>
             </div>

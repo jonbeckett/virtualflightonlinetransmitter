@@ -60,6 +60,10 @@
             font-size: 12px;
             line-height: 1.4;
         }
+
+	.radar-stats A {
+	    color: #557799 !important;
+	}
         
         .aircraft-icon {
             color: #00ff00 !important;
@@ -454,14 +458,20 @@
 <body>
     <div class="radar-container">
         <div class="radar-info">
-            <h3>🛩️ RADAR DISPLAY</h3>
             <div class="radar-stats">
                 <div>Aircraft Online: <span id="aircraft-count">0</span></div>
                 <div>Update Rate: 5 seconds</div>
                 <div>Last Update: <span id="last-update">--:--:--</span></div>
                 <div>Smooth Movement: <span id="smooth-status">Enabled</span></div>
                 <hr style="border-color: #00ff00; margin: 10px 0;">
-                <div><a href="status.php" style="color: #00ff00; text-decoration: none;">← Back to List View</a></div>
+		<div><a href="https://virtualflight.online" title="Visit VirtualFlight.Online homepage"><i class="fas fa-home"></i> Home</a></div>
+                <div><a href="https://virtualflightonline.substack.com" title="Subscribe to the newsletter"><i class="fas fa-newspaper"></i> Newsletter</a></div>
+		<div><a href="https://forums.virtualflight.online" title="Join the conversation in the forums"><i class="fas fa-comment"></i> Forums</a></div>
+                <div><a href="https://bit.ly/virtualflightonlinediscord" title="Join group flights on the Discord server"><i class="fa-brands fa-discord"></i> Discord</a></div>
+		<div><a href="https://facebook.com/groups/virtualflightonline" title="Join the conversation in the Facebook group"><i class="fa-brands fa-facebook"></i> Facebook</a></div>
+		<div><a href="https://airline.virtualflight.online" title="Join the Airline"><i class="fas fa-plane"></i> Airline</a></div>
+		<div><a href="https://transmitter.virtualflight.online" title="Start using Transmitter"><i class="fas fa-satellite-dish"></i> Transmitter</a></div>
+                <div><a href="https://patreon.com/virtualflightonline" title="Support us at Patreon"><i class="fa-brands fa-patreon"></i> Patreon</a> < Support us!</div>
             </div>
         </div>
         
