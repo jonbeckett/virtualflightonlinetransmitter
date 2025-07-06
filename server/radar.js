@@ -41,6 +41,10 @@ class RadarDisplay {
         this.rangeRingCenterMarker = null;
         this.rangeRingLabel = null;
         
+        // Aircraft tracking
+        this.trackedCallsign = null; // Callsign to track from URL parameter
+        this.isTrackingEnabled = false; // Whether tracking is currently active
+        
         // Tile layer configuration
         this.currentTileLayerIndex = 0;
         this.currentTileLayer = null;
@@ -93,6 +97,7 @@ class RadarDisplay {
     }
     
     init() {
+        this.parseUrlParameters();
         this.initMap();
         this.startRadarUpdates();
     }
@@ -860,6 +865,11 @@ class RadarDisplay {
         if (this.isInitialLoad && aircraftData.length > 0) {
             this.autoFitAircraft(aircraftData);
             this.isInitialLoad = false;
+        }
+        
+        // Track specific aircraft if tracking is enabled
+        if (this.isTrackingEnabled && this.trackedCallsign) {
+            this.trackAircraft(aircraftData);
         }
         
         console.log(`Updated ${aircraftData.length} aircraft on radar`);
@@ -2011,7 +2021,7 @@ class RadarDisplay {
     }
     
     calculateBearing(lat1, lng1, lat2, lng2) {
-        // Calculate bearing (direction) from point 1 to point 2
+        // Calculate bearing (direction) from point 1 to point  2
         const dLng = this.toRadians(lng2 - lng1);
         const lat1Rad = this.toRadians(lat1);
         const lat2Rad = this.toRadians(lat2);
@@ -2154,6 +2164,149 @@ class RadarDisplay {
             lat: this.toDegrees(destLatRad),
             lng: this.toDegrees(destLngRad)
         };
+    }
+    
+    parseUrlParameters() {
+        // Parse URL parameters for aircraft tracking
+        const urlParams = new URLSearchParams(window.location.search);
+        const callsign = urlParams.get('callsign');
+        
+        if (callsign) {
+            this.trackedCallsign = callsign.toUpperCase().trim();
+            this.isTrackingEnabled = true;
+            console.log(`Aircraft tracking enabled for callsign: ${this.trackedCallsign}`);
+            
+            // Show tracking indicator
+            this.showTrackingIndicator();
+        }
+    }
+    
+    showTrackingIndicator() {
+        // Create a tracking indicator in the UI
+        const indicator = document.createElement('div');
+        indicator.id = 'tracking-indicator';
+        indicator.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 165, 0, 0.95);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: monospace;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            border: 2px solid #ff8c00;
+        `;
+        indicator.innerHTML = `
+            <i class="fas fa-crosshairs"></i> 
+            Tracking: ${this.trackedCallsign}
+            <button onclick="window.radar.stopTracking()" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        document.body.appendChild(indicator);
+    }
+    
+    stopTracking() {
+        this.isTrackingEnabled = false;
+        this.trackedCallsign = null;
+        
+        // Remove tracking indicator
+        const indicator = document.getElementById('tracking-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+        
+        console.log('Aircraft tracking stopped');
+    }
+
+    trackAircraft(aircraftData) {
+        // Find the tracked aircraft in the current data
+        const trackedAircraft = aircraftData.find(aircraft => 
+            aircraft.callsign.toUpperCase() === this.trackedCallsign
+        );
+        
+        if (trackedAircraft) {
+            // Get the aircraft's current position
+            let aircraftPosition;
+            
+            if (this.smoothMovementEnabled && this.aircraftPositions.has(this.trackedCallsign)) {
+                // Use smooth movement position if available
+                const positionData = this.aircraftPositions.get(this.trackedCallsign);
+                aircraftPosition = [positionData.currentLat, positionData.currentLng];
+            } else {
+                // Use actual position
+                aircraftPosition = [trackedAircraft.latitude, trackedAircraft.longitude];
+            }
+            
+            // Center map on the tracked aircraft with appropriate zoom
+            const currentZoom = this.map.getZoom();
+            const targetZoom = Math.max(currentZoom, 8); // Ensure minimum zoom level for tracking
+            
+            this.map.setView(aircraftPosition, targetZoom, {
+                animate: true,
+                duration: 1.0 // Smooth animation
+            });
+            
+            // Highlight the tracked aircraft
+            this.highlightTrackedAircraft(this.trackedCallsign);
+            
+        } else {
+            // Aircraft not found, show warning but keep tracking enabled
+            console.warn(`Tracked aircraft ${this.trackedCallsign} not found in current data`);
+            this.updateTrackingIndicator(false);
+        }
+    }
+    
+    highlightTrackedAircraft(callsign) {
+        // Remove previous highlighting
+        const allMarkers = document.querySelectorAll('.aircraft-marker.tracked-aircraft');
+        allMarkers.forEach(marker => {
+            marker.classList.remove('tracked-aircraft');
+        });
+        
+        // Add highlighting to tracked aircraft
+        const trackedMarker = this.aircraftMarkers.get(callsign);
+        if (trackedMarker) {
+            const markerElement = trackedMarker.getElement();
+            if (markerElement) {
+                markerElement.classList.add('tracked-aircraft');
+            }
+        }
+        
+        // Update tracking indicator to show aircraft is found
+        this.updateTrackingIndicator(true);
+    }
+    
+    updateTrackingIndicator(found) {
+        const indicator = document.getElementById('tracking-indicator');
+        if (indicator) {
+            if (found) {
+                indicator.style.background = 'rgba(76, 175, 80, 0.95)';
+                indicator.style.borderColor = '#4CAF50';
+                indicator.innerHTML = `
+                    <i class="fas fa-crosshairs"></i> 
+                    Tracking: ${this.trackedCallsign} ✓
+                    <button onclick="window.radar.stopTracking()" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+            } else {
+                indicator.style.background = 'rgba(244, 67, 54, 0.95)';
+                indicator.style.borderColor = '#f44336';
+                indicator.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Tracking: ${this.trackedCallsign} (Not Found)
+                    <button onclick="window.radar.stopTracking()" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+            }
+        }
     }
 }
 

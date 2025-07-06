@@ -76,6 +76,22 @@
             font-size: 20px !important;
         }
         
+        /* Tracked aircraft highlighting */
+        .aircraft-marker.tracked-aircraft .aircraft-icon {
+            color: #ff6600 !important;
+            filter: drop-shadow(0 0 8px #ff6600) drop-shadow(0 0 12px #ff6600);
+            animation: pulse-orange 2s infinite;
+        }
+        
+        @keyframes pulse-orange {
+            0%, 100% { 
+                filter: drop-shadow(0 0 8px #ff6600) drop-shadow(0 0 12px #ff6600);
+            }
+            50% { 
+                filter: drop-shadow(0 0 15px #ff6600) drop-shadow(0 0 20px #ff6600);
+            }
+        }
+        
         .aircraft-label {
             z-index: 1000;
             pointer-events: auto; /* Enable pointer events for dragging */
