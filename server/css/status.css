@@ -1,0 +1,100 @@
+/* Enhanced styling for better UX */
+.status-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 15px 15px;
+}
+
+.status-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.status-card-header {
+    background: #f8f9fa;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+.status-card-body {
+    padding: 1.5rem;
+}
+
+.aircraft-table {
+    font-size: 0.9rem;
+}
+
+.aircraft-table th {
+    background: #f8f9fa;
+    border-top: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.aircraft-table th:hover {
+    background: #e9ecef;
+}
+
+.callsign-link {
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.callsign-link:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+}
+
+.refresh-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #e7f3ff;
+    border: 1px solid #b8daff;
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+}
+
+.refresh-indicator.updating {
+    background: #fff3cd;
+    border-color: #ffecb5;
+}
+
+.refresh-indicator .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.map-container {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-container {
+    max-height: 600px;
+    overflow-y: auto;
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .status-header h1 {
+        font-size: 2rem;
+    }
+    
+    .aircraft-table {
+        font-size: 0.8rem;
+    }
+}

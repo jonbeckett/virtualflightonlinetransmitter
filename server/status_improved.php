@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Virtual Flight Online - Aircraft Status</title>
-    <link rel="shortcut icon" type="image/jpg" href="virtualflightonline.jpg"/>
+    <link rel="shortcut icon" type="image/jpg" href="img/vfo_logo_300x300.jpg"/>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     
     <!-- Custom CSS -->
-    <link href="style.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
     
     <style>
         /* Enhanced styling for better UX */
@@ -392,6 +392,6 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     
     <!-- Enhanced Status JS -->
-    <script src="status_enhanced.js?t=<?php echo time(); ?>"></script>
+    <script src="js/status_enhanced.js?t=<?php echo time(); ?>"></script>
 </body>
 </html>

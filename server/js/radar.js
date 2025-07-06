@@ -827,7 +827,8 @@ class RadarDisplay {
                 marker.bindPopup(this.createPopupContent(aircraft));
                 
                 marker.on('click', () => {
-                    this.map.setView(targetPosition, Math.max(this.map.getZoom(), 8));
+                    // Show popup at aircraft's current position without centering map
+                    marker.openPopup();
                 });
                 
                 marker.addTo(this.map);
@@ -1637,10 +1638,19 @@ class RadarDisplay {
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
         
-        const headers = ['Callsign', 'Pilot', 'Aircraft', 'Altitude', 'Speed'];
-        headers.forEach(headerText => {
+        const headers = ['', 'Callsign', 'Pilot', 'Aircraft', 'Altitude', 'Speed'];
+        headers.forEach((headerText, index) => {
             const th = document.createElement('th');
-            th.textContent = headerText;
+            if (index === 0) {
+                // Track column header with icon
+                const trackIcon = document.createElement('i');
+                trackIcon.className = 'fas fa-crosshairs';
+                trackIcon.title = 'Track Aircraft';
+                th.appendChild(trackIcon);
+                th.className = 'track-column-header';
+            } else {
+                th.textContent = headerText;
+            }
             headerRow.appendChild(th);
         });
         
@@ -1687,10 +1697,43 @@ class RadarDisplay {
                 row.className = 'aircraft-row';
                 row.setAttribute('data-callsign', aircraft.callsign);
                 
-                // Add click handler to zoom to aircraft
-                row.addEventListener('click', () => {
-                    this.zoomToAircraft(aircraft.callsign);
+                // Add click handler to zoom to aircraft (excluding the track icon)
+                row.addEventListener('click', (e) => {
+                    // Don't zoom if clicking on the track icon
+                    if (!e.target.closest('.track-icon')) {
+                        this.zoomToAircraft(aircraft.callsign);
+                    }
                 });
+                
+                // Track icon
+                const trackCell = document.createElement('td');
+                trackCell.className = 'track-cell';
+                const trackIcon = document.createElement('i');
+                trackIcon.className = 'fas fa-crosshairs track-icon';
+                trackIcon.setAttribute('data-callsign', aircraft.callsign);
+                
+                // Check if this aircraft is currently being tracked
+                const isTracked = this.isTrackingEnabled && this.trackedCallsign === aircraft.callsign;
+                if (isTracked) {
+                    trackIcon.classList.add('tracking');
+                    trackIcon.title = `Stop tracking ${aircraft.callsign}`;
+                } else {
+                    trackIcon.title = `Track ${aircraft.callsign}`;
+                }
+                
+                trackIcon.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent row click
+                    
+                    // If this aircraft is currently being tracked, stop tracking
+                    if (this.isTrackingEnabled && this.trackedCallsign === aircraft.callsign) {
+                        this.stopTracking();
+                    } else {
+                        // Start tracking this aircraft
+                        this.startTrackingAircraft(aircraft.callsign);
+                    }
+                });
+                trackCell.appendChild(trackIcon);
+                row.appendChild(trackCell);
                 
                 // Callsign
                 const callsignCell = document.createElement('td');
@@ -1726,12 +1769,15 @@ class RadarDisplay {
             // No aircraft found
             const row = document.createElement('tr');
             const cell = document.createElement('td');
-            cell.colSpan = 5;
+            cell.colSpan = 6; // Updated to 6 columns (added track column)
             cell.textContent = 'No aircraft online';
             cell.className = 'no-aircraft-cell';
             row.appendChild(cell);
             tbody.appendChild(row);
         }
+        
+        // Update tracking icon highlights after table is populated
+        this.updateTrackingIconHighlights();
     }
     
     zoomToAircraft(callsign) {
@@ -1982,7 +2028,7 @@ class RadarDisplay {
         this.measurementLabel.setLatLng(midpoint);
         this.measurementLabel.setIcon(L.divIcon({
             className: 'measurement-label',
-            html: `<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${distance.toFixed(1)} NM<br>${bearing.toFixed(0).padStart(3, '0')}°</div>`,
+            html: `<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 4px 8px; border-radius:  4px; font-family: monospace; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${distance.toFixed(1)} NM<br>${bearing.toFixed(0).padStart(3, '0')}°</div>`,
             iconSize: [80, 40],
             iconAnchor: [40, 20]
         }));
@@ -1990,6 +2036,7 @@ class RadarDisplay {
     
     endMeasurement() {
         this.measurementActive = false;
+        
         
         // Remove measurement elements
         if (this.measurementLine) {
@@ -2172,12 +2219,11 @@ class RadarDisplay {
         const callsign = urlParams.get('callsign');
         
         if (callsign) {
-            this.trackedCallsign = callsign.toUpperCase().trim();
-            this.isTrackingEnabled = true;
-            console.log(`Aircraft tracking enabled for callsign: ${this.trackedCallsign}`);
-            
-            // Show tracking indicator
-            this.showTrackingIndicator();
+            // Use the startTrackingAircraft method to ensure proper tracking setup
+            // Note: We delay this slightly to ensure the map is fully initialized
+            setTimeout(() => {
+                this.startTrackingAircraft(callsign);
+            }, 100);
         }
     }
     
@@ -2220,6 +2266,9 @@ class RadarDisplay {
         if (indicator) {
             indicator.remove();
         }
+        
+        // Update tracking icon highlights in the aircraft table
+        this.updateTrackingIconHighlights();
         
         console.log('Aircraft tracking stopped');
     }
@@ -2307,6 +2356,74 @@ class RadarDisplay {
                 `;
             }
         }
+    }
+    
+    updateTrackingIconHighlights() {
+        // Update all tracking icons in the aircraft table to reflect current tracking status
+        const allTrackIcons = document.querySelectorAll('.track-icon');
+        allTrackIcons.forEach(icon => {
+            const callsign = icon.getAttribute('data-callsign');
+            const isTracked = this.isTrackingEnabled && this.trackedCallsign === callsign;
+            
+            if (isTracked) {
+                icon.classList.add('tracking');
+                icon.title = `Stop tracking ${callsign}`;
+            } else {
+                icon.classList.remove('tracking');
+                icon.title = `Track ${callsign}`;
+            }
+        });
+    }
+    
+    startTrackingAircraft(callsign) {
+        // Stop any existing tracking first
+        if (this.isTrackingEnabled && this.trackedCallsign) {
+            console.log(`Stopping tracking for ${this.trackedCallsign} to start tracking ${callsign}`);
+            this.stopTracking();
+        }
+        
+        // Set tracking parameters for new aircraft
+        this.trackedCallsign = callsign.toUpperCase().trim();
+        this.isTrackingEnabled = true;
+        
+        console.log(`Aircraft tracking started for callsign: ${this.trackedCallsign}`);
+        
+        // Show tracking indicator
+        this.showTrackingIndicator();
+        
+        // Immediately track if aircraft is currently visible
+        const marker = this.aircraftMarkers.get(this.trackedCallsign);
+        if (marker && marker.aircraftData) {
+            // Get the aircraft's current position
+            let aircraftPosition;
+            
+            if (this.smoothMovementEnabled && this.aircraftPositions.has(this.trackedCallsign)) {
+                // Use smooth movement position if available
+                const positionData = this.aircraftPositions.get(this.trackedCallsign);
+                aircraftPosition = [positionData.currentLat, positionData.currentLng];
+            } else {
+                // Use actual position
+                aircraftPosition = [marker.aircraftData.latitude, marker.aircraftData.longitude];
+            }
+            
+            // Center map on the aircraft with appropriate zoom
+            const currentZoom = this.map.getZoom();
+            const targetZoom = Math.max(currentZoom, 8); // Ensure minimum zoom level for tracking
+            
+            this.map.setView(aircraftPosition, targetZoom, {
+                animate: true,
+                duration: 1.5 // Smooth animation
+            });
+            
+            // Highlight the tracked aircraft (this will remove previous highlighting)
+            this.highlightTrackedAircraft(this.trackedCallsign);
+            
+            // Update the tracking indicator to show found status
+            this.updateTrackingIndicator(true);
+        }
+        
+        // Update tracking icon highlights in the aircraft table
+        this.updateTrackingIconHighlights();
     }
 }
 

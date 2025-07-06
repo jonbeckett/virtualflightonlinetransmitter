@@ -4,8 +4,24 @@ A real-time aircraft tracking system for Microsoft Flight Simulator that display
 
 ## 🎯 Overview
 
-Virtual Flight Online Transmitter enables multiple pilots to server/
-├── radar.php              # Enhanced radar display with toolbar & aircraft table
+Virtual Flight Online Transmitter enables multiple pilots to serve### Aircraft Tracking & Following
+Follow specific aircraft automatically using URL parameters or the aircraft table:
+
+**URL Parameter Support:** `radar.php?callsign=AIRCRAFT_CALLSIGN`
+
+**Table Tracking:** Click the crosshairs icon (🎯) next to any aircraft in the aircraft table to start tracking
+
+**Examples:**
+- `radar.php?callsign=N123AB` - Track aircraft N123AB
+- `radar.php?callsign=AAL123` - Track airline flight AAL123
+- `radar.php?callsign=MYSIM` - Track aircraft with callsign MYSIM
+
+**Features:**
+- **Visual Highlighting**: Tracked aircraft glow orange with pulsing animation
+- **Auto-centering**: Map continuously follows the tracked aircraft
+- **Status Banner**: Shows tracking status and aircraft availability
+- **Easy Access**: Click tracking icon in aircraft table or use URL parameters
+- **Easy Exit**: Click the X button in the banner to stop trackinghp              # Enhanced radar display with toolbar & aircraft table
 ├── radar.js               # Advanced radar functionality & controls
 ├── status.php             # Aircraft status table dashboard
 ├── transmit.php           # Data submission endpoint
@@ -153,7 +169,8 @@ Virtual Flight Online Transmitter enables multiple pilots to server/
   - Draggable and scrollable aircraft list
   - Real-time sync with map (5-second updates)
   - Click-to-focus on aircraft with smooth zoom
-  - Displays callsign, pilot name, aircraft type, altitude, and speed
+  - **Track Aircraft Icon**: One-click tracking via crosshairs icon for each aircraft
+  - Displays track icon, callsign, pilot name, aircraft type, altitude, and speed
   - Responsive design for mobile devices
 - **Advanced Map Features**:
   - Live aircraft tracking with heading indicators
@@ -345,8 +362,9 @@ Cycle through different map views with the layers button (`L` key):
 - **Drag**: Click and drag the table header to reposition
 - **Scroll**: Use mouse wheel or scroll bars for long aircraft lists
 - **Click to Focus**: Click any aircraft row to zoom and center on that aircraft
+- **Track Aircraft**: Click the crosshairs icon (🎯) next to any aircraft to start tracking it
 - **Real-time Updates**: Table refreshes every 5 seconds with map data
-- **Columns**: Callsign, Pilot Name, Aircraft Type, Altitude (ft), Speed (kts)
+- **Columns**: Track Icon, Callsign, Pilot Name, Aircraft Type, Altitude (ft), Speed (kts)
 
 ### Coordinate Grid
 - **Toggle**: Click the ⚏ button or press `G` key

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Virtual Flight Online - Aircraft Status</title>
-    <link rel="shortcut icon" type="image/jpg" href="virtualflightonline.jpg"/>
+    <link rel="shortcut icon" type="image/jpg" href="img/vfo_logo_300x300.jpg"/>
     
     <!-- Bootstrap CSS (Updated to latest) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,110 +16,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     
     <!-- Custom CSS -->
-    <link href="style.css" rel="stylesheet" />
-    <link rel="icon" href="https://transmitter.virtualflight.online/vfo_logo_300x300.jpg" />
-    <style>
-        /* Enhanced styling for better UX */
-        .status-header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            border-radius: 0 0 15px 15px;
-        }
-        
-        .status-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-        
-        .status-card-header {
-            background: #f8f9fa;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #dee2e6;
-            font-weight: 600;
-        }
-        
-        .status-card-body {
-            padding: 1.5rem;
-        }
-        
-        .aircraft-table {
-            font-size: 0.9rem;
-        }
-        
-        .aircraft-table th {
-            background: #f8f9fa;
-            border-top: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .aircraft-table th:hover {
-            background: #e9ecef;
-        }
-        
-        .callsign-link {
-            color: #0d6efd;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .callsign-link:hover {
-            color: #0a58ca;
-            text-decoration: underline;
-        }
-        
-        .refresh-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: #e7f3ff;
-            border: 1px solid #b8daff;
-            border-radius: 0.375rem;
-            font-size: 0.9rem;
-        }
-        
-        .refresh-indicator.updating {
-            background: #fff3cd;
-            border-color: #ffecb5;
-        }
-        
-        .refresh-indicator .spinner {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .map-container {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .table-container {
-            max-height: 600px;
-            overflow-y: auto;
-            border-radius: 8px;
-        }
-        
-        @media (max-width: 768px) {
-            .status-header h1 {
-                font-size: 2rem;
-            }
-            
-            .aircraft-table {
-                font-size: 0.8rem;
-            }
-        }
-    </style>
+    <link href="css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/status.css" />
+    <link rel="icon" href="img/vfo_logo_300x300.jpg" />
 </head>
 <body class="bg-light">
     <header class="status-header">
@@ -293,6 +192,6 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     
     <!-- Enhanced Status JS -->
-    <script src="status_improved.js?t=<?php echo time(); ?>"></script>
+    <script src="js/status_improved.js?t=<?php echo time(); ?>"></script>
 </body>
 </html>
