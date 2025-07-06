@@ -289,10 +289,23 @@ class RadarDisplay {
     }
     
     createPopupContent(aircraft) {
+        const isTracked = this.trackedCallsign === aircraft.callsign;
+        const trackingIcon = isTracked ? '🎯' : '📍';
+        const trackingText = isTracked ? 'Stop Tracking' : 'Track Aircraft';
+        const trackingColor = isTracked ? '#ff6b6b' : '#4dabf7';
+        
         return `
             <div style="min-width: 200px;">
-                <div style="font-size: 16px; font-weight: bold; margin-bottom: 8px; color: #00ff00;">
-                    ${aircraft.callsign}
+                <div style="font-size: 16px; font-weight: bold; margin-bottom: 8px; color: #00ff00; display: flex; align-items: center; justify-content: space-between;">
+                    <span>${aircraft.callsign}</span>
+                    <span 
+                        id="track-btn-${aircraft.callsign.replace(/[^a-zA-Z0-9]/g, '_')}" 
+                        style="cursor: pointer; font-size: 14px; padding: 2px 6px; background-color: ${trackingColor}; color: white; border-radius: 3px; margin-left: 10px; user-select: none;"
+                        title="${trackingText}"
+                        onclick="window.radar.toggleTrackingFromPopup('${aircraft.callsign}')"
+                    >
+                        ${trackingIcon} ${isTracked ? 'Stop' : 'Track'}
+                    </span>
                 </div>
                 <div style="color: #88ff88; margin-bottom: 8px;">
                     ${aircraft.pilot_name} - ${aircraft.group_name}
@@ -2271,6 +2284,28 @@ class RadarDisplay {
         this.updateTrackingIconHighlights();
         
         console.log('Aircraft tracking stopped');
+    }
+
+    toggleTrackingFromPopup(callsign) {
+        if (this.trackedCallsign === callsign) {
+            // Currently tracking this aircraft, so stop tracking
+            this.stopTracking();
+        } else {
+            // Start tracking this aircraft
+            this.startTrackingAircraft(callsign);
+        }
+        
+        // Update all open popups to reflect the new tracking state
+        this.updateAllPopups();
+    }
+
+    updateAllPopups() {
+        // Update all open popups to reflect current tracking state
+        this.aircraftMarkers.forEach((marker, callsign) => {
+            if (marker.isPopupOpen() && marker.aircraftData) {
+                marker.getPopup().setContent(this.createPopupContent(marker.aircraftData));
+            }
+        });
     }
 
     trackAircraft(aircraftData) {
