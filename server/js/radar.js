@@ -289,7 +289,7 @@ class RadarDisplay {
     }
     
     createPopupContent(aircraft) {
-        const isTracked = this.trackedCallsign === aircraft.callsign;
+        const isTracked = this.trackedCallsign === aircraft.callsign.toUpperCase();
         const trackingIcon = isTracked ? '🎯' : '📍';
         const trackingText = isTracked ? 'Stop Tracking' : 'Track Aircraft';
         const trackingColor = isTracked ? '#ff6b6b' : '#4dabf7';
@@ -1726,7 +1726,7 @@ class RadarDisplay {
                 trackIcon.setAttribute('data-callsign', aircraft.callsign);
                 
                 // Check if this aircraft is currently being tracked
-                const isTracked = this.isTrackingEnabled && this.trackedCallsign === aircraft.callsign;
+                const isTracked = this.isTrackingEnabled && this.trackedCallsign === aircraft.callsign.toUpperCase();
                 if (isTracked) {
                     trackIcon.classList.add('tracking');
                     trackIcon.title = `Stop tracking ${aircraft.callsign}`;
@@ -1738,7 +1738,7 @@ class RadarDisplay {
                     e.stopPropagation(); // Prevent row click
                     
                     // If this aircraft is currently being tracked, stop tracking
-                    if (this.isTrackingEnabled && this.trackedCallsign === aircraft.callsign) {
+                    if (this.isTrackingEnabled && this.trackedCallsign === aircraft.callsign.toUpperCase()) {
                         this.stopTracking();
                     } else {
                         // Start tracking this aircraft
@@ -2283,11 +2283,14 @@ class RadarDisplay {
         // Update tracking icon highlights in the aircraft table
         this.updateTrackingIconHighlights();
         
+        // Update all open popups to reflect the new tracking state
+        this.updateAllPopups();
+        
         console.log('Aircraft tracking stopped');
     }
 
     toggleTrackingFromPopup(callsign) {
-        if (this.trackedCallsign === callsign) {
+        if (this.trackedCallsign === callsign.toUpperCase()) {
             // Currently tracking this aircraft, so stop tracking
             this.stopTracking();
         } else {
@@ -2398,7 +2401,7 @@ class RadarDisplay {
         const allTrackIcons = document.querySelectorAll('.track-icon');
         allTrackIcons.forEach(icon => {
             const callsign = icon.getAttribute('data-callsign');
-            const isTracked = this.isTrackingEnabled && this.trackedCallsign === callsign;
+            const isTracked = this.isTrackingEnabled && this.trackedCallsign === callsign.toUpperCase();
             
             if (isTracked) {
                 icon.classList.add('tracking');
@@ -2459,6 +2462,9 @@ class RadarDisplay {
         
         // Update tracking icon highlights in the aircraft table
         this.updateTrackingIconHighlights();
+        
+        // Update all open popups to reflect the new tracking state
+        this.updateAllPopups();
     }
 }
 
