@@ -56,7 +56,7 @@ class RadarDisplay {
                 className: 'map-tiles',
                 opacity: 0.8,
                 aircraftColor: '#00ff00',
-                labelBackground: 'rgba(0, 128, 0, 0.5)' // White background for light maps
+                labelBackground: 'rgba(0, 32, 0, 0.9)' // White background for light maps
             },
             {
                 name: 'Satellite',
