@@ -36,11 +36,35 @@ Virtual Flight Online Transmitter enables multiple pilots to server/
 
 ### Advanced Radar Interface
 - **Draggable Toolbar** - Professional aviation-style controls that can be repositioned
-- **Multi-Layer Maps** - 7 different map views from street maps to aviation charts
+- **Multi-Layer Maps** - 6 different map views from street maps to aviation charts
 - **Aircraft Table** - Synchronized, draggable table with click-to-focus functionality
+- **Smooth Movement** - Physics-based aircraft movement with realistic heading and speed interpolation
+- **Measurement Tools** - Right-click drag for distance/bearing measurements and Shift+right-click for range rings
+- **Aircraft Tracking** - URL parameter support to follow specific aircraft (e.g., `?callsign=ABC123`)
 - **Keyboard Shortcuts** - Complete keyboard navigation for all functions
 - **Touch Support** - Full mobile and tablet compatibility
 - **Responsive Design** - Adapts to any screen size from mobile to large displays
+
+### Professional Measurement Tools
+- **Distance/Bearing Tool** - Right-click and drag to measure distances in nautical miles and true bearings
+- **Range Ring Tool** - Shift+right-click and drag to create circular range indicators with radius labels
+- **Real-time Updates** - Both tools update measurements dynamically during dragging
+- **Aviation Units** - All measurements displayed in standard aviation units (NM, degrees)
+- **Auto-cleanup** - Tools disappear when mouse button is released
+
+### Smooth Aircraft Movement
+- **Physics-based Interpolation** - Aircraft move realistically based on actual heading and groundspeed
+- **Label Synchronization** - Aircraft labels and connecting lines move smoothly with aircraft
+- **Toggle Control** - Enable/disable smooth movement with toolbar button or 'S' key
+- **Performance Optimized** - Efficient updates only when aircraft actually move
+- **Visual Feedback** - Clear on/off state indication in toolbar
+
+### Aircraft Tracking & Following
+- **URL Parameter Support** - Direct links to track specific aircraft (`radar.php?callsign=ABC123`)
+- **Visual Highlighting** - Tracked aircraft glow orange with pulsing animation
+- **Status Indicator** - Live tracking banner with aircraft found/not found status
+- **Continuous Following** - Map automatically centers on tracked aircraft position
+- **Easy Disable** - Click X button to stop tracking and return to normal view
 
 ### Real-Time Data Management
 - **Zero-database design** - Uses APCu in-memory cache for maximum speed
@@ -64,15 +88,23 @@ Virtual Flight Online Transmitter enables multiple pilots to server/
 
 ## 🚀 Recent Enhancements
 
+### Version 3.0 Features
+- ✅ **Smooth Aircraft Movement** with physics-based interpolation using heading and groundspeed
+- ✅ **Measurement Tools** including distance/bearing and range ring tools with real-time updates
+- ✅ **Aircraft Tracking** via URL parameters to follow specific aircraft automatically
+- ✅ **Enhanced Visual Effects** with pulsing animations and improved aircraft highlighting
+- ✅ **Label Synchronization** ensuring aircraft labels move smoothly with their aircraft
+- ✅ **Professional Measurement Display** showing distances in nautical miles and bearings in degrees
+
 ### Version 2.0 Features
 - ✅ **Draggable Toolbar** with zoom, home, center, fullscreen, layers, and aircraft list controls
-- ✅ **Multi-Layer Map Support** with 7 different tile providers and smooth transitions
+- ✅ **Multi-Layer Map Support** with 6 different tile providers and smooth transitions
 - ✅ **Interactive Aircraft Table** with drag, scroll, and click-to-focus functionality
 - ✅ **Keyboard Navigation** for all radar functions and controls
 - ✅ **Mobile Optimization** with touch-friendly interface and responsive design
 - ✅ **Real-Time Synchronization** between map display and aircraft table
 - ✅ **Professional Styling** with aviation-themed dark interface
-- ✅ **Enhanced Performance** with optimized data handling and smooth animationse position data from Microsoft Flight Simulator, creating a shared virtual airspace experience with:
+- ✅ **Enhanced Performance** with optimized data handling and smooth animations
 
 - **Advanced interactive radar display** with draggable toolbar, multi-layer maps, and aircraft table
 - **Professional aviation controls** with zoom, centering, fullscreen, and layer management
@@ -87,18 +119,36 @@ Virtual Flight Online Transmitter enables multiple pilots to server/
 - **Draggable Toolbar** with professional aviation controls:
   - Zoom In/Out buttons with smooth animation
   - Home button (auto-fit all aircraft)
-  - Center button (focus on map center)
+  - Center button (focus on aircraft)
   - Fullscreen toggle for immersive viewing
-  - Map layer cycling through 7 different views
+  - Map layer cycling through 6 different views
   - Aircraft list toggle with synchronized table
+  - Grid toggle for coordinate reference
+  - Smooth movement toggle for realistic aircraft motion
 - **Multi-Layer Map Support**:
   - OpenStreetMap (default)
   - Satellite imagery
   - Dark mode for night operations
   - Aviation chart overlay
   - Topographic terrain view
-  - Detailed terrain elevation
   - No map (aircraft only)
+- **Professional Measurement Tools**:
+  - **Distance/Bearing Measurement**: Right-click and drag to measure distances in nautical miles and true bearing angles
+  - **Range Ring Tool**: Shift+right-click and drag to create circular range indicators with radius labels
+  - **Real-time Updates**: Both tools update measurements dynamically as you drag
+  - **Aviation Units**: All measurements in standard aviation format (NM, degrees)
+  - **Auto-cleanup**: Tools disappear when mouse button is released
+- **Smooth Aircraft Movement**:
+  - **Physics-based Animation**: Aircraft move realistically based on heading and groundspeed
+  - **Label Synchronization**: Aircraft labels and connecting lines follow smoothly
+  - **Toggle Control**: Enable/disable with toolbar button or 'S' keyboard shortcut
+  - **Performance Optimized**: Efficient updates only when aircraft positions change
+- **Aircraft Tracking & Following**:
+  - **URL Parameter Support**: Link directly to track specific aircraft (`radar.php?callsign=ABC123`)
+  - **Visual Highlighting**: Tracked aircraft glow orange with pulsing animation
+  - **Continuous Following**: Map automatically centers on tracked aircraft
+  - **Status Banner**: Live indicator showing tracking status and aircraft availability
+  - **Easy Controls**: Click X to stop tracking or use normal radar controls
 - **Interactive Aircraft Table**:
   - Draggable and scrollable aircraft list
   - Real-time sync with map (5-second updates)
@@ -111,6 +161,7 @@ Virtual Flight Online Transmitter enables multiple pilots to server/
   - Auto-fit view to show all aircraft on page load
   - Zoom-based label visibility (appears at zoom level 6+)
   - Smooth animations and marker highlighting
+  - Coordinate grid overlay with aviation-standard formatting
 
 ### Status Dashboard (`status.php`)
 - Sortable table view of all online aircraft
@@ -230,20 +281,64 @@ The draggable toolbar provides quick access to all radar functions:
 | 🔍+ | Zoom In | `+` or `=` |
 | 🔍- | Zoom Out | `-` |
 | 🏠 | Home (Auto-fit all aircraft) | `H` |
-| 🎯 | Center on map center | `C` |
-| ⛶ | Toggle fullscreen | `F` |
-| 🗺️ | Cycle map layers | `M` |
-| 📋 | Toggle aircraft table | `A` |
+| 🎯 | Center on Aircraft | `C` |
+| 📋 | Toggle Aircraft List | `A` |
+| ⚏ | Toggle Coordinate Grid | `G` |
+| 🏃 | Toggle Smooth Movement | `S` |
+| 🗺️ | Cycle Map Layers | `L` |
+| ⛶ | Toggle Fullscreen | `Shift+F` |
+
+### Measurement Tools
+Professional aviation measurement tools for distance and range calculations:
+
+| Tool | Activation | Function |
+|------|-----------|----------|
+| **Distance/Bearing** | Right-click + Drag | Measures distance in nautical miles and true bearing in degrees |
+| **Range Ring** | Shift + Right-click + Drag | Creates circular range indicator with radius in nautical miles |
+
+**Usage Tips:**
+- Both tools provide real-time updates as you drag
+- Measurements use standard aviation units (NM, degrees)
+- Tools automatically disappear when you release the mouse button
+- Perfect for flight planning, range calculations, and navigation
+
+### Aircraft Tracking
+Follow specific aircraft automatically using URL parameters:
+
+**Syntax:** `radar.php?callsign=AIRCRAFT_CALLSIGN`
+
+**Examples:**
+- `radar.php?callsign=N123AB` - Track aircraft N123AB
+- `radar.php?callsign=AAL123` - Track airline flight AAL123
+- `radar.php?callsign=MYSIM` - Track aircraft with callsign MYSIM
+
+**Features:**
+- **Visual Highlighting**: Tracked aircraft glow orange with pulsing animation
+- **Auto-centering**: Map continuously follows the tracked aircraft
+- **Status Banner**: Shows tracking status and aircraft availability
+- **Easy Exit**: Click the X button in the banner to stop tracking
+
+### Smooth Movement
+Realistic aircraft animation based on actual flight data:
+
+**Toggle Methods:**
+- Click the 🏃 button in toolbar
+- Press `S` key
+
+**Features:**
+- **Physics-based**: Aircraft move according to their actual heading and groundspeed
+- **Label Sync**: Aircraft labels and connecting lines move smoothly with aircraft
+- **Performance**: Optimized to update only when aircraft actually move
+- **Visual State**: Button illuminates when smooth movement is active
 
 ### Map Layers
-Cycle through different map views with the layers button:
+Cycle through different map views with the layers button (`L` key):
 1. **OpenStreetMap** - Standard street and terrain view
-2. **Satellite** - High-resolution satellite imagery
+2. **Satellite** - High-resolution satellite imagery  
 3. **Dark Mode** - Professional dark theme for night operations
 4. **Aviation Chart** - Aeronautical navigation charts
 5. **Topographic** - Detailed topographic terrain view
-6. **Terrain** - Elevation and terrain features
-7. **No Map** - Aircraft-only view with transparent background
+6. **No Map** - Aircraft-only view with transparent background
 
 ### Aircraft Table
 - **Toggle**: Click the 📋 button or press `A` key
@@ -253,18 +348,33 @@ Cycle through different map views with the layers button:
 - **Real-time Updates**: Table refreshes every 5 seconds with map data
 - **Columns**: Callsign, Pilot Name, Aircraft Type, Altitude (ft), Speed (kts)
 
+### Coordinate Grid
+- **Toggle**: Click the ⚏ button or press `G` key
+- **Aviation Format**: Shows latitude/longitude in degrees and minutes
+- **Zoom Adaptive**: Grid spacing automatically adjusts based on zoom level
+- **Professional Display**: Uses standard aviation coordinate formatting
+
 ### Navigation Tips
 - **Auto-positioning**: Map automatically centers on all aircraft at startup
 - **Smooth Zoom**: All zoom operations use smooth animations
 - **Touch Support**: All controls work on mobile devices and tablets
 - **Persistent Settings**: Toolbar position and table state remembered during session
 - **Responsive Design**: Interface adapts to different screen sizes
+- **Label Dragging**: Drag aircraft labels to custom positions (position is remembered)
 
 ### For Pilots
 1. Configure your flight sim addon to send data to `transmit.php`
 2. Send updates every 5-30 seconds for smooth tracking
 3. Your aircraft appears automatically on radar with your callsign
 4. Aircraft data updates in real-time in both map and table views
+5. Share direct tracking links: `radar.php?callsign=YOUR_CALLSIGN`
+
+### For Air Traffic Controllers
+1. Use measurement tools for separation and navigation guidance
+2. Track specific aircraft using URL parameters
+3. Enable smooth movement for realistic aircraft behavior
+4. Use coordinate grid for precise position references
+5. Multiple map layers provide optimal situational awareness
 
 ### For Developers
 - Use JSON endpoints for custom integrations
