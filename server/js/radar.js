@@ -91,8 +91,8 @@ class RadarDisplay {
                 attribution: '© OpenTopoMap (CC-BY-SA)',
                 className: '',
                 opacity: 0.8,
-                aircraftColor: '#fff',
-                labelBackground: 'rgba(0, 0, 0, 0.5)' // Cornsilk background for topographic maps
+                aircraftColor: '#000',
+                labelBackground: 'rgba(255, 255, 255, 0.8)' // Cornsilk background for topographic maps
             },
             {
                 name: 'No Map',
