@@ -52,15 +52,15 @@ body {
 }
 
 .aircraft-icon {
-    color: #00ff00 !important;
-    filter: drop-shadow(0 0 3px #00ff00);
+    /* Color will be set dynamically by JavaScript based on tile layer */
+    filter: drop-shadow(0 0 3px currentColor);
     font-size: 20px !important;
 }
 
 /* Tracked aircraft highlighting */
 .aircraft-marker.tracked-aircraft .aircraft-icon {
     color: #ff6600 !important;
-    filter: drop-shadow(0 0 8px #ff6600) drop-shadow(0 0 12px #ff6600);
+    filter: drop-shadow(0 0 8px #ff6600) drop-shadow(0 0 12px #ff6600) !important;
     animation: pulse-orange 2s infinite;
 }
 

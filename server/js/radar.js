@@ -54,42 +54,54 @@ class RadarDisplay {
                 url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 attribution: '© OpenStreetMap contributors',
                 className: 'map-tiles',
-                opacity: 0.6
+                opacity: 0.8,
+                aircraftColor: '#00ff00',
+                labelBackground: 'rgba(0, 128, 0, 0.5)' // White background for light maps
             },
             {
                 name: 'Satellite',
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                 attribution: '© Esri, Maxar, Earthstar Geographics',
                 className: '',
-                opacity: 0.8
+                opacity: 0.8,
+                aircraftColor: '#fff',
+                labelBackground: 'rgba(0, 0, 0, 0.5)' // Dark background for satellite imagery
             },
             {
                 name: 'Dark Mode',
                 url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
                 attribution: '© OpenStreetMap contributors © CARTO',
                 className: '',
-                opacity: 0.7
+                opacity: 0.8,
+                aircraftColor: '#ddd',
+                labelBackground: 'rgba(0, 0, 0, 0.5)' // Very dark background for dark mode
             },
             {
                 name: 'Aviation Chart',
                 url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
                 attribution: '© OpenStreetMap contributors © CARTO',
                 className: '',
-                opacity: 0.5
+                opacity: 0.8,
+                aircraftColor: '#333',
+                labelBackground: 'rgba(255, 255, 255, 0.5)' // Light lavender background for aviation charts
             },
             {
                 name: 'Topographic',
                 url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
                 attribution: '© OpenTopoMap (CC-BY-SA)',
                 className: '',
-                opacity: 0.6
+                opacity: 0.8,
+                aircraftColor: '#fff',
+                labelBackground: 'rgba(0, 0, 0, 0.5)' // Cornsilk background for topographic maps
             },
             {
                 name: 'No Map',
                 url: null,
                 attribution: '',
                 className: '',
-                opacity: 0
+                opacity: 0,
+                aircraftColor: '#1e90ff', // Dodger blue for no map background
+                labelBackground: 'rgba(240, 248, 255, 0.95)' // Alice blue background for no map
             }
         ];
         
@@ -174,6 +186,9 @@ class RadarDisplay {
         
         // Update the layers button to show current layer
         this.updateLayersButton();
+        
+        // Update aircraft colors for the new tile layer
+        this.updateAircraftColors();
     }
     
     updateLayersButton() {
@@ -276,13 +291,17 @@ class RadarDisplay {
             '<i class="fas fa-plane aircraft-icon"></i>' : 
             '<i class="fas fa-circle aircraft-icon"></i>';
         
+        // Get aircraft color for current tile layer
+        const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+        const aircraftColor = currentTileLayer.aircraftColor || '#ff6b35'; // Default orange
+        
         // Calculate rotation angle (heading - 90 degrees to align with north)
         let rotationAngle = aircraft.heading - 90;
         if (rotationAngle < 0) rotationAngle += 360;
         
         return L.divIcon({
             className: 'aircraft-marker',
-            html: `<div style="transform: rotate(${rotationAngle}deg);">${iconHtml}</div>`,
+            html: `<div style="transform: rotate(${rotationAngle}deg); color: ${aircraftColor};">${iconHtml}</div>`,
             iconSize: [24, 24],
             iconAnchor: [12, 12]
         });
@@ -349,11 +368,16 @@ class RadarDisplay {
         const endLat = startLat + (distance * Math.cos(heading));
         const endLng = startLng + (distance * Math.sin(heading));
         
+        // Get aircraft color for current tile layer and make heading line slightly different
+        const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+        const baseColor = currentTileLayer.aircraftColor || '#ff6b35';
+        const headingLineColor = this.getHeadingLineColor(baseColor);
+        
         const headingLine = L.polyline([
             [startLat, startLng],
             [endLat, endLng]
         ], {
-            color: '#ffff00',
+            color: headingLineColor,
             weight: 1, // Thinner line (was 2)
             opacity: 0.8
         });
@@ -365,6 +389,12 @@ class RadarDisplay {
     createAircraftLabel(aircraft) {
         const callsign = aircraft.callsign;
         const position = [aircraft.latitude, aircraft.longitude];
+        
+        // Get aircraft color for current tile layer
+        const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+        const aircraftColor = currentTileLayer.aircraftColor || '#ff6b35';
+        const labelBackground = currentTileLayer.labelBackground || 'rgba(0, 20, 40, 0.95)';
+        const labelLineColor = aircraftColor; // Use same color as aircraft
         
         // Get pixel offset for this aircraft (either saved or default)
         let pixelOffset;
@@ -379,19 +409,18 @@ class RadarDisplay {
         // Convert pixel offset to geographic position based on current zoom
         const labelPosition = this.pixelOffsetToLatLng(position, pixelOffset);
         
-        // Create label content with better styling
+        // Create label content with tile layer-specific styling
         const labelText = `
             <div style="
-                background: rgba(0, 20, 40, 0.95);
-                color: #00ff00;
+                background: ${labelBackground};
+                color: ${aircraftColor};
                 padding: 3px 6px;
-                border: 1px solid #00ff00;
+                border: 1px solid ${aircraftColor};
                 border-radius: 3px;
                 font-family: 'Courier New', monospace;
                 font-size: 10px;
                 white-space: nowrap;
-                box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
-                backdrop-filter: blur(2px);
+                box-shadow: 0 0 8px ${aircraftColor}40;
                 cursor: move;
             ">
                 <div style="font-weight: bold; font-size: 11px;">${aircraft.callsign}</div>
@@ -412,9 +441,9 @@ class RadarDisplay {
             draggable: true
         });
         
-        // Create connecting line from aircraft to center of label
+        // Create connecting line from aircraft to center of label with dynamic color
         const labelLine = L.polyline([position, labelPosition], {
-            color: '#00ff00',
+            color: labelLineColor,
             weight: 1,
             opacity: 0.7,
             dashArray: '1, 2'
@@ -1555,7 +1584,15 @@ class RadarDisplay {
             document.querySelector('.radar-container').appendChild(notification);
         }
         
-        notification.textContent = `Map Layer: ${currentLayer.name}`;
+        notification.innerHTML = `
+            <div style="font-weight: bold;">Map Layer: ${currentLayer.name}</div>
+            <div style="font-size: 12px; margin-top: 2px;">
+                Aircraft Color: <span style="color: ${currentLayer.aircraftColor};">●</span> ${currentLayer.aircraftColor}
+            </div>
+            <div style="font-size: 12px; margin-top: 1px;">
+                Label Background: <span style="background: ${currentLayer.labelBackground}; padding: 2px 4px; border-radius: 2px; color: ${currentLayer.aircraftColor};">ABC</span> 
+            </div>
+        `;
         notification.style.opacity = '1';
         
         // Auto-hide after 2 seconds
@@ -1909,19 +1946,23 @@ class RadarDisplay {
             const labelMarker = layers[1]; // Marker is second
             
             try {
-                // Create updated label content
+                // Get current tile layer colors
+                const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+                const aircraftColor = currentTileLayer.aircraftColor || '#ff6b35';
+                const labelBackground = currentTileLayer.labelBackground || 'rgba(0, 20, 40, 0.95)';
+                
+                // Create updated label content with dynamic colors
                 const updatedLabelText = `
                     <div style="
-                        background: rgba(0, 20, 40, 0.95);
-                        color: #00ff00;
+                        background: ${labelBackground};
+                        color: ${aircraftColor};
                         padding: 3px 6px;
-                        border: 1px solid #00ff00;
+                        border: 1px solid ${aircraftColor};
                         border-radius: 3px;
                         font-family: 'Courier New', monospace;
                         font-size: 10px;
                         white-space: nowrap;
-                        box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
-                        backdrop-filter: blur(2px);
+                        box-shadow: 0 0 8px ${aircraftColor}40;
                         cursor: move;
                     ">
                         <div style="font-weight: bold; font-size: 11px;">${aircraft.callsign}</div>
@@ -1940,6 +1981,17 @@ class RadarDisplay {
                 });
                 
                 labelMarker.setIcon(updatedIcon);
+                
+                // Also update the connecting line color to match the current tile layer
+                const labelLine = layers[0]; // Line is first
+                if (labelLine instanceof L.Polyline) {
+                    labelLine.setStyle({
+                        color: aircraftColor,
+                        weight: 1,
+                        opacity: 0.7,
+                        dashArray: '1, 2'
+                    });
+                }
             } catch (error) {
                 console.warn(`Error updating label content for ${callsign}:`, error);
             }
@@ -1994,6 +2046,7 @@ class RadarDisplay {
         this.measurementActive = true;
         this.measurementStartPoint = startLatLng;
         
+               
         // Create measurement line
         this.measurementLine = L.polyline([startLatLng, startLatLng], {
             color: '#ff0000',
@@ -2350,10 +2403,53 @@ class RadarDisplay {
     }
     
     highlightTrackedAircraft(callsign) {
-        // Remove previous highlighting
-        const allMarkers = document.querySelectorAll('.aircraft-marker.tracked-aircraft');
-        allMarkers.forEach(marker => {
-            marker.classList.remove('tracked-aircraft');
+        // Remove previous highlighting from all aircraft and their labels
+        this.aircraftMarkers.forEach((marker, markerCallsign) => {
+            const markerElement = marker.getElement();
+            if (markerElement) {
+                markerElement.classList.remove('tracked-aircraft');
+                // Reset to normal color for this tile layer
+                const iconElement = markerElement.querySelector('.aircraft-icon');
+                if (iconElement && marker.aircraftData) {
+                    const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+                    const normalColor = currentTileLayer.aircraftColor || '#ff6b35';
+                    iconElement.style.color = normalColor;
+                    iconElement.style.filter = `drop-shadow(0 0 3px ${normalColor})`;
+                }
+            }
+            
+            // Also reset label colors to normal
+            const labelGroup = this.labelLayers.get(markerCallsign);
+            if (labelGroup && marker.aircraftData) {
+                const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+                const normalColor = currentTileLayer.aircraftColor || '#ff6b35';
+                const normalBackground = currentTileLayer.labelBackground || 'rgba(0, 20, 40, 0.95)';
+                const labelLineColor = normalColor; // Use same color as aircraft
+                
+                labelGroup.eachLayer((layer) => {
+                    if (layer instanceof L.Marker) {
+                        // This is the label marker
+                        const labelElement = layer.getElement();
+                        if (labelElement) {
+                            const labelDiv = labelElement.querySelector('div');
+                            if (labelDiv) {
+                                // Reset to normal tile layer colors including background
+                                labelDiv.style.color = normalColor;
+                                labelDiv.style.backgroundColor = normalBackground;
+                                labelDiv.style.borderColor = normalColor;
+                                labelDiv.style.boxShadow = `0 0 8px ${normalColor}40`;
+                            }
+                        }
+                    } else if (layer instanceof L.Polyline) {
+                        // This is the connecting line
+                        layer.setStyle({
+                            color: labelLineColor,
+                            opacity: 0.7,
+                            weight: 1
+                        });
+                    }
+                });
+            }
         });
         
         // Add highlighting to tracked aircraft
@@ -2362,7 +2458,41 @@ class RadarDisplay {
             const markerElement = trackedMarker.getElement();
             if (markerElement) {
                 markerElement.classList.add('tracked-aircraft');
+                const iconElement = markerElement.querySelector('.aircraft-icon');
+                if (iconElement) {
+                    // Use a bright orange highlight that works with any background
+                    iconElement.style.color = '#ff6600';
+                    iconElement.style.filter = 'drop-shadow(0 0 8px #ff6600) drop-shadow(0 0 12px #ff6600)';
+                }
             }
+        }
+        
+        // Also highlight the tracked aircraft's label if it exists
+        const trackedLabelGroup = this.labelLayers.get(callsign);
+        if (trackedLabelGroup) {
+            trackedLabelGroup.eachLayer((layer) => {
+                if (layer instanceof L.Marker) {
+                    // This is the label marker
+                    const labelElement = layer.getElement();
+                    if (labelElement) {
+                        const labelDiv = labelElement.querySelector('div');
+                        if (labelDiv) {
+                            // Highlight the label with orange including background
+                            labelDiv.style.color = '#ff6600';
+                            labelDiv.style.backgroundColor = 'rgba(255, 102, 0, 0.2)'; // Semi-transparent orange background
+                            labelDiv.style.borderColor = '#ff6600';
+                            labelDiv.style.boxShadow = '0 0 8px #ff660080';
+                        }
+                    }
+                } else if (layer instanceof L.Polyline) {
+                    // This is the connecting line
+                    layer.setStyle({
+                        color: '#ff6600',
+                        opacity: 0.9,
+                        weight: 2
+                    });
+                }
+            });
         }
         
         // Update tracking indicator to show aircraft is found
@@ -2466,12 +2596,82 @@ class RadarDisplay {
         // Update all open popups to reflect the new tracking state
         this.updateAllPopups();
     }
+    
+    updateAircraftColors() {
+        // Update all existing aircraft markers to use the new tile layer's color
+        this.aircraftMarkers.forEach((marker, callsign) => {
+            if (marker.aircraftData) {
+                // Recreate the icon with the new color
+                const newIcon = this.createAircraftIcon(marker.aircraftData);
+                marker.setIcon(newIcon);
+            }
+        });
+        
+        // Update aircraft labels and their connecting lines
+        this.updateLabelColors();
+        
+        // Reapply tracking highlighting if there's a tracked aircraft
+        if (this.isTrackingEnabled && this.trackedCallsign) {
+            this.highlightTrackedAircraft(this.trackedCallsign);
+        }
+        
+        // Also update heading lines
+        this.updateHeadingLineColors();
+        
+        console.log(`Aircraft colors updated for tile layer: ${this.tileLayers[this.currentTileLayerIndex].name}`);
+    }
+    
+    getHeadingLineColor(aircraftColor) {
+        // Create a slightly different color for heading lines based on aircraft color
+        // This ensures good visibility while maintaining color coordination
+        const colorMap = {
+            '#ff6b35': '#ffaa00', // Orange aircraft -> Golden heading
+            '#00ff41': '#66ff66', // Green aircraft -> Light green heading  
+            '#40e0d0': '#00ffff', // Turquoise aircraft -> Cyan heading
+            '#8a2be2': '#dda0dd', // Blue violet aircraft -> Plum heading
+            '#dc143c': '#ff69b4', // Crimson aircraft -> Hot pink heading
+            '#1e90ff': '#87ceeb'  // Dodger blue aircraft -> Sky blue heading
+        };
+        
+        return colorMap[aircraftColor] || '#ffff00'; // Default to yellow if color not found
+    }
+    
+    updateHeadingLineColors() {
+        // Update all existing heading lines to use the new tile layer's colors
+        this.headingLines.forEach((line, callsign) => {
+            const marker = this.aircraftMarkers.get(callsign);
+            if (marker && marker.aircraftData) {
+                // Remove old line and redraw with new color
+                this.map.removeLayer(line);
+                this.drawHeadingLine(marker.aircraftData);
+            }
+        });
+    }
+
+    updateLabelColors() {
+        // Update all existing aircraft labels and their connecting lines to use new tile layer colors
+        this.labelLayers.forEach((labelGroup, callsign) => {
+            const marker = this.aircraftMarkers.get(callsign);
+            if (marker && marker.aircraftData) {
+                // Remove old label group and recreate with new colors
+                this.map.removeLayer(labelGroup);
+                
+                // Create new label with updated colors
+                const newLabelGroup = this.createAircraftLabel(marker.aircraftData);
+                newLabelGroup.addTo(this.map);
+                
+                // Update the stored reference
+                this.labelLayers.set(callsign, newLabelGroup);
+            }
+        });
+    }
 }
 
 // Initialize the radar display when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Initializing Virtual Flight Online Radar Display');
     window.radar = new RadarDisplay();
+    window.radarDisplay = window.radar; // Backwards compatibility alias
 });
 
 // Handle window resize
