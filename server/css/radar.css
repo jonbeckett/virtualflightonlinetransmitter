@@ -1,8 +1,20 @@
+:root {
+    /* Default color scheme - will be overridden by JavaScript */
+    --primary-color: #00ff00;
+    --background-color: rgba(0, 20, 40, 0.95);
+    --border-color: #00ff00;
+    --hover-color: rgba(0, 60, 120, 0.9);
+    --accent-color: #00ffff;
+    --text-color: #00ff00;
+    --secondary-bg: rgba(0, 40, 80, 0.8);
+    --shadow-color: rgba(0, 255, 0, 0.3);
+}
+
 body {
     margin: 0;
     padding: 0;
     background: #001122;
-    color: #00ff00;
+    color: var(--text-color);
     font-family: 'Courier New', monospace;
 }
 
@@ -23,16 +35,16 @@ body {
     position: absolute;
     top: 10px;
     left: 10px;
-    background: rgba(0, 20, 40, 0.9);
+    background: var(--background-color);
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid #00ff00;
+    border: 1px solid var(--border-color);
     z-index: 1000;
     min-width: 250px;
 }
 
 .radar-info h3 {
-    color: #00ff00;
+    color: var(--primary-color);
     margin: 0 0 10px 0;
     font-size: 18px;
     text-align: center;
@@ -48,7 +60,7 @@ body {
 }
 
 .radar-stats A:hover {
-    color: #00ff00 !important;
+    color: var(--primary-color) !important;
 }
 
 .aircraft-icon {
@@ -97,31 +109,32 @@ body {
 }
 
 .leaflet-popup-content-wrapper {
-    background: rgba(0, 20, 40, 0.95);
-    color: #00ff00;
-    border: 1px solid #00ff00;
+    background: var(--background-color);
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
 }
 
 .leaflet-popup-content {
-    color: #00ff00;
+    color: var(--primary-color);
     font-family: 'Courier New', monospace;
 }
 
 .leaflet-popup-tip {
-    background: rgba(0, 20, 40, 0.95);
-    border: 1px solid #00ff00;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
 }
 
 .refresh-indicator {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(0, 20, 40, 0.9);
+    background: var(--background-color);
     padding: 8px 12px;
     border-radius: 4px;
-    border: 1px solid #00ff00;
+    border: 1px solid var(--border-color);
     z-index: 1000;
     font-size: 12px;
+    color: var(--primary-color);
 }
 
 .refresh-active {
@@ -138,15 +151,15 @@ body {
     top: 50%;
     right: 20px;
     transform: translateY(-50%);
-    background: rgba(0, 20, 40, 0.95);
-    border: 2px solid #00ff00;
+    background: var(--background-color);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     padding: 8px;
     z-index: 1001;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+    box-shadow: 0 4px 12px var(--shadow-color);
     backdrop-filter: blur(10px);
     user-select: none;
     transition: all 0.3s ease;
@@ -168,8 +181,8 @@ body {
 }
 
 .radar-toolbar:hover {
-    box-shadow: 0 6px 20px rgba(0, 255, 0, 0.4);
-    border-color: #00ffff;
+    box-shadow: 0 6px 20px var(--shadow-color);
+    border-color: var(--accent-color);
 }
 
 /* Prevent toolbar from changing size during drag */
@@ -180,13 +193,13 @@ body {
 }
 
 .toolbar-drag-handle {
-    background: rgba(0, 40, 80, 0.8);
-    border: 1px solid #00ff00;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     padding: 6px 8px;
     cursor: grab;
     text-align: center;
-    color: #00ff00;
+    color: var(--primary-color);
     font-size: 10px;
     margin-bottom: 4px;
     transition: all 0.2s ease;
@@ -199,8 +212,8 @@ body {
 }
 
 .toolbar-drag-handle:hover {
-    background: rgba(0, 60, 120, 0.9);
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+    background: var(--hover-color);
+    box-shadow: 0 0 8px var(--shadow-color);
 }
 
 .toolbar-drag-handle:active {
@@ -208,10 +221,10 @@ body {
 }
 
 .toolbar-btn {
-    background: rgba(0, 40, 80, 0.8);
-    border: 1px solid #00ff00;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    color: #00ff00;
+    color: var(--primary-color);
     padding: 8px 12px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -224,14 +237,14 @@ body {
 }
 
 .toolbar-btn:hover {
-    background: rgba(0, 60, 120, 0.9);
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+    background: var(--hover-color);
+    box-shadow: 0 0 8px var(--shadow-color);
     transform: translateY(-1px);
 }
 
 .toolbar-btn:active {
     transform: translateY(0);
-    box-shadow: 0 0 4px rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 4px var(--shadow-color);
 }
 
 .toolbar-btn i {
@@ -240,7 +253,7 @@ body {
 
 .toolbar-separator {
     height: 1px;
-    background: rgba(0, 255, 0, 0.3);
+    background: var(--shadow-color);
     margin: 4px 0;
 }
 
@@ -272,14 +285,14 @@ body {
     top: 20%;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 20, 40, 0.95);
-    border: 2px solid #00ff00;
+    background: var(--background-color);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     z-index: 1500;
     display: none;
     min-width: 600px;
     max-width: 800px;
-    box-shadow: 0 6px 20px rgba(0, 255, 0, 0.3);
+    box-shadow: 0 6px 20px var(--shadow-color);
     backdrop-filter: blur(10px);
 }
 
@@ -287,14 +300,14 @@ body {
     display: flex;
     align-items: center;
     padding: 8px 12px;
-    background: rgba(0, 40, 80, 0.9);
-    border-bottom: 1px solid #00ff00;
+    background: var(--secondary-bg);
+    border-bottom: 1px solid var(--border-color);
     border-radius: 6px 6px 0 0;
 }
 
 .aircraft-list-drag-handle {
     cursor: grab;
-    color: #00ff00;
+    color: var(--primary-color);
     margin-right: 8px;
     font-size: 12px;
 }
@@ -305,7 +318,7 @@ body {
 
 .aircraft-list-title {
     flex-grow: 1;
-    color: #00ff00;
+    color: var(--primary-color);
     font-family: 'Courier New', monospace;
     font-weight: bold;
     font-size: 14px;
@@ -314,7 +327,7 @@ body {
 .aircraft-list-close {
     background: none;
     border: none;
-    color: #00ff00;
+    color: var(--primary-color);
     cursor: pointer;
     font-size: 14px;
     padding: 4px;
@@ -335,14 +348,14 @@ body {
 .aircraft-list-table {
     width: 100%;
     border-collapse: collapse;
-    color: #00ff00;
+    color: var(--primary-color);
     font-family: 'Courier New', monospace;
     font-size: 12px;
 }
 
 .aircraft-list-table th {
-    background: rgba(0, 40, 80, 0.8);
-    border: 1px solid #00ff00;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
     padding: 8px 6px;
     text-align: left;
     font-weight: bold;
@@ -352,7 +365,7 @@ body {
 }
 
 .aircraft-list-table td {
-    border: 1px solid rgba(0, 255, 0, 0.3);
+    border: 1px solid var(--shadow-color);
     padding: 6px;
     white-space: nowrap;
     overflow: hidden;
@@ -365,16 +378,16 @@ body {
 }
 
 .aircraft-row:hover {
-    background: rgba(0, 60, 120, 0.5);
+    background: var(--hover-color);
 }
 
 .aircraft-row:active {
-    background: rgba(0, 80, 160, 0.7);
+    background: var(--accent-color);
 }
 
 .callsign-cell {
     font-weight: bold;
-    color: #00ffff;
+    color: var(--accent-color);
 }
 
 .number-cell {
