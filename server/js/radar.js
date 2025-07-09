@@ -356,37 +356,51 @@ class RadarDisplay {
             const currentLayer = this.tileLayers[this.currentTileLayerIndex];
             layersBtn.title = `Map Layer: ${currentLayer.name} (L)`;
             
+            // Get tile layer colors for consistent theming
+            const buttonBackground = currentLayer.backgroundColor || 'rgba(0, 40, 80, 0.8)';
+            const buttonAccent = currentLayer.accentColor || currentLayer.primaryColor || '#00ff00';
+            
             // Update button appearance based on layer type
             switch (currentLayer.name) {
                 case 'No Map':
-                    layersBtn.style.background = 'rgba(255, 100, 0, 0.8)';
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
                     layersBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
                     break;
                 case 'Satellite':
-                    layersBtn.style.background = 'rgba(100, 150, 255, 0.8)';
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
                     layersBtn.innerHTML = '<i class="fas fa-satellite"></i>';
                     break;
                 case 'Dark Mode':
-                    layersBtn.style.background = 'rgba(50, 50, 50, 0.8)';
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
                     layersBtn.innerHTML = '<i class="fas fa-moon"></i>';
                     break;
                 case 'Aviation Chart':
-                    layersBtn.style.background = 'rgba(0, 150, 255, 0.8)';
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
                     layersBtn.innerHTML = '<i class="fas fa-plane"></i>';
                     break;
                 case 'Topographic':
-                    layersBtn.style.background = 'rgba(139, 69, 19, 0.8)';
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
                     layersBtn.innerHTML = '<i class="fas fa-mountain"></i>';
                     break;
                 case 'Terrain':
-                    layersBtn.style.background = 'rgba(34, 139, 34, 0.8)';
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
                     layersBtn.innerHTML = '<i class="fas fa-globe-americas"></i>';
                     break;
                 default:
-                    layersBtn.style.background = 'rgba(0, 40, 80, 0.8)';
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
                     layersBtn.innerHTML = '<i class="fas fa-layer-group"></i>';
                     break;
             }
+            
+            // Ensure text color matches tile layer
+            layersBtn.style.color = currentLayer.primaryColor || currentLayer.aircraftColor || '#00ff00';
         }
     }
     
@@ -1437,12 +1451,21 @@ class RadarDisplay {
     updateGridButton() {
         const btn = document.getElementById('grid-btn');
         if (btn) {
+            const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+            const enabledBackground = currentTileLayer.accentColor || currentTileLayer.primaryColor || '#00ff00';
+            const disabledBackground = currentTileLayer.backgroundColor || 'rgba(0, 40, 80, 0.8)';
+            const textColor = currentTileLayer.primaryColor || currentTileLayer.aircraftColor || '#00ff00';
+            
             if (this.gridVisible) {
-                btn.style.background = 'rgba(0, 255, 100, 0.8)';
+                btn.style.background = enabledBackground;
+                btn.style.color = '#ffffff'; // White text on colored background
+                btn.style.borderColor = enabledBackground;
                 btn.innerHTML = '<i class="fas fa-border-all"></i>';
                 btn.title = 'Hide Coordinate Grid (G)';
             } else {
-                btn.style.background = 'rgba(0, 40, 80, 0.8)';
+                btn.style.background = disabledBackground;
+                btn.style.color = textColor;
+                btn.style.borderColor = textColor;
                 btn.innerHTML = '<i class="fas fa-border-none"></i>';
                 btn.title = 'Show Coordinate Grid (G)';
             }
@@ -2026,12 +2049,21 @@ class RadarDisplay {
     updateAircraftListButton() {
         const btn = document.getElementById('aircraft-list-btn');
         if (btn) {
+            const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+            const enabledBackground = currentTileLayer.accentColor || currentTileLayer.primaryColor || '#00ff00';
+            const disabledBackground = currentTileLayer.backgroundColor || 'rgba(0, 40, 80, 0.8)';
+            const textColor = currentTileLayer.primaryColor || currentTileLayer.aircraftColor || '#00ff00';
+            
             if (this.aircraftListVisible) {
-                btn.style.background = 'rgba(0, 255, 100, 0.8)';
+                btn.style.background = enabledBackground;
+                btn.style.color = '#ffffff'; // White text on colored background
+                btn.style.borderColor = enabledBackground;
                 btn.innerHTML = '<i class="fas fa-list-check"></i>';
                 btn.title = 'Hide Aircraft List (A)';
             } else {
-                btn.style.background = 'rgba(0, 40, 80, 0.8)';
+                btn.style.background = disabledBackground;
+                btn.style.color = textColor;
+                btn.style.borderColor = textColor;
                 btn.innerHTML = '<i class="fas fa-list"></i>';
                 btn.title = 'Show Aircraft List (A)';
             }
@@ -2077,15 +2109,21 @@ class RadarDisplay {
         const status = document.getElementById('smooth-status');
         
         if (btn) {
-            // Remove any existing state classes first
-            btn.classList.remove('smooth-enabled', 'smooth-disabled');
+            const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+            const enabledBackground = currentTileLayer.accentColor || currentTileLayer.primaryColor || '#00ff00';
+            const disabledBackground = currentTileLayer.backgroundColor || 'rgba(0, 40, 80, 0.8)';
+            const textColor = currentTileLayer.primaryColor || currentTileLayer.aircraftColor || '#00ff00';
             
             if (this.smoothMovementEnabled) {
-                btn.classList.add('smooth-enabled');
+                btn.style.background = enabledBackground;
+                btn.style.color = '#ffffff'; // White text on colored background
+                btn.style.borderColor = enabledBackground;
                 btn.innerHTML = '<i class="fas fa-running"></i>';
                 btn.title = 'Disable Smooth Movement (S)';
             } else {
-                btn.classList.add('smooth-disabled');
+                btn.style.background = disabledBackground;
+                btn.style.color = textColor;
+                btn.style.borderColor = textColor;
                 btn.innerHTML = '<i class="fas fa-walking"></i>';
                 btn.title = 'Enable Smooth Movement (S)';
             }
@@ -2687,9 +2725,14 @@ class RadarDisplay {
     updateTrackingIndicator(found) {
         const indicator = document.getElementById('tracking-indicator');
         if (indicator) {
+            const currentTileLayer = this.tileLayers[this.currentTileLayerIndex];
+            const textColor = currentTileLayer.primaryColor || currentTileLayer.aircraftColor || '#00ff00';
+            
             if (found) {
-                indicator.style.background = 'rgba(76, 175, 80, 0.95)';
-                indicator.style.borderColor = '#4CAF50';
+                const successBackground = currentTileLayer.accentColor || '#4CAF50';
+                indicator.style.background = successBackground;
+                indicator.style.borderColor = successBackground;
+                indicator.style.color = '#ffffff';
                 indicator.innerHTML = `
                     <i class="fas fa-crosshairs"></i> 
                     Tracking: ${this.trackedCallsign} ✓
@@ -2698,8 +2741,10 @@ class RadarDisplay {
                     </button>
                 `;
             } else {
-                indicator.style.background = 'rgba(244, 67, 54, 0.95)';
-                indicator.style.borderColor = '#f44336';
+                const errorBackground = currentTileLayer.trackingHighlightColor || '#f44336';
+                indicator.style.background = errorBackground;
+                indicator.style.borderColor = errorBackground;
+                indicator.style.color = '#ffffff';
                 indicator.innerHTML = `
                     <i class="fas fa-exclamation-triangle"></i> 
                     Tracking: ${this.trackedCallsign} (Not Found)
@@ -2889,12 +2934,24 @@ class RadarDisplay {
         document.documentElement.style.setProperty('--grid-color', colors.grid);
         document.documentElement.style.setProperty('--grid-major-color', colors.gridMajor);
         document.documentElement.style.setProperty('--grid-minor-color', colors.gridMinor);
+        document.documentElement.style.setProperty('--tracking-highlight-color', colors.trackingHighlight);
+        document.documentElement.style.setProperty('--tracking-highlight-bg', colors.trackingHighlightBg);
         
         // Update radar info panel
         this.updateRadarInfoColors(colors);
         
         // Update toolbar colors
         this.updateToolbarColors(colors);
+        
+        // Update individual toolbar buttons to respect their toggle states and tile layer colors
+        this.updateLayersButton();
+        this.updateGridButton();
+        this.updateAircraftListButton();
+        this.updateSmoothButton();
+        // Update tracking indicator if tracking is active
+        if (this.isTrackingEnabled && this.trackedCallsign) {
+            this.updateTrackingIndicator(true);
+        }
         
         // Update aircraft list colors
         this.updateAircraftListColors(colors);
@@ -2980,13 +3037,8 @@ class RadarDisplay {
             toolbar.style.boxShadow = `0 4px 12px ${colors.shadow}`;
         }
         
-        // Update toolbar buttons
-        const toolbarButtons = document.querySelectorAll('.toolbar-btn');
-        toolbarButtons.forEach(btn => {
-            btn.style.backgroundColor = colors.secondaryBg;
-            btn.style.borderColor = colors.border;
-            btn.style.color = colors.text;
-        });
+        // Don't update individual toolbar buttons here - let their specific update methods handle styling
+        // This prevents conflicts with toggle state styling in updateGridButton, updateAircraftListButton, etc.
         
         // Update drag handle
         const dragHandle = document.querySelector('.toolbar-drag-handle');
