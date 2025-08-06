@@ -94,8 +94,13 @@ namespace VirtualFlightOnlineTransmitter
             this.forumsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.discordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.facebookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.transmitterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.whosOnlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.radarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patreonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.downloadTheSourceCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ssMain = new System.Windows.Forms.StatusStrip();
             this.tsslMain = new System.Windows.Forms.ToolStripStatusLabel();
@@ -105,11 +110,8 @@ namespace VirtualFlightOnlineTransmitter
             this.btnRemoveServer = new System.Windows.Forms.Button();
             this.btnAddServer = new System.Windows.Forms.Button();
             this.lbServers = new System.Windows.Forms.ListBox();
-            this.transmitterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.whosOnlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.radarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.downloadTheSourceCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsslSimulatorStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslCommunicationsStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.gbServer.SuspendLayout();
             this.gbAircraftData.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -598,7 +600,7 @@ namespace VirtualFlightOnlineTransmitter
             // 
             this.aircraftDataToolStripMenuItem.CheckOnClick = true;
             this.aircraftDataToolStripMenuItem.Name = "aircraftDataToolStripMenuItem";
-            this.aircraftDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aircraftDataToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.aircraftDataToolStripMenuItem.Text = "&Aircraft Data";
             this.aircraftDataToolStripMenuItem.Click += new System.EventHandler(this.aircraftDataToolStripMenuItem_Click);
             // 
@@ -623,60 +625,83 @@ namespace VirtualFlightOnlineTransmitter
             // 
             this.virtualFlightOnlineToolStripMenuItem1.Enabled = false;
             this.virtualFlightOnlineToolStripMenuItem1.Name = "virtualFlightOnlineToolStripMenuItem1";
-            this.virtualFlightOnlineToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.virtualFlightOnlineToolStripMenuItem1.Size = new System.Drawing.Size(176, 22);
             this.virtualFlightOnlineToolStripMenuItem1.Text = "VirtualFlight.Online";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(173, 6);
             // 
             // websiteToolStripMenuItem
             // 
             this.websiteToolStripMenuItem.Name = "websiteToolStripMenuItem";
-            this.websiteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.websiteToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.websiteToolStripMenuItem.Text = "&Website";
             this.websiteToolStripMenuItem.Click += new System.EventHandler(this.websiteToolStripMenuItem_Click);
             // 
             // newsletterToolStripMenuItem
             // 
             this.newsletterToolStripMenuItem.Name = "newsletterToolStripMenuItem";
-            this.newsletterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newsletterToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.newsletterToolStripMenuItem.Text = "&Newsletter";
             this.newsletterToolStripMenuItem.Click += new System.EventHandler(this.newsletterToolStripMenuItem_Click);
             // 
             // airlineToolStripMenuItem
             // 
             this.airlineToolStripMenuItem.Name = "airlineToolStripMenuItem";
-            this.airlineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.airlineToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.airlineToolStripMenuItem.Text = "&Airline";
             this.airlineToolStripMenuItem.Click += new System.EventHandler(this.airlineToolStripMenuItem_Click);
             // 
             // forumsToolStripMenuItem
             // 
             this.forumsToolStripMenuItem.Name = "forumsToolStripMenuItem";
-            this.forumsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.forumsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.forumsToolStripMenuItem.Text = "&Forums";
             this.forumsToolStripMenuItem.Click += new System.EventHandler(this.forumsToolStripMenuItem_Click);
             // 
             // discordToolStripMenuItem
             // 
             this.discordToolStripMenuItem.Name = "discordToolStripMenuItem";
-            this.discordToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.discordToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.discordToolStripMenuItem.Text = "&Discord";
             this.discordToolStripMenuItem.Click += new System.EventHandler(this.discordToolStripMenuItem_Click);
             // 
             // facebookToolStripMenuItem
             // 
             this.facebookToolStripMenuItem.Name = "facebookToolStripMenuItem";
-            this.facebookToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.facebookToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.facebookToolStripMenuItem.Text = "&Facebook";
             this.facebookToolStripMenuItem.Click += new System.EventHandler(this.facebookToolStripMenuItem_Click);
+            // 
+            // transmitterToolStripMenuItem1
+            // 
+            this.transmitterToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.whosOnlineToolStripMenuItem,
+            this.radarToolStripMenuItem});
+            this.transmitterToolStripMenuItem1.Name = "transmitterToolStripMenuItem1";
+            this.transmitterToolStripMenuItem1.Size = new System.Drawing.Size(176, 22);
+            this.transmitterToolStripMenuItem1.Text = "&Transmitter";
+            // 
+            // whosOnlineToolStripMenuItem
+            // 
+            this.whosOnlineToolStripMenuItem.Name = "whosOnlineToolStripMenuItem";
+            this.whosOnlineToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.whosOnlineToolStripMenuItem.Text = "&Who\'s Online";
+            this.whosOnlineToolStripMenuItem.Click += new System.EventHandler(this.whosOnlineToolStripMenuItem_Click_1);
+            // 
+            // radarToolStripMenuItem
+            // 
+            this.radarToolStripMenuItem.Name = "radarToolStripMenuItem";
+            this.radarToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.radarToolStripMenuItem.Text = "&Radar";
+            this.radarToolStripMenuItem.Click += new System.EventHandler(this.radarToolStripMenuItem_Click_1);
             // 
             // patreonToolStripMenuItem
             // 
             this.patreonToolStripMenuItem.Name = "patreonToolStripMenuItem";
-            this.patreonToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.patreonToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.patreonToolStripMenuItem.Text = "&Patreon";
             this.patreonToolStripMenuItem.Click += new System.EventHandler(this.patreonToolStripMenuItem_Click);
             // 
@@ -690,6 +715,18 @@ namespace VirtualFlightOnlineTransmitter
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
+            // downloadTheSourceCodeToolStripMenuItem
+            // 
+            this.downloadTheSourceCodeToolStripMenuItem.Name = "downloadTheSourceCodeToolStripMenuItem";
+            this.downloadTheSourceCodeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.downloadTheSourceCodeToolStripMenuItem.Text = "&Download the source code";
+            this.downloadTheSourceCodeToolStripMenuItem.Click += new System.EventHandler(this.downloadTheSourceCodeToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(212, 6);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
@@ -701,7 +738,9 @@ namespace VirtualFlightOnlineTransmitter
             // 
             this.ssMain.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.ssMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsslMain});
+            this.tsslMain,
+            this.tsslSimulatorStatus,
+            this.tsslCommunicationsStatus});
             this.ssMain.Location = new System.Drawing.Point(0, 309);
             this.ssMain.Name = "ssMain";
             this.ssMain.Size = new System.Drawing.Size(784, 22);
@@ -713,6 +752,7 @@ namespace VirtualFlightOnlineTransmitter
             this.tsslMain.Name = "tsslMain";
             this.tsslMain.Size = new System.Drawing.Size(16, 17);
             this.tsslMain.Text = "...";
+            this.tsslMain.Click += new System.EventHandler(this.tsslMain_Click);
             // 
             // tmrConnect
             // 
@@ -771,40 +811,17 @@ namespace VirtualFlightOnlineTransmitter
             this.lbServers.TabIndex = 0;
             this.lbServers.SelectedIndexChanged += new System.EventHandler(this.lbServers_SelectedIndexChanged);
             // 
-            // transmitterToolStripMenuItem1
+            // tsslSimulatorStatus
             // 
-            this.transmitterToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.whosOnlineToolStripMenuItem,
-            this.radarToolStripMenuItem});
-            this.transmitterToolStripMenuItem1.Name = "transmitterToolStripMenuItem1";
-            this.transmitterToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.transmitterToolStripMenuItem1.Text = "&Transmitter";
+            this.tsslSimulatorStatus.Name = "tsslSimulatorStatus";
+            this.tsslSimulatorStatus.Size = new System.Drawing.Size(16, 17);
+            this.tsslSimulatorStatus.Text = "...";
             // 
-            // whosOnlineToolStripMenuItem
+            // tsslCommunicationsStatus
             // 
-            this.whosOnlineToolStripMenuItem.Name = "whosOnlineToolStripMenuItem";
-            this.whosOnlineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.whosOnlineToolStripMenuItem.Text = "&Who\'s Online";
-            this.whosOnlineToolStripMenuItem.Click += new System.EventHandler(this.whosOnlineToolStripMenuItem_Click_1);
-            // 
-            // radarToolStripMenuItem
-            // 
-            this.radarToolStripMenuItem.Name = "radarToolStripMenuItem";
-            this.radarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.radarToolStripMenuItem.Text = "&Radar";
-            this.radarToolStripMenuItem.Click += new System.EventHandler(this.radarToolStripMenuItem_Click_1);
-            // 
-            // downloadTheSourceCodeToolStripMenuItem
-            // 
-            this.downloadTheSourceCodeToolStripMenuItem.Name = "downloadTheSourceCodeToolStripMenuItem";
-            this.downloadTheSourceCodeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.downloadTheSourceCodeToolStripMenuItem.Text = "&Download the source code";
-            this.downloadTheSourceCodeToolStripMenuItem.Click += new System.EventHandler(this.downloadTheSourceCodeToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(212, 6);
+            this.tsslCommunicationsStatus.Name = "tsslCommunicationsStatus";
+            this.tsslCommunicationsStatus.Size = new System.Drawing.Size(16, 17);
+            this.tsslCommunicationsStatus.Text = "...";
             // 
             // frmMain
             // 
@@ -912,6 +929,8 @@ namespace VirtualFlightOnlineTransmitter
         private ToolStripMenuItem radarToolStripMenuItem;
         private ToolStripMenuItem downloadTheSourceCodeToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem3;
+        private ToolStripStatusLabel tsslSimulatorStatus;
+        private ToolStripStatusLabel tsslCommunicationsStatus;
     }
 }
 

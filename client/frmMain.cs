@@ -42,6 +42,7 @@ namespace VirtualFlightOnlineTransmitter
             PlaneInfoRequest = 0
         }
 
+        
 
         /// <summary>
         /// Function to convert longitude decimal to string
@@ -185,23 +186,46 @@ namespace VirtualFlightOnlineTransmitter
                 request.Method = "GET";
                 request.Timeout = 1000; // 1 second
 
+                // tsslCommunicationsStatus.Text = "Requested";
+                DateTime requestTime = DateTime.Now;
+
                 using (var webResponse = request.GetResponse())
                 {
-                    using (var webStream = webResponse.GetResponseStream())
+                    // get response code
+                    HttpWebResponse httpResponse = (HttpWebResponse)webResponse;
+                    if (httpResponse.StatusCode == HttpStatusCode.OK)
                     {
-                        using (var reader = new StreamReader(webStream))
+                        
+                        DateTime responseTime = DateTime.Now;
+
+                        // update the communications status with the time lapse
+                        TimeSpan timeTaken = responseTime - requestTime;
+                        tsslCommunicationsStatus.Text = timeTaken.TotalMilliseconds.ToString("0.00") + " ms";
+
+                        using (var webStream = webResponse.GetResponseStream())
                         {
-                            result = reader.ReadToEnd();
+                            using (var reader = new StreamReader(webStream))
+                            {
+                                result = reader.ReadToEnd();
+                            }
                         }
+                    } else
+                    {
+                        // if the response is not OK, then we have a problem
+                        result = "Error: " + httpResponse.StatusCode.ToString();
+                        tsslCommunicationsStatus.Text = result;
+                        Disconnect(result);
                     }
                 }
 
                 // todo - catch "server not found" errors and report them
 
             }
-            catch
+            catch (Exception ex)
             {
-                // do nothing 
+                // do nothing
+                tsslCommunicationsStatus.Text = ex.Message;
+                Disconnect(ex.Message);
             }
 
             return result;
@@ -258,6 +282,7 @@ namespace VirtualFlightOnlineTransmitter
                 }
                 catch
                 {
+                    tsslSimulatorStatus.Text = "Cannot connect to simulator";
                     Disconnect("Problem transmitting data simulator." + ((Properties.Settings.Default["AutoConnect"].ToString().ToLower() == "true") ? " - retrying every 5 seconds" : ""));
                 }
 
@@ -275,7 +300,7 @@ namespace VirtualFlightOnlineTransmitter
         /// <param name="airspeed"></param>
         public void HandleDataReceived(string aircraft_type, double latitude, double longitude, double altitude, double heading, double airspeed, double groundspeed, double touchdown_velocity, string transponder_code)
         {
-
+            
             // convert ground speed from metres per second to knots
             groundspeed = groundspeed * 1.94384449;
 
@@ -291,6 +316,8 @@ namespace VirtualFlightOnlineTransmitter
 
             string version = System.Windows.Forms.Application.ProductVersion;
 
+            this.tsslSimulatorStatus.Text = "Longitude : " + this.tbLongitude.Text + " - Latitude : " + this.tbLatitude.Text + " - Altitude : " + this.tbAltitude.Text + " - Heading : " + this.tbHeading.Text + " - Ground Speed : " + this.tbGroundspeed.Text;
+
             // Transmit data to web
             try
             {
@@ -300,13 +327,12 @@ namespace VirtualFlightOnlineTransmitter
                 // send the data to the server and get the response back
                 string response_data = this.SendDataToServer(aircraft_type, latitude, longitude, heading, altitude, airspeed, groundspeed, touchdown_velocity, transponder_code, notes, version);
 
-                tsslMain.Text = "Connected for " + DateTime.Now.Subtract(this.ConnectionStartTime).ToString(@"hh\:mm\:ss");
+                tsslMain.Text = DateTime.Now.Subtract(this.ConnectionStartTime).ToString(@"hh\:mm\:ss");
 
             }
             catch
             {
-                // problems
-                Disconnect("Problem sending data to the server");
+                // do nothing
             }
 
 
@@ -696,6 +722,7 @@ namespace VirtualFlightOnlineTransmitter
                             this.planeInfoDefinitionId = this.FlightSimulatorConnection.RegisterDataDefinition<PlaneInfoResponse>();
 
                             // Attach event handler
+                            this.FlightSimulatorConnection.FsDataReceived -= this.HandleReceivedFsData;
                             this.FlightSimulatorConnection.FsDataReceived += this.HandleReceivedFsData;
 
                             // Disable the textboxes
@@ -766,11 +793,17 @@ namespace VirtualFlightOnlineTransmitter
             else
             {
                 tsslMain.Text = "Not Connected";
+                tsslCommunicationsStatus.Text = "...";
+                tsslSimulatorStatus.Text = "...";
             }
             this.Refresh();
 
             // if we are connected, disconnect from the simulator
-            if (this.FlightSimulatorConnection.Connected) this.FlightSimulatorConnection.Disconnect();
+            if (this.FlightSimulatorConnection.Connected)
+            {
+                this.FlightSimulatorConnection.Disconnect();
+                this.FlightSimulatorConnection.FsDataReceived -= this.HandleReceivedFsData;
+            }
 
             // configure the connect / disconnect buttons
             btnConnect.Enabled = true;
@@ -1075,6 +1108,11 @@ namespace VirtualFlightOnlineTransmitter
         {
             // open a browser to the Virtual Flight Online Patreon page
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://patreon.com/virtualflightonline") { UseShellExecute = true });
+        }
+
+        private void tsslMain_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
