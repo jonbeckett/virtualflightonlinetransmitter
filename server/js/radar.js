@@ -34,12 +34,18 @@ class RadarDisplay {
         this.measurementLine = null;
         this.measurementLabel = null;
         
+        // Persistent measurements system
+        this.persistentMeasurements = [];
+        
         // Range ring tool
         this.rangeRingActive = false;
         this.rangeRingCenter = null;
         this.rangeRingCircle = null;
         this.rangeRingCenterMarker = null;
         this.rangeRingLabel = null;
+        
+        // Persistent range rings system
+        this.persistentRangeRings = [];
         
         // Aircraft tracking
         this.trackedCallsign = null; // Callsign to track from URL parameter
@@ -81,7 +87,9 @@ class RadarDisplay {
                 popupBorderColor: '#00ff00',
                 // Tracking highlight colors
                 trackingHighlightColor: '#ff6600',
-                trackingHighlightBackground: 'rgb(255, 102, 0)'
+                trackingHighlightBackground: 'rgb(255, 102, 0)',
+                // Measurement colors
+                measurementColor: '#ff6600'
             },
             {
                 name: 'Satellite',
@@ -115,7 +123,9 @@ class RadarDisplay {
                 popupBorderColor: '#fff',
                 // Tracking highlight colors
                 trackingHighlightColor: '#ff6600',
-                trackingHighlightBackground: 'rgb(255, 102, 0)'
+                trackingHighlightBackground: 'rgb(255, 102, 0)',
+                // Measurement colors
+                measurementColor: '#ff0000'
             },
             {
                 name: 'Dark Mode',
@@ -149,7 +159,9 @@ class RadarDisplay {
                 popupBorderColor: '#40e0d0',
                 // Tracking highlight colors
                 trackingHighlightColor: '#ff6600',
-                trackingHighlightBackground: 'rgb(255, 102, 0)'
+                trackingHighlightBackground: 'rgb(255, 102, 0)',
+                // Measurement colors
+                measurementColor: '#00ffff'
             },
             {
                 name: 'Aviation Chart',
@@ -183,7 +195,9 @@ class RadarDisplay {
                 popupBorderColor: '#0066cc',
                 // Tracking highlight colors
                 trackingHighlightColor: '#ff6600',
-                trackingHighlightBackground: 'rgb(255, 102, 0)'
+                trackingHighlightBackground: 'rgb(255, 102, 0)',
+                // Measurement colors
+                measurementColor: '#ff9900'
             },
             {
                 name: 'Topographic',
@@ -217,7 +231,9 @@ class RadarDisplay {
                 popupBorderColor: 'rgb(0, 0, 0)',
                 // Tracking highlight colors
                 trackingHighlightColor: '#ff6600',
-                trackingHighlightBackground: 'rgb(255, 102, 0)'
+                trackingHighlightBackground: 'rgb(255, 102, 0)',
+                // Measurement colors
+                measurementColor: '#cc0000'
             },
             {
                 name: 'No Map',
@@ -251,7 +267,119 @@ class RadarDisplay {
                 popupBorderColor: '#1e90ff',
                 // Tracking highlight colors
                 trackingHighlightColor: '#ff6600',
-                trackingHighlightBackground: 'rgb(255, 102, 0)'
+                trackingHighlightBackground: 'rgb(255, 102, 0)',
+                // Measurement colors
+                measurementColor: '#0099ff'
+            },
+            {
+                name: 'CartoDB Light',
+                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                attribution: '© OpenStreetMap contributors © CARTO',
+                className: '',
+                opacity: 1.0,
+                subdomains: ['a', 'b', 'c', 'd'],
+                // Aircraft and label colors - clean light theme
+                aircraftColor: '#2563eb',
+                labelBackground: 'rgb(255, 255, 255)',
+                labelTextColor: '#1e40af',
+                labelBorderColor: '#2563eb',
+                labelLineColor: '#2563eb',
+                // Interface colors - clean blue theme
+                primaryColor: '#2563eb',
+                secondaryColor: '#3b82f6',
+                accentColor: '#60a5fa',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                secondaryBackground: 'rgba(248, 250, 252, 0.9)',
+                borderColor: '#2563eb',
+                hoverColor: 'rgba(59, 130, 246, 0.9)',
+                textColor: '#1e40af',
+                shadowColor: 'rgba(37, 99, 235, 0.3)',
+                // Grid colors
+                gridColor: '#2563eb',
+                gridMajorColor: '#2563eb',
+                gridMinorColor: 'rgba(37, 99, 235, 0.3)',
+                // Popup colors
+                popupBackground: 'rgba(255, 255, 255, 0.95)',
+                popupTextColor: '#1e40af',
+                popupBorderColor: '#2563eb',
+                // Tracking highlight colors
+                trackingHighlightColor: '#dc2626',
+                trackingHighlightBackground: 'rgb(220, 38, 38)',
+                // Measurement colors
+                measurementColor: '#ff3366'
+            },
+            {
+                name: 'CartoDB Dark',
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                attribution: '© OpenStreetMap contributors © CARTO',
+                className: '',
+                opacity: 1.0,
+                subdomains: ['a', 'b', 'c', 'd'],
+                // Aircraft and label colors - dark theme
+                aircraftColor: '#fbbf24',
+                labelBackground: 'rgb(31, 41, 55)',
+                labelTextColor: '#fbbf24',
+                labelBorderColor: '#fbbf24',
+                labelLineColor: '#fbbf24',
+                // Interface colors - dark theme
+                primaryColor: '#fbbf24',
+                secondaryColor: '#f59e0b',
+                accentColor: '#f97316',
+                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                secondaryBackground: 'rgba(31, 41, 55, 0.9)',
+                borderColor: '#fbbf24',
+                hoverColor: 'rgba(245, 158, 11, 0.9)',
+                textColor: '#fbbf24',
+                shadowColor: 'rgba(251, 191, 36, 0.3)',
+                // Grid colors
+                gridColor: '#fbbf24',
+                gridMajorColor: '#fbbf24',
+                gridMinorColor: 'rgba(251, 191, 36, 0.3)',
+                // Popup colors
+                popupBackground: 'rgba(17, 24, 39, 0.95)',
+                popupTextColor: '#fbbf24',
+                popupBorderColor: '#fbbf24',
+                // Tracking highlight colors
+                trackingHighlightColor: '#ef4444',
+                trackingHighlightBackground: 'rgb(239, 68, 68)',
+                // Measurement colors
+                measurementColor: '#ffaa00'
+            },
+            {
+                name: 'Terrain Relief',
+                url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                attribution: '© OpenTopoMap (CC-BY-SA)',
+                className: '',
+                opacity: 0.9,
+                // Aircraft and label colors - terrain aviation style
+                aircraftColor: '#8b4513',
+                labelBackground: 'rgb(245, 245, 220)',
+                labelTextColor: '#654321',
+                labelBorderColor: '#8b4513',
+                labelLineColor: '#8b4513',
+                // Interface colors - terrain theme
+                primaryColor: '#8b4513',
+                secondaryColor: '#a0522d',
+                accentColor: '#cd853f',
+                backgroundColor: 'rgba(245, 245, 220, 0.95)',
+                secondaryBackground: 'rgba(250, 235, 215, 0.9)',
+                borderColor: '#8b4513',
+                hoverColor: 'rgba(160, 82, 45, 0.9)',
+                textColor: '#654321',
+                shadowColor: 'rgba(139, 69, 19, 0.3)',
+                // Grid colors
+                gridColor: '#8b4513',
+                gridMajorColor: '#8b4513',
+                gridMinorColor: 'rgba(139, 69, 19, 0.3)',
+                // Popup colors
+                popupBackground: 'rgba(245, 245, 220, 0.95)',
+                popupTextColor: '#654321',
+                popupBorderColor: '#8b4513',
+                // Tracking highlight colors
+                trackingHighlightColor: '#ff6600',
+                trackingHighlightBackground: 'rgb(255, 102, 0)',
+                // Measurement colors
+                measurementColor: '#996633'
             }
         ];
         
@@ -327,12 +455,34 @@ class RadarDisplay {
         
         // Add new tile layer if URL is provided
         if (layerConfig.url) {
-            this.currentTileLayer = L.tileLayer(layerConfig.url, {
+            const tileLayerOptions = {
                 attribution: layerConfig.attribution,
                 className: layerConfig.className,
                 opacity: layerConfig.opacity,
-                maxZoom: 18
-            }).addTo(this.map);
+                maxZoom: 18,
+                errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
+            };
+            
+            // Add subdomains if specified
+            if (layerConfig.subdomains) {
+                tileLayerOptions.subdomains = layerConfig.subdomains;
+            }
+            
+            console.log(`Loading tile layer: ${layerConfig.name} with URL: ${layerConfig.url}`);
+            
+            this.currentTileLayer = L.tileLayer(layerConfig.url, tileLayerOptions);
+            
+            // Add error event listener
+            this.currentTileLayer.on('tileerror', (e) => {
+                console.error(`Tile loading error for ${layerConfig.name}:`, e.error, 'URL:', e.url);
+            });
+            
+            // Add load event listener
+            this.currentTileLayer.on('tileload', (e) => {
+                console.log(`Tile loaded successfully for ${layerConfig.name}`);
+            });
+            
+            this.currentTileLayer.addTo(this.map);
         } else {
             this.currentTileLayer = null;
         }
@@ -383,6 +533,21 @@ class RadarDisplay {
                     layersBtn.innerHTML = '<i class="fas fa-plane"></i>';
                     break;
                 case 'Topographic':
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
+                    layersBtn.innerHTML = '<i class="fas fa-mountain"></i>';
+                    break;
+                case 'CartoDB Light':
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
+                    layersBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                    break;
+                case 'CartoDB Dark':
+                    layersBtn.style.background = buttonBackground;
+                    layersBtn.style.borderColor = buttonAccent;
+                    layersBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                    break;
+                case 'Terrain Relief':
                     layersBtn.style.background = buttonBackground;
                     layersBtn.style.borderColor = buttonAccent;
                     layersBtn.innerHTML = '<i class="fas fa-mountain"></i>';
@@ -1561,6 +1726,15 @@ class RadarDisplay {
             this.toggleSmoothMovement();
         });
         
+        const clearMeasurementsBtn = document.createElement('button');
+        clearMeasurementsBtn.className = 'toolbar-btn';
+        clearMeasurementsBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+        clearMeasurementsBtn.title = 'Clear All Persistent Measurements & Range Rings (X)';
+        clearMeasurementsBtn.id = 'clear-measurements-btn';
+        clearMeasurementsBtn.addEventListener('click', () => {
+            this.clearAllMeasurements();
+        });
+        
         // Add drag handle
         const dragHandle = document.createElement('div');
         dragHandle.className = 'toolbar-drag-handle';
@@ -1582,6 +1756,7 @@ class RadarDisplay {
         toolbar.appendChild(aircraftListBtn);
         toolbar.appendChild(gridBtn);
         toolbar.appendChild(smoothBtn);
+        toolbar.appendChild(clearMeasurementsBtn);
         
         // Add separator
         const separator2 = document.createElement('div');
@@ -1737,6 +1912,11 @@ class RadarDisplay {
                     this.toggleSmoothMovement();
                     e.preventDefault();
                     break;
+                case 'x':
+                case 'X':
+                    this.clearAllMeasurements();
+                    e.preventDefault();
+                    break;
                 case 'f':
                 case 'F':
                     if (e.shiftKey) {
@@ -1767,6 +1947,21 @@ class RadarDisplay {
         
         // Show notification of layer change
         this.showLayerNotification();
+        
+        // Also log to console for debugging
+        console.log(`Switched to layer ${this.currentTileLayerIndex + 1}/${this.tileLayers.length}: ${this.tileLayers[this.currentTileLayerIndex].name}`);
+    }
+    
+    // Add method to jump directly to a layer by index (for testing)
+    setTileLayer(index) {
+        if (index >= 0 && index < this.tileLayers.length) {
+            this.currentTileLayerIndex = index;
+            this.loadTileLayer(this.currentTileLayerIndex);
+            this.showLayerNotification();
+            console.log(`Jumped to layer ${this.currentTileLayerIndex + 1}/${this.tileLayers.length}: ${this.tileLayers[this.currentTileLayerIndex].name}`);
+        } else {
+            console.log(`Invalid layer index. Valid range: 0-${this.tileLayers.length - 1}`);
+        }
     }
     
     showLayerNotification() {
@@ -1782,12 +1977,15 @@ class RadarDisplay {
         }
         
         notification.innerHTML = `
-            <div style="font-weight: bold;">Map Layer: ${currentLayer.name}</div>
+            <div style="font-weight: bold;">Map Layer ${this.currentTileLayerIndex + 1}/${this.tileLayers.length}: ${currentLayer.name}</div>
             <div style="font-size: 12px; margin-top: 2px;">
                 Aircraft Color: <span style="color: ${currentLayer.aircraftColor};">●</span> ${currentLayer.aircraftColor}
             </div>
             <div style="font-size: 12px; margin-top: 1px;">
                 Label Background: <span style="background: ${currentLayer.labelBackground}; padding: 2px 4px; border-radius: 2px; color: ${currentLayer.aircraftColor};">ABC</span> 
+            </div>
+            <div style="font-size: 12px; margin-top: 1px;">
+                URL: ${currentLayer.url ? 'Loading tiles...' : 'No tiles (No Map mode)'}
             </div>
         `;
         notification.style.opacity = '1';
@@ -2220,7 +2418,7 @@ class RadarDisplay {
         // Add mouse event listeners for measurement tool and range rings
         this.map.on('mousedown', (e) => {
             if (e.originalEvent.button === 2) { // Right mouse button
-                console.log('Right click detected, Shift key:', e.originalEvent.shiftKey);
+                console.log('Right click detected, Shift key:', e.originalEvent.shiftKey, 'CTRL key:', e.originalEvent.ctrlKey);
                 if (e.originalEvent.shiftKey) {
                     // Shift + right click = range ring
                     console.log('Starting range ring');
@@ -2245,9 +2443,19 @@ class RadarDisplay {
         this.map.on('mouseup', (e) => {
             if (e.originalEvent.button === 2) { // Right mouse button
                 if (this.measurementActive) {
-                    this.endMeasurement();
+                    // Check if CTRL key is held - if so, make measurement persistent
+                    if (e.originalEvent.ctrlKey) {
+                        this.endMeasurementPersistent();
+                    } else {
+                        this.endMeasurement();
+                    }
                 } else if (this.rangeRingActive) {
-                    this.endRangeRing();
+                    // Check if CTRL key is held - if so, make range ring persistent
+                    if (e.originalEvent.ctrlKey) {
+                        this.endRangeRingPersistent();
+                    } else {
+                        this.endRangeRing();
+                    }
                 }
             }
         });
@@ -2262,10 +2470,13 @@ class RadarDisplay {
         this.measurementActive = true;
         this.measurementStartPoint = startLatLng;
         
+        // Get current tile layer colors
+        const currentLayer = this.tileLayers[this.currentTileLayerIndex];
+        const measurementColor = currentLayer.measurementColor || '#ff0000';
                
         // Create measurement line
         this.measurementLine = L.polyline([startLatLng, startLatLng], {
-            color: '#ff0000',
+            color: measurementColor,
             weight: 2,
             opacity: 0.8,
             dashArray: '5, 5'
@@ -2275,7 +2486,7 @@ class RadarDisplay {
         this.measurementLabel = L.marker(startLatLng, {
             icon: L.divIcon({
                 className: 'measurement-label',
-                html: '<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0.0 NM<br>000°</div>',
+                html: `<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0.0 NM<br>000°</div>`,
                 iconSize: [80, 40],
                 iconAnchor: [40, 20]
             })
@@ -2308,6 +2519,11 @@ class RadarDisplay {
         );
         
         this.measurementLabel.setLatLng(midpoint);
+        
+        // Get current tile layer colors for label
+        const currentLayer = this.tileLayers[this.currentTileLayerIndex];
+        const measurementColor = currentLayer.measurementColor || '#ff0000';
+        
         this.measurementLabel.setIcon(L.divIcon({
             className: 'measurement-label',
             html: `<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 4px 8px; border-radius:  4px; font-family: monospace; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${distance.toFixed(1)} NM<br>${bearing.toFixed(0).padStart(3, '0')}°</div>`,
@@ -2333,6 +2549,109 @@ class RadarDisplay {
         
         this.measurementStartPoint = null;
         console.log('Measurement ended');
+    }
+    
+    endMeasurementPersistent() {
+        // Store the measurement as persistent before clearing
+        if (this.measurementLine && this.measurementLabel) {
+            const persistentMeasurement = {
+                line: this.measurementLine,
+                label: this.measurementLabel,
+                id: 'measurement-' + Date.now()
+            };
+            
+            // Add to persistent measurements array
+            this.persistentMeasurements.push(persistentMeasurement);
+            
+            console.log('Measurement made persistent:', persistentMeasurement.id);
+        }
+        
+        // Reset active measurement state
+        this.measurementActive = false;
+        this.measurementLine = null;
+        this.measurementLabel = null;
+        this.measurementStartPoint = null;
+        
+        console.log('Persistent measurement created');
+    }
+    
+    clearAllMeasurements() {
+        // Remove all persistent measurements from map
+        this.persistentMeasurements.forEach(measurement => {
+            if (measurement.line) {
+                this.map.removeLayer(measurement.line);
+            }
+            if (measurement.label) {
+                this.map.removeLayer(measurement.label);
+            }
+        });
+        
+        // Remove all persistent range rings from map
+        this.persistentRangeRings.forEach(rangeRing => {
+            if (rangeRing.circle) {
+                this.map.removeLayer(rangeRing.circle);
+            }
+            if (rangeRing.centerMarker) {
+                this.map.removeLayer(rangeRing.centerMarker);
+            }
+            if (rangeRing.label) {
+                this.map.removeLayer(rangeRing.label);
+            }
+        });
+        
+        // Clear the arrays
+        this.persistentMeasurements = [];
+        this.persistentRangeRings = [];
+        
+        console.log('All persistent measurements and range rings cleared');
+    }
+    
+    updatePersistentMeasurementsColors() {
+        // Update colors of all persistent measurements to match current tile layer
+        const currentLayer = this.tileLayers[this.currentTileLayerIndex];
+        const measurementColor = currentLayer.measurementColor || '#ff0000';
+        
+        this.persistentMeasurements.forEach(measurement => {
+            // Update line color
+            if (measurement.line) {
+                measurement.line.setStyle({
+                    color: measurementColor
+                });
+            }
+            
+            // Note: Label colors are handled by the original HTML content,
+            // we could optionally recreate labels with new colors here
+        });
+        
+        console.log('Updated persistent measurements colors to:', measurementColor);
+    }
+    
+    updatePersistentRangeRingsColors() {
+        // Update colors of all persistent range rings to match current tile layer
+        const currentLayer = this.tileLayers[this.currentTileLayerIndex];
+        const measurementColor = currentLayer.measurementColor || '#ff0000';
+        
+        this.persistentRangeRings.forEach(rangeRing => {
+            // Update circle color
+            if (rangeRing.circle) {
+                rangeRing.circle.setStyle({
+                    color: measurementColor
+                });
+            }
+            
+            // Update center marker color
+            if (rangeRing.centerMarker) {
+                rangeRing.centerMarker.setStyle({
+                    color: measurementColor,
+                    fillColor: measurementColor
+                });
+            }
+            
+            // Note: Label colors are handled by the original HTML content,
+            // we could optionally recreate labels with new colors here
+        });
+        
+        console.log('Updated persistent range rings colors to:', measurementColor);
     }
     
     calculateDistanceNauticalMiles(lat1, lng1, lat2, lng2) {
@@ -2383,10 +2702,14 @@ class RadarDisplay {
         
         console.log('Starting range ring at:', centerLatLng);
         
+        // Get current tile layer colors
+        const currentLayer = this.tileLayers[this.currentTileLayerIndex];
+        const rangeRingColor = currentLayer.measurementColor || '#ff0000';
+        
         // Create center marker (small red circle)
         this.rangeRingCenterMarker = L.circleMarker(centerLatLng, {
-            color: '#ff0000',
-            fillColor: '#ff0000',
+            color: rangeRingColor,
+            fillColor: rangeRingColor,
             fillOpacity: 0.8,
             radius: 3,
             weight: 1
@@ -2394,7 +2717,7 @@ class RadarDisplay {
         
         // Create initial range ring circle (will be updated on mouse move)
         this.rangeRingCircle = L.circle(centerLatLng, {
-            color: '#ff0000',
+            color: rangeRingColor,
             fillColor: 'transparent',
             weight: 1,
             opacity: 0.7,
@@ -2405,7 +2728,7 @@ class RadarDisplay {
         this.rangeRingLabel = L.marker(centerLatLng, {
             icon: L.divIcon({
                 className: 'range-ring-label',
-                html: '<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 11px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0.0 NM</div>',
+                html: `<div style="background: rgba(255, 0, 0, 0.9); color: white; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 11px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">0.0 NM</div>`,
                 iconSize: [60, 20],
                 iconAnchor: [30, 10]
             })
@@ -2470,6 +2793,32 @@ class RadarDisplay {
         
         this.rangeRingCenter = null;
         console.log('Range ring ended');
+    }
+    
+    endRangeRingPersistent() {
+        // Store the range ring as persistent before clearing
+        if (this.rangeRingCircle && this.rangeRingCenterMarker && this.rangeRingLabel) {
+            const persistentRangeRing = {
+                circle: this.rangeRingCircle,
+                centerMarker: this.rangeRingCenterMarker,
+                label: this.rangeRingLabel,
+                id: 'rangering-' + Date.now()
+            };
+            
+            // Add to persistent range rings array
+            this.persistentRangeRings.push(persistentRangeRing);
+            
+            console.log('Range ring made persistent:', persistentRangeRing.id);
+        }
+        
+        // Reset active range ring state
+        this.rangeRingActive = false;
+        this.rangeRingCircle = null;
+        this.rangeRingCenterMarker = null;
+        this.rangeRingLabel = null;
+        this.rangeRingCenter = null;
+        
+        console.log('Persistent range ring created');
     }
     
     calculateDestinationPoint(lat, lng, bearing, distanceNM) {
@@ -2958,6 +3307,12 @@ class RadarDisplay {
         
         // Update grid colors
         this.updateGridColors(colors);
+        
+        // Update persistent measurements colors
+        this.updatePersistentMeasurementsColors();
+        
+        // Update persistent range rings colors
+        this.updatePersistentRangeRingsColors();
         
         // Update other UI elements
         this.updateMiscUIColors(colors);
